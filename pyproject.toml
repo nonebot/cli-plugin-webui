@@ -2,7 +2,7 @@
 name = "nb-cli-plugin-webui"
 version = "0.1.0"
 description = "web ui support for nb-cli"
-authors = ["yanyongyu <yyy@nonebot.dev>"]
+authors = ["Kyomotoi <0w0@imki.moe>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/nonebot/cli-plugin-webui"
@@ -20,12 +20,21 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
+psutil = "^5.9.5"
+pathlib = "^1.0.1"
+WMI = {version = "^1.5.1", markers = "sys_platform == 'win32'"}
+nb-cli = "^1.1.2"
+fastapi = "^0.95.1"
+APScheduler = "^3.10.1"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.10.1"
 black = "^23.1.0"
 nonemoji = "^0.1.2"
 pre-commit = "^3.1.0"
+
+[tool.poetry.plugins.nb]
+webui = "cli_plugin.webui:install"
 
 [tool.black]
 line-length = 88
