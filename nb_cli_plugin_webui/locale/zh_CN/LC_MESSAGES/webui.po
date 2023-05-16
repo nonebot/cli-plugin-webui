@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-17 02:27+0800\n"
+"PO-Revision-Date: 2023-05-17 02:31+0800\n"
+"Last-Translator: Kyomotoi <0w0@imki.moe>\n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.3\n"
+
+#: ../nb_cli_plugin_webui/api/routes/performance.py:21
+msgid "Malformed data from websocket."
+msgstr "无效的 WebSocket 返回."
+
+#: ../nb_cli_plugin_webui/cli.py:18
+msgid "Start NB CLI WebUI."
+msgstr "管理 NB CLI WebUI."
+
+#: ../nb_cli_plugin_webui/cli.py:25
+msgid "The host required to access NB CLI WebUI."
+msgstr "NB CLI WebUI 所需的 Host."
+
+#: ../nb_cli_plugin_webui/cli.py:33
+msgid "The port required to access NB CLI WebUI."
+msgstr "NB CLI WebUI 所需的端口."
+
+#: ../nb_cli_plugin_webui/cli.py:68
+msgid "Run NB CLI WebUI"
+msgstr "运行 NB CLI WebUI."
+
+#: ../nb_cli_plugin_webui/cli.py:74
+msgid "Set access Token."
+msgstr "设置访问密钥."
+
+#: ../nb_cli_plugin_webui/cli.py:77
+msgid "Do you want it generated? [Y/N]"
+msgstr "你需要生成一个吗？[Y/N]"
+
+#: ../nb_cli_plugin_webui/cli.py:83
+msgid "Please enter token:"
+msgstr "请键入密钥:"
+
+#: ../nb_cli_plugin_webui/cli.py:93
+msgid "Please enter again:"
+msgstr "请再次键入:"
+
+#: ../nb_cli_plugin_webui/cli.py:97
+msgid "Your token is:"
+msgstr "你的密钥是:"
+
+#: ../nb_cli_plugin_webui/cli.py:99
+msgid "ATTENTION, TOKEN ONLY SHOW ONCE."
+msgstr "注意, 该密钥仅显示这一次, 请妥善保存."
+
+#: ../nb_cli_plugin_webui/utils/security/jwt.py:41
+msgid "Session(cookie) has expired."
+msgstr "会话已过期."
+
+#: ../nb_cli_plugin_webui/utils/security/jwt.py:43
+msgid "Invalid JWT."
+msgstr ""
+
+#: ../nb_cli_plugin_webui/utils/security/jwt.py:45
+msgid "Malformed payload in cookie."
+msgstr ""
+
+#: ../nb_cli_plugin_webui/utils/__init__.py:27
+msgid "Token should be at least 12 characters long."
+msgstr ""
+
+#: ../nb_cli_plugin_webui/utils/__init__.py:32
+msgid "Token should contain at least one digit."
+msgstr ""
+
+#: ../nb_cli_plugin_webui/utils/__init__.py:36
+msgid "Token should contain at least one lowercase letter."
+msgstr ""
+
+#: ../nb_cli_plugin_webui/utils/__init__.py:40
+msgid "Token should contain at least one uppercase letter."
+msgstr ""
+
+#: ../nb_cli_plugin_webui/utils/__init__.py:44
+msgid "Token should contain at least one special character."
+msgstr ""
