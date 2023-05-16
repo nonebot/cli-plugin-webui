@@ -1,8 +1,9 @@
-import psutil
 import platform
 from sys import platform as pf
 
-from .models import *
+import psutil
+
+from nb_cli_plugin_webui.models.schemas.machine import *
 
 if pf == "win32":
     import wmi
@@ -53,7 +54,7 @@ class PlatformPerformanceMonitor:
             available=vm.available,
             percent=vm.percent,
             used=vm.used,
-            free=vm.free
+            free=vm.free,
         )
 
     @staticmethod
@@ -74,12 +75,8 @@ class PlatformPerformanceMonitor:
             disk_total = disk.total
             disk_used = disk.used
             disk_free = disk.free
-        
-        return RunnerDiskInfo(
-            total=disk_total,
-            used=disk_used,
-            free=disk_free
-        )
+
+        return RunnerDiskInfo(total=disk_total, used=disk_used, free=disk_free)
 
     @staticmethod
     def get_net_info() -> RunnerNetInfo:
