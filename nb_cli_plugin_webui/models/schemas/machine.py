@@ -1,4 +1,5 @@
 from typing import List
+
 from pydantic import BaseModel
 
 
@@ -37,4 +38,3 @@ class RunnerNetInfo(BaseModel):
     package_sent: int
     package_recv: int
     speed: List[int]
-
