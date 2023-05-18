@@ -1,11 +1,13 @@
 from typing import List, cast
 
 import click
+from pydantic import SecretStr
 from nb_cli.i18n import _ as nb_cli_i18n
-from noneprompt import Choice, ListPrompt, InputPrompt, CancelledError
 from nb_cli.cli import CLI_DEFAULT_STYLE, ClickAliasedGroup, run_sync, run_async
+from noneprompt import Choice, ListPrompt, InputPrompt, ConfirmPrompt, CancelledError
 
 from nb_cli_plugin_webui.i18n import _
+from nb_cli_plugin_webui.config import Config, WebUIConfig
 from nb_cli_plugin_webui.utils import (
     find_available_port,
     check_token_complexity,
@@ -14,14 +16,14 @@ from nb_cli_plugin_webui.utils import (
 
 
 @click.group(
-    cls=ClickAliasedGroup, invoke_without_command=True, help=_("Start NB CLI WebUI.")
+    cls=ClickAliasedGroup, invoke_without_command=True, help=_("Start NB CLI UI.")
 )
 @click.option(
     "-h",
     "--host",
     type=str,
     show_default=True,
-    help=_("The host required to access NB CLI WebUI."),
+    help=_("The host required to access NB CLI UI."),
     default="localhost",
 )
 @click.option(
@@ -29,7 +31,7 @@ from nb_cli_plugin_webui.utils import (
     "--port",
     type=int,
     show_default=True,
-    help=_("The port required to access NB CLI WebUI."),
+    help=_("The port required to access NB CLI UI."),
     default=find_available_port(10000, 20000),
 )
 @click.pass_context
@@ -64,19 +66,25 @@ async def webui(ctx: click.Context, host: str, port: int):
     await run_sync(ctx.invoke)(sub_cmd)
 
 
-@webui.command(help=_("Run NB CLI WebUI"))
+@webui.command(help=_("Run NB CLI UI"))
 @run_async
 async def start():
     ...
 
 
-@webui.command(help=_("Set access Token."))
+@webui.command(help=_("Reset or create access Token."))
 @run_async
 async def setting_token():
-    att = await InputPrompt(_("Do you want it generated? [Y/N]")).prompt_async(
+    if Config.exist():
+        if await ConfirmPrompt(
+            _("Token is exist, did you need overwrite?")
+        ).prompt_async(style=CLI_DEFAULT_STYLE):
+            click.secho(_("Pass..."))
+
+    click.secho(_("Token is not exist."))
+    if await ConfirmPrompt(_("Do you want it generated?")).prompt_async(
         style=CLI_DEFAULT_STYLE
-    )
-    if att in ["y", "Y"]:
+    ):
         token = generate_complexity_string()
     else:
         token = await InputPrompt(_("Please enter token:")).prompt_async(
@@ -93,9 +101,20 @@ async def setting_token():
                 style=CLI_DEFAULT_STYLE
             )
 
-    click.secho(_(f"Your token is:"))
+    click.secho(_("Your token is:"))
     click.secho(f"\n{token}\n", fg="green")
-    click.secho(_("ATTENTION, TOKEN ONLY SHOW ONCE."), fg="red")
+    click.secho(_("ATTENTION, TOKEN ONLY SHOW ONCE."), fg="red", bold=True)
 
-    secret_key = generate_complexity_string(length=18)
-    # TODO ...
+    if Config.exist():
+        config = Config.load()
+        config.token = SecretStr(token)
+        config.reset_token()
+        Config(config).store()
+    else:
+        user_config = WebUIConfig(
+            token=SecretStr(token),
+            secret_key=SecretStr(generate_complexity_string(18)),
+            is_customize=False,
+        )
+        user_config.reset_token()
+        Config(user_config).store()
