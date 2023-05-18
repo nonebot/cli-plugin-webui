@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["nonebot", "webui"]
+  "cSpell.words": [
+    "fastapi",
+    "levelname",
+    "levelno",
+    "Loguru",
+    "nonebot",
+    "webui"
+  ]
 }
