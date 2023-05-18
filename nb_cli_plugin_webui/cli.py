@@ -18,25 +18,9 @@ from nb_cli_plugin_webui.utils import (
 @click.group(
     cls=ClickAliasedGroup, invoke_without_command=True, help=_("Start NB CLI UI.")
 )
-@click.option(
-    "-h",
-    "--host",
-    type=str,
-    show_default=True,
-    help=_("The host required to access NB CLI UI."),
-    default="localhost",
-)
-@click.option(
-    "-p",
-    "--port",
-    type=int,
-    show_default=True,
-    help=_("The port required to access NB CLI UI."),
-    default=find_available_port(10000, 20000),
-)
 @click.pass_context
 @run_async
-async def webui(ctx: click.Context, host: str, port: int):
+async def webui(ctx: click.Context):
     if ctx.invoked_subcommand is not None:
         return
 
@@ -67,8 +51,24 @@ async def webui(ctx: click.Context, host: str, port: int):
 
 
 @webui.command(help=_("Run NB CLI UI"))
+@click.option(
+    "-h",
+    "--host",
+    type=str,
+    show_default=True,
+    help=_("The host required to access NB CLI UI."),
+    default="localhost",
+)
+@click.option(
+    "-p",
+    "--port",
+    type=int,
+    show_default=True,
+    help=_("The port required to access NB CLI UI."),
+    default=find_available_port(10000, 20000),
+)
 @run_async
-async def start():
+async def start(host: str, port: int):
     ...
 
 
