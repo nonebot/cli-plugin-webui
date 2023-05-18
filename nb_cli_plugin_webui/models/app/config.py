@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, Dict
 
 from pydantic import BaseModel, SecretStr
 
@@ -17,24 +17,27 @@ class ServerConfig(BaseModel):
     host: str
     port: str
 
+    debug: bool = False
+    title: str = "NB CLI UI APIs"
+
+    @property
+    def fastapi_kwargs(self) -> Dict[str, Any]:
+        return {
+            "debug": self.debug,
+            "title": self.title,
+        }
+
 
 class WebUIConfig(BaseModel):
-    token: SecretStr
     hashed_token: str = str()
     salt: SecretStr = SecretStr(str())
     secret_key: SecretStr
     is_customize: bool
     server: ServerConfig = ServerConfig(host="localhost", port="12345")
 
-    def to_json(self):
+    def to_json(self) -> str:
         return json.dumps(self.dict(), cls=SecretStrJSONEncoder)
 
-    def check_token(self):
-        return salt.verify_token(
-            self.salt.get_secret_value() + self.token.get_secret_value(),
-            self.hashed_token,
-        )
-
-    def reset_token(self):
+    def reset_token(self, token: str) -> None:
         self.salt = SecretStr(salt.gen_salt())
-        self.hashed_token = salt.get_token_hash(self.token.get_secret_value())
+        self.hashed_token = salt.get_token_hash(self.salt.get_secret_value() + token)
