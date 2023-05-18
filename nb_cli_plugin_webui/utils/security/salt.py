@@ -5,7 +5,7 @@ token_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def gen_salt() -> str:
-    return bcrypt.gensalt.decode()
+    return bcrypt.gensalt().decode()
 
 
 def verify_token(plain_token: str, hashed_token: str) -> bool:
