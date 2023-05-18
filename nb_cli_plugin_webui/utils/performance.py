@@ -2,12 +2,36 @@ import platform
 from sys import platform as pf
 
 import psutil
+import pythoncom
 
-from nb_cli_plugin_webui.models.schemas.machine import *
+from nb_cli_plugin_webui.utils.apscheduler import scheduler
+from nb_cli_plugin_webui.models.app.machine import (
+    RunnerCpuInfo,
+    RunnerMemInfo,
+    RunnerNetInfo,
+    RunnerDiskInfo,
+    RunnerPlatformInfo,
+)
 
 if pf == "win32":
     import wmi
-    from win32com.client import GetObject
+    from win32com import client
+
+
+_last_net_io = [0, 0]
+_now_net_io = [0, 0]
+
+
+@scheduler.scheduled_job("interval", seconds=1, misfire_grace_time=15)
+async def _():
+    global _last_net_io, _now_net_io
+
+    net_counters = psutil.net_io_counters()
+    _now_net_io = [
+        net_counters.bytes_sent - _last_net_io[0],
+        net_counters.bytes_recv - _last_net_io[1],
+    ]
+    _last_net_io = [net_counters.bytes_sent, net_counters.bytes_recv]
 
 
 class PlatformPerformanceMonitor:
@@ -25,7 +49,8 @@ class PlatformPerformanceMonitor:
     def get_cpu_info() -> RunnerCpuInfo:
         cpu_name = platform.processor()
         if pf == "win32":
-            winm = GetObject("winmgmts:root\cimv2")
+            pythoncom.CoInitialize()
+            winm = client.GetObject("winmgmts:root\cimv2")
             cpus = winm.ExecQuery("SELECT * FROM Win32_Processor")
             cpu_name = cpus[0].Name.strip()
 
@@ -63,6 +88,7 @@ class PlatformPerformanceMonitor:
         disk_used = int()
         disk_free = int()
         if pf == "win32":
+            pythoncom.CoInitialize()
             w = wmi.WMI()
             disk_list = [d.DeviceID for d in w.Win32_LogicalDisk()]
             for i in disk_list:
@@ -80,4 +106,11 @@ class PlatformPerformanceMonitor:
 
     @staticmethod
     def get_net_info() -> RunnerNetInfo:
-        ...
+        net = psutil.net_io_counters()
+        return RunnerNetInfo(
+            sent_total=net.bytes_sent,
+            recv_total=net.bytes_recv,
+            package_sent=net.packets_sent,
+            package_recv=net.packets_recv,
+            speed=_now_net_io,
+        )
