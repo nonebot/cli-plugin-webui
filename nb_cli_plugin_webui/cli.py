@@ -1,13 +1,14 @@
 from typing import List, cast
 
 import click
+import uvicorn
 from pydantic import SecretStr
 from nb_cli.i18n import _ as nb_cli_i18n
 from nb_cli.cli import CLI_DEFAULT_STYLE, ClickAliasedGroup, run_sync, run_async
 from noneprompt import Choice, ListPrompt, InputPrompt, ConfirmPrompt, CancelledError
 
 from nb_cli_plugin_webui.i18n import _
-from nb_cli_plugin_webui.config import Config, WebUIConfig
+from nb_cli_plugin_webui.config import WebUIConfig, config
 from nb_cli_plugin_webui.utils import (
     find_available_port,
     check_token_complexity,
@@ -67,21 +68,43 @@ async def webui(ctx: click.Context):
     help=_("The port required to access NB CLI UI."),
     default=find_available_port(10000, 20000),
 )
-@run_async
-async def start(host: str, port: int):
-    ...
+def start(host: str, port: int):
+    LOGGING_CONFIG = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "default": {
+                "class": "nb_cli_plugin_webui.log.LoguruHandler",
+            },
+        },
+        "loggers": {
+            "uvicorn.error": {"handlers": ["default"], "level": "INFO"},
+            "uvicorn.access": {
+                "handlers": ["default"],
+                "level": "INFO",
+            },
+        },
+    }
+
+    uvicorn.run(
+        "nb_cli_plugin_webui.api:app",
+        host=host,
+        port=int(port),
+        log_config=LOGGING_CONFIG,
+    )
 
 
 @webui.command(help=_("Reset or create access Token."))
 @run_async
 async def setting_token():
-    if Config.exist():
-        if await ConfirmPrompt(
+    if config.exist:
+        if not await ConfirmPrompt(
             _("Token is exist, did you need overwrite?")
         ).prompt_async(style=CLI_DEFAULT_STYLE):
-            click.secho(_("Pass..."))
+            return
+    else:
+        click.secho(_("Token is not exist."))
 
-    click.secho(_("Token is not exist."))
     if await ConfirmPrompt(_("Do you want it generated?")).prompt_async(
         style=CLI_DEFAULT_STYLE
     ):
@@ -105,16 +128,14 @@ async def setting_token():
     click.secho(f"\n{token}\n", fg="green")
     click.secho(_("ATTENTION, TOKEN ONLY SHOW ONCE."), fg="red", bold=True)
 
-    if Config.exist():
-        config = Config.load()
-        config.token = SecretStr(token)
-        config.reset_token()
-        Config(config).store()
+    if config.exist:
+        cache = config.read()
+        cache.reset_token(token)
+        config.store(cache)
     else:
         user_config = WebUIConfig(
-            token=SecretStr(token),
             secret_key=SecretStr(generate_complexity_string(18)),
             is_customize=False,
         )
-        user_config.reset_token()
-        Config(user_config).store()
+        user_config.reset_token(token)
+        config.store(user_config)
