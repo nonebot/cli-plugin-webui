@@ -1,7 +1,7 @@
 import sys
 import logging
 from types import FrameType
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import loguru
 
@@ -28,6 +28,12 @@ class LoguruHandler(logging.Handler):
         )
 
 
+class LoguruFilter:
+    def __call__(self, record) -> Any:
+        record["name"] = record["name"].split(".")[0]
+        return record
+
+
 log_format: str = (
     "<g>{time:MM-DD HH:mm:ss}</g> "
     "[<lvl>{level}</lvl>] "
@@ -41,4 +47,5 @@ logger_id = logger.add(
     level=0,
     diagnose=False,
     format=log_format,
+    filter=LoguruFilter(),
 )
