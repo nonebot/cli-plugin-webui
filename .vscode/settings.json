@@ -5,6 +5,7 @@
     "levelno",
     "Loguru",
     "nonebot",
+    "uvicorn",
     "webui"
   ]
 }
