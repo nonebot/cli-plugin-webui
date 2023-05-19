@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from nb_cli_plugin_webui.config import config
+from nb_cli_plugin_webui.core.config import config
 from nb_cli_plugin_webui.exceptions import ConfigIsNotExist
 from nb_cli_plugin_webui.api.routes.api import router as api_router
 from nb_cli_plugin_webui.api.event import (

@@ -1,14 +1,14 @@
 from typing import List, cast
 
 import click
-import uvicorn
 from pydantic import SecretStr
 from nb_cli.i18n import _ as nb_cli_i18n
 from nb_cli.cli import CLI_DEFAULT_STYLE, ClickAliasedGroup, run_sync, run_async
 from noneprompt import Choice, ListPrompt, InputPrompt, ConfirmPrompt, CancelledError
 
 from nb_cli_plugin_webui.i18n import _
-from nb_cli_plugin_webui.config import WebUIConfig, config
+from nb_cli_plugin_webui.core import server
+from nb_cli_plugin_webui.core.config import WebUIConfig, config
 from nb_cli_plugin_webui.utils import (
     find_available_port,
     check_token_complexity,
@@ -68,30 +68,9 @@ async def webui(ctx: click.Context):
     help=_("The port required to access NB CLI UI."),
     default=find_available_port(10000, 20000),
 )
-def start(host: str, port: int):
-    LOGGING_CONFIG = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "handlers": {
-            "default": {
-                "class": "nb_cli_plugin_webui.log.LoguruHandler",
-            },
-        },
-        "loggers": {
-            "uvicorn.error": {"handlers": ["default"], "level": "INFO"},
-            "uvicorn.access": {
-                "handlers": ["default"],
-                "level": "INFO",
-            },
-        },
-    }
-
-    uvicorn.run(
-        "nb_cli_plugin_webui.api:app",
-        host=host,
-        port=int(port),
-        log_config=LOGGING_CONFIG,
-    )
+@run_async
+async def start(host: str, port: int):
+    await server.run_server(host, port)
 
 
 @webui.command(help=_("Reset or create access Token."))

@@ -1,6 +1,6 @@
 from fastapi import Body, APIRouter, HTTPException, status
 
-from nb_cli_plugin_webui.config import config
+from nb_cli_plugin_webui.core.config import config
 from nb_cli_plugin_webui.utils.security import jwt
 from nb_cli_plugin_webui.models.schemas.user import (
     UserInLogin,
