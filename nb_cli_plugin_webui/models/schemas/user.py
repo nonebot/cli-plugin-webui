@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from nb_cli_plugin_webui.config import config
+from nb_cli_plugin_webui.core.config import config
 from nb_cli_plugin_webui.utils.security import salt
 
 

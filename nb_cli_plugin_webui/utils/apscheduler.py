@@ -2,7 +2,7 @@ import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from nb_cli_plugin_webui.log import LoguruHandler
+from nb_cli_plugin_webui.core.log import LoguruHandler
 
 scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
 
