@@ -7,7 +7,7 @@ from nb_cli_plugin_webui.utils.security import jwt
 security = HTTPBearer()
 
 
-def get_current_cookie(
+def get_current_header(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> str:
     try:

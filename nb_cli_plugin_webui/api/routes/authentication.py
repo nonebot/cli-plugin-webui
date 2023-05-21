@@ -18,7 +18,7 @@ async def login(
     if not login_data.check_token():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-    jwt_token = jwt.create_access_for_cookie(
+    jwt_token = jwt.create_access_for_header(
         login_data.string, config.read().secret_key.get_secret_value()
     )
     return UserInResponse(user=UserWithJWT(jwt_token=jwt_token))
