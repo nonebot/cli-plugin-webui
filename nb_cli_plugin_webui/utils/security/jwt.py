@@ -21,16 +21,12 @@ def create_jwt(
     return jwt.encode(to_encode, secret_key, algorithm=ALGORITHM)
 
 
-def create_access_for_cookie(cookie: str, secret_key: str) -> str:
+def create_access_for_header(detail: str, secret_key: str) -> str:
     return create_jwt(
-        payload=JWTUser(cookie=cookie).dict(),
+        payload=JWTUser(cookie=detail).dict(),
         secret_key=secret_key,
         expire_seconds=timedelta(EXPIRE_SECONDS),
     )
-
-
-def get_cookie_from_access(cookie: str, secret_key: str) -> str:
-    ...
 
 
 def verify_and_read_jwt(cookie: str, secret_key: str) -> str:
