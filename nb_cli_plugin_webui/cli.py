@@ -1,3 +1,4 @@
+import webbrowser
 from typing import List, cast
 
 import click
@@ -70,6 +71,7 @@ async def webui(ctx: click.Context):
 )
 @run_async
 async def start(host: str, port: int):
+    webbrowser.open(f"http://{host}:{port}/")
     await server.run_server(host, port)
 
 
