@@ -1,30 +1,48 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import AppSideNav from "@/layouts/AppSideNav.vue";
+import AppStatusBar from "@/layouts/AppStatusBar.vue";
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="webui" style="height: 100vh">
+    <!-- <AppTopBar /> -->
+    <div class="content">
+      <AppSideNav />
+      <div class="view">
+        <router-view />
+      </div>
+    </div>
+    <AppStatusBar />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<style>
+@import "vue3-toastify/dist/index.css";
+
+[data-theme="light"] .view {
+  background: #fffdfd;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.view {
+  width: 100%;
+  padding: 30px;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+@media screen and (max-width: 1280px) {
+  .view {
+    padding: 10px;
+  }
+}
+
+.webui {
+  overflow: hidden;
+
+  background: hsl(var(--b1));
+}
+
+.content {
+  height: calc(100% - 22px);
+  width: 100%;
+  display: flex;
 }
 </style>
