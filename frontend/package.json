@@ -1,7 +1,7 @@
 {
-  "name": "cli-plugin-webui-frontend",
+  "name": "nb-cli-plugin-webui-frontend",
   "description": "WebUI for nb-cli.",
-  "author": "Kyomotoi <0w0@imki.moe>",
+  "author": "Kyomotoi <kyomotoiowo@gmail.com>",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -11,11 +11,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.2.47"
+    "daisyui": "^2.51.6",
+    "pinia": "^2.1.3",
+    "theme-change": "^2.5.0",
+    "vue": "^3.2.47",
+    "vue-router": "^4.2.1",
+    "vue3-toastify": "^0.1.10"
   },
   "devDependencies": {
+    "@types/node": "^20.2.3",
     "@vitejs/plugin-vue": "^4.1.0",
-    "daisyui": "^2.51.6",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-vue": "^9.13.0",
+    "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.2",
     "vite": "^4.3.2",
