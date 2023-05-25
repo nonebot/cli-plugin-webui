@@ -25,7 +25,7 @@ def create_access_for_header(detail: str, secret_key: str) -> str:
     return create_jwt(
         payload=JWTUser(cookie=detail).dict(),
         secret_key=secret_key,
-        expire_seconds=timedelta(EXPIRE_SECONDS),
+        expire_seconds=timedelta(seconds=EXPIRE_SECONDS),
     )
 
 
