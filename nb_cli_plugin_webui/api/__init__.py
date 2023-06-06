@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from nb_cli_plugin_webui.core.config import config
+from nb_cli_plugin_webui.core.configs.config import config
 from nb_cli_plugin_webui.exceptions import ConfigIsNotExist
 from nb_cli_plugin_webui.api.routes.api import router as api_router
 from nb_cli_plugin_webui.api.event import (
@@ -18,7 +18,7 @@ def get_application() -> FastAPI:
     app = FastAPI(**conf.server.fastapi_kwargs)
     app.add_middleware(
         CORSMiddleware,
-        # allow_origins=...,
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

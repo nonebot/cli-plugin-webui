@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from nb_cli_plugin_webui.core.config import config
 from nb_cli_plugin_webui.utils.security import jwt
+from nb_cli_plugin_webui.core.configs.config import config
 
 security = HTTPBearer()
 
