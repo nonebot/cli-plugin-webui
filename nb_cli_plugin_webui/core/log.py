@@ -97,7 +97,7 @@ log_format: str = (
 )
 
 logger.remove()
-logger_id = logger.add(
+logger.add(
     sys.stdout,
     level=0,
     diagnose=False,
