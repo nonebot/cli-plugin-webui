@@ -47,3 +47,7 @@ def generate_complexity_string(length: int = random.randint(12, 18)) -> str:
             string.ascii_letters + string.digits + string.punctuation, k=length
         )
     )
+
+
+def filling_str(text: str, target_length: int) -> str:
+    return text + str().join([" " for _ in range(0, target_length - len(text))])
