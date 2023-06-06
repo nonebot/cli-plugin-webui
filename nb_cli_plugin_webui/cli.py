@@ -2,19 +2,15 @@ import webbrowser
 from typing import List, cast
 
 import click
-from pydantic import SecretStr
 from nb_cli.i18n import _ as nb_cli_i18n
 from nb_cli.cli import CLI_DEFAULT_STYLE, ClickAliasedGroup, run_sync, run_async
 from noneprompt import Choice, ListPrompt, InputPrompt, ConfirmPrompt, CancelledError
 
 from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui.core import server
-from nb_cli_plugin_webui.core.config import WebUIConfig, config
-from nb_cli_plugin_webui.utils import (
-    find_available_port,
-    check_token_complexity,
-    generate_complexity_string,
-)
+from nb_cli_plugin_webui.core.configs.config import config
+from nb_cli_plugin_webui.core.configs.setup import get_user_config
+from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexity_string
 
 
 @click.group(
@@ -23,6 +19,9 @@ from nb_cli_plugin_webui.utils import (
 @click.pass_context
 @run_async
 async def webui(ctx: click.Context):
+    if not config.exist:
+        await get_user_config()
+
     if ctx.invoked_subcommand is not None:
         return
 
@@ -59,7 +58,7 @@ async def webui(ctx: click.Context):
     type=str,
     show_default=True,
     help=_("The host required to access NB CLI UI."),
-    default="localhost",
+    default=None,
 )
 @click.option(
     "-p",
@@ -67,10 +66,22 @@ async def webui(ctx: click.Context):
     type=int,
     show_default=True,
     help=_("The port required to access NB CLI UI."),
-    default=find_available_port(10000, 20000),
+    default=None,
 )
 @run_async
 async def start(host: str, port: int):
+    if not config.exist:
+        click.secho(_("Cannot find config file."))
+        click.secho(
+            _("Please run: nb ui init (If you are running this for the first time)")
+        )
+        return
+    else:
+        if not host and not port:
+            conf = config.read()
+            host = conf.server.host
+            port = int(conf.server.port)
+
     webbrowser.open(f"http://{host}:{port}/")
     await server.run_server(host, port)
 
@@ -78,13 +89,12 @@ async def start(host: str, port: int):
 @webui.command(help=_("Reset or create access Token."))
 @run_async
 async def setting_token():
-    if config.exist:
-        if not await ConfirmPrompt(
-            _("Token is exist, did you need overwrite?")
-        ).prompt_async(style=CLI_DEFAULT_STYLE):
-            return
-    else:
-        click.secho(_("Token is not exist."))
+    if not config.exist:
+        click.secho(_("Cannot find config file."))
+        click.secho(
+            _("Please run: nb ui init (If you are running this for the first time)")
+        )
+        return
 
     if await ConfirmPrompt(_("Do you want it generated?")).prompt_async(
         style=CLI_DEFAULT_STYLE
@@ -109,14 +119,6 @@ async def setting_token():
     click.secho(f"\n{token}\n", fg="green")
     click.secho(_("ATTENTION, TOKEN ONLY SHOW ONCE."), fg="red", bold=True)
 
-    if config.exist:
-        cache = config.read()
-        cache.reset_token(token)
-        config.store(cache)
-    else:
-        user_config = WebUIConfig(
-            secret_key=SecretStr(generate_complexity_string(18)),
-            is_customize=False,
-        )
-        user_config.reset_token(token)
-        config.store(user_config)
+    cache = config.read()
+    cache.reset_token(token)
+    config.store(cache)
