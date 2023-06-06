@@ -1,9 +1,12 @@
+import re
 import sys
 import logging
 from types import FrameType
 from typing import TYPE_CHECKING, Any, cast
 
 import loguru
+
+from nb_cli_plugin_webui.utils import filling_str
 
 if TYPE_CHECKING:
     from loguru import Logger
@@ -29,8 +32,60 @@ class LoguruHandler(logging.Handler):
 
 
 class LoguruFilter:
+    _method_pattern = r'"([A-Z]+)\s.*" (\d{3})'
+
+    def _get_color_of_method(self, method: str) -> str:
+        if method == "GET":
+            return "\033[32m"  # green
+        elif method == "POST":
+            return "\033[34m"  # blue
+        elif method == "PUT":
+            return "\033[33m"  # orange
+        elif method == "DELETE":
+            return "\033[31m"  # red
+        elif method == "HEAD":
+            return "\033[90m"  # gray
+        elif method == "OPTIONS":
+            return "\033[93m"  # yellow
+        else:
+            return "\033[0m"  # default color
+
+    def _get_color_of_code(self, code: str) -> str:
+        if code.startswith("2"):
+            return "\033[32m"  # green
+        elif code.startswith("3"):
+            return "\033[33m"  # orange
+        elif code.startswith("4"):
+            return "\033[31m"  # red
+        elif code.startswith("5"):
+            return "\033[91m"  # deep red
+        else:
+            return "\033[0m"  # default color
+
     def __call__(self, record) -> Any:
         record["name"] = record["name"].split(".")[0]
+
+        message: str = record["message"]
+        _match = re.search(self._method_pattern, message)
+        if _match:
+            request_method = _match.group(1)
+            status_code = _match.group(2)
+
+            message = message.replace(f"{request_method} ", str()).replace(
+                status_code, str()
+            )
+
+            request_method_color = self._get_color_of_method(request_method)
+            status_code_color = self._get_color_of_code(status_code)
+
+            new_request_method = request_method_color + filling_str(request_method, 7)
+            new_status_code = status_code_color + status_code
+            message = (
+                f"{new_request_method}\033[0m | {new_status_code}\033[0m | " + message
+            )
+
+        record["message"] = message
+
         return record
 
 
