@@ -1,0 +1,97 @@
+from pathlib import Path
+
+import click
+from pydantic import SecretStr
+from nb_cli.cli import CLI_DEFAULT_STYLE
+from noneprompt import InputPrompt, ConfirmPrompt
+
+from nb_cli_plugin_webui.i18n import _
+from nb_cli_plugin_webui.core.configs.config import config
+from nb_cli_plugin_webui.models.app.config import WebUIConfig, ServerConfig
+from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexity_string
+
+
+async def get_user_config():
+    click.secho(_("\n[Token Setting]"), fg="green")
+    click.secho(_("Token is your key to access WebUI."))
+    if await ConfirmPrompt(_("Do you want it generated?")).prompt_async(
+        style=CLI_DEFAULT_STYLE
+    ):
+        token = generate_complexity_string()
+    else:
+        token = await InputPrompt(_("Please enter token:")).prompt_async(
+            style=CLI_DEFAULT_STYLE
+        )
+        while True:
+            try:
+                check_token_complexity(token)
+                break
+            except Exception as err:
+                click.secho(str(err))
+
+            token = await InputPrompt(_("Please enter again:")).prompt_async(
+                style=CLI_DEFAULT_STYLE
+            )
+
+    click.secho(_("Your token is:"))
+    click.secho(f"\n{token}\n", fg="green")
+    click.secho(_("ATTENTION, TOKEN ONLY SHOW ONCE."), fg="red", bold=True)
+
+    click.secho(_("\n[Server Setting]"), fg="green")
+    host = "localhost"
+    port = "12345"
+    if await ConfirmPrompt(
+        _("Do you want to decide (host) and (port) by yourself?")
+    ).prompt_async(style=CLI_DEFAULT_STYLE):
+        host = await InputPrompt(_("Please enter host:")).prompt_async(
+            style=CLI_DEFAULT_STYLE
+        )
+        port = await InputPrompt(_("Please enter port:")).prompt_async(
+            style=CLI_DEFAULT_STYLE
+        )
+
+        click.secho(_("Your webui url is:"))
+        click.secho(f"\nhttp://{host}:{port}/\n", fg="green")
+    else:
+        click.secho(_("Your webui url will decide by nb-cli."))
+
+    click.secho(_("\n[General Setting]"), fg="green")
+    click.secho(_("BASE DIR REQUIRE"), fg="red")
+    click.secho(_("- Absolute path. like:"))
+    click.secho(_("  * Linux: /home/(user)/"))
+    click.secho(_("  * Windows: C:/Users/Public/Pictures"))
+    click.secho(_("- Nonebot instance will be stored here."))
+    click.secho(
+        _("- The base directory for WebUI file system display will start here."),
+        fg="red",
+    )
+    click.secho(_("- The path entered will be validated to ensure it exists"), fg="red")
+    base_dir = await InputPrompt(_("Please enter base dir:")).prompt_async(
+        style=CLI_DEFAULT_STYLE
+    )
+    while True:
+        if not Path(base_dir).exists():
+            click.secho(_("This directory does not exist"))
+            base_dir = await InputPrompt(_("Please enter again:")).prompt_async(
+                style=CLI_DEFAULT_STYLE
+            )
+        else:
+            break
+
+    click.secho(_("\n[Setting Overview]"), fg="green")
+    click.secho(_(f"Token: {token}"))
+    click.secho(_(f"WebUI URL: http://{host}:{port}/"))
+    click.secho(_(f"Base DIR: {base_dir}"))
+    if not await ConfirmPrompt(_("Are you confirm?")).prompt_async(
+        style=CLI_DEFAULT_STYLE
+    ):
+        return
+
+    user_config = WebUIConfig(
+        secret_key=SecretStr(generate_complexity_string(32)), base_dir=base_dir
+    )
+    if host:
+        user_config.server = ServerConfig(host=host, port=port)
+    user_config.reset_token(token)
+
+    config.store(user_config)
