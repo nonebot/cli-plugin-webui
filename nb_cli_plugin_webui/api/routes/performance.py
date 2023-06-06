@@ -3,8 +3,8 @@ import asyncio
 from fastapi import Depends, APIRouter, status
 from fastapi.websockets import WebSocket, WebSocketState
 
-from nb_cli_plugin_webui.core.config import config
 from nb_cli_plugin_webui.utils.security import jwt
+from nb_cli_plugin_webui.core.configs.config import config
 from nb_cli_plugin_webui.models.app.performance import SystemStats
 from nb_cli_plugin_webui.api.dependencies.performance import get_system_stats
 from nb_cli_plugin_webui.models.schemas.performance import SystemStatsResponse
