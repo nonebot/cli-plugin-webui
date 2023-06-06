@@ -9,7 +9,7 @@ from nb_cli_plugin_webui.models.schemas.jwt import JWTMeta, JWTUser
 
 JWT_SUBJECT: str = "access"
 ALGORITHM: str = "HS256"
-EXPIRE_SECONDS: int = 60 * 60 * 24
+EXPIRE_SECONDS: int = 60 * 60 * 24  # a day
 
 
 def create_jwt(
