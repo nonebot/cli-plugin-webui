@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 
-from nb_cli_plugin_webui.core.config import config
 from nb_cli_plugin_webui.utils.security import salt
+from nb_cli_plugin_webui.core.configs.config import config
 
 
 class UserInLogin(BaseModel):
     token: str
-    string: str
+    mark: str
 
     def check_token(self) -> bool:
         conf = config.read()
@@ -16,9 +16,5 @@ class UserInLogin(BaseModel):
         )
 
 
-class UserWithJWT(BaseModel):
-    jwt_token: str
-
-
 class UserInResponse(BaseModel):
-    user: UserWithJWT
+    jwt_token: str
