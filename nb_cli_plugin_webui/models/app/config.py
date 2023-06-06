@@ -32,7 +32,7 @@ class WebUIConfig(BaseModel):
     hashed_token: str = str()
     salt: SecretStr = SecretStr(str())
     secret_key: SecretStr
-    is_customize: bool
+    base_dir: str = str()
     server: ServerConfig = ServerConfig(host="localhost", port="12345")
 
     def to_json(self) -> str:
