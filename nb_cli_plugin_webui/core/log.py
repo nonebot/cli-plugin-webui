@@ -33,6 +33,7 @@ class LoguruHandler(logging.Handler):
 
 class LoguruFilter:
     _method_pattern = r'"([A-Z]+)\s.*" (\d{3})'
+    _websocket_pattern = r"\('(.+?)', (\d+)\) - \"WebSocket (.+?)\" (\[.+\]|\d+)"
 
     def _get_color_of_method(self, method: str) -> str:
         if method == "GET":
@@ -83,6 +84,21 @@ class LoguruFilter:
             message = (
                 f"{new_request_method}\033[0m | {new_status_code}\033[0m | " + message
             )
+        else:
+            _match = re.search(self._websocket_pattern, message)
+            if _match:
+                ws_host = _match.group(1)
+                ws_port = _match.group(2)
+                ws_path = _match.group(3)
+                ws_stat = _match.group(4)
+
+                status_code_color = self._get_color_of_code(ws_stat)
+                new_status_code = status_code_color + ws_stat
+
+                message = (
+                    f"CLIENT  | {new_status_code}\033[0m | "
+                    f'{ws_host}:{ws_port} - "{ws_path} WebSocket"'
+                )
 
         record["message"] = message
 
@@ -104,3 +120,5 @@ logger.add(
     format=log_format,
     filter=LoguruFilter(),
 )
+
+STDOUT = logger.level("STDOUT", no=logging.INFO)
