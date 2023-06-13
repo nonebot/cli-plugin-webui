@@ -41,10 +41,18 @@ def check_token_complexity(token: str) -> None:
         )
 
 
-def generate_complexity_string(length: int = random.randint(12, 18)) -> str:
+def generate_complexity_string(
+    length: int = random.randint(12, 18),
+    *,
+    use_digits: bool = False,
+    use_punctuation: bool = False
+) -> str:
     return str().join(
         random.choices(
-            string.ascii_letters + string.digits + string.punctuation, k=length
+            string.ascii_letters
+            + (string.digits if use_digits else str())
+            + (string.punctuation if use_punctuation else str()),
+            k=length,
         )
     )
 
