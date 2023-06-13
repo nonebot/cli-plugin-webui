@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Union
 
 from nb_cli_plugin_webui import PLUGIN_NAME
-from nb_cli_plugin_webui.models.app.config import WebUIConfig
+from nb_cli_plugin_webui.models.domain.config import WebUIConfig
 from nb_cli_plugin_webui.utils.localstore import get_config_file
 
 CONFIG_PATH = get_config_file(PLUGIN_NAME, "webui-config.json")
@@ -17,12 +17,9 @@ class Config:
     def exist(self) -> bool:
         return CONFIG_PATH.is_file()
 
-    def read(self, read_local: bool = False) -> WebUIConfig:
-        if read_local:
-            return WebUIConfig.parse_file(self.config_file)
-
+    def read(self, refresh: bool = False) -> WebUIConfig:
         global CONFIG_CACHE
-        if not CONFIG_CACHE:
+        if not CONFIG_CACHE or refresh:
             CONFIG_CACHE = WebUIConfig.parse_file(self.config_file)
         return CONFIG_CACHE
 

@@ -5,12 +5,12 @@ import psutil
 import pythoncom
 
 from nb_cli_plugin_webui.utils.apscheduler import scheduler
-from nb_cli_plugin_webui.models.app.machine import (
-    RunnerCpuInfo,
-    RunnerMemInfo,
-    RunnerNetInfo,
-    RunnerDiskInfo,
-    RunnerPlatformInfo,
+from nb_cli_plugin_webui.models.schemas.performance import (
+    CpuInfo,
+    MemInfo,
+    NetInfo,
+    DiskInfo,
+    PlatformInfo,
 )
 
 if pf == "win32":
@@ -34,19 +34,19 @@ async def _():
     _last_net_io = [net_counters.bytes_sent, net_counters.bytes_recv]
 
 
-class PlatformPerformanceMonitor:
+class PerformanceMonitor:
     """获取当前运行平台性能信息"""
 
     @staticmethod
-    def get_platform_info() -> RunnerPlatformInfo:
-        return RunnerPlatformInfo(
+    def get_platform_info() -> PlatformInfo:
+        return PlatformInfo(
             name=platform.platform(),
             struct=platform.architecture()[0],
             platform_type=pf,
         )
 
     @staticmethod
-    def get_cpu_info() -> RunnerCpuInfo:
+    def get_cpu_info() -> CpuInfo:
         cpu_name = platform.processor()
         if pf == "win32":
             pythoncom.CoInitialize()
@@ -61,7 +61,7 @@ class PlatformPerformanceMonitor:
         cpu_percent = psutil.cpu_percent(interval=0.1)
         process = len(psutil.pids())
 
-        return RunnerCpuInfo(
+        return CpuInfo(
             name=cpu_name,
             count=cpu_cores,
             max_freq=cpu_max_freq,
@@ -71,10 +71,10 @@ class PlatformPerformanceMonitor:
         )
 
     @staticmethod
-    def get_mem_info() -> RunnerMemInfo:
+    def get_mem_info() -> MemInfo:
         vm = psutil.virtual_memory()
 
-        return RunnerMemInfo(
+        return MemInfo(
             total=vm.total,
             available=vm.available,
             percent=vm.percent,
@@ -83,7 +83,7 @@ class PlatformPerformanceMonitor:
         )
 
     @staticmethod
-    def get_disk_info() -> RunnerDiskInfo:
+    def get_disk_info() -> DiskInfo:
         disk_total = int()
         disk_used = int()
         disk_free = int()
@@ -102,12 +102,12 @@ class PlatformPerformanceMonitor:
             disk_used = disk.used
             disk_free = disk.free
 
-        return RunnerDiskInfo(total=disk_total, used=disk_used, free=disk_free)
+        return DiskInfo(total=disk_total, used=disk_used, free=disk_free)
 
     @staticmethod
-    def get_net_info() -> RunnerNetInfo:
+    def get_net_info() -> NetInfo:
         net = psutil.net_io_counters()
-        return RunnerNetInfo(
+        return NetInfo(
             sent_total=net.bytes_sent,
             recv_total=net.bytes_recv,
             package_sent=net.packets_sent,

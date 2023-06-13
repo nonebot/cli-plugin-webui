@@ -1,25 +1,18 @@
 import shutil
 from pathlib import Path
 
-from fastapi import Body, Depends, APIRouter, HTTPException, status
+from fastapi import Body, APIRouter, HTTPException, status
 
 from nb_cli_plugin_webui.api.dependencies.files import BASE_DIR, get_files
-from nb_cli_plugin_webui.api.dependencies.authentication import get_current_header
-from nb_cli_plugin_webui.models.schemas.files import (
-    FileListRequest,
-    FilesInResponse,
-    FileOperateRequest,
-)
+from nb_cli_plugin_webui.models.schemas.files import FileMeta, FilesInResponse
 
-router = APIRouter(dependencies=[Depends(get_current_header)])
+router = APIRouter()
 
 
 @router.post("/list", response_model=FilesInResponse)
-async def get_file_list(
-    path_data: FileListRequest = Body(embed=True),
-) -> FilesInResponse:
+async def get_file_list(path: str) -> FilesInResponse:
     try:
-        data = get_files(BASE_DIR / Path(path_data.path))
+        data = get_files(BASE_DIR / Path(path))
     except FileNotFoundError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
@@ -28,9 +21,9 @@ async def get_file_list(
 
 @router.post("/create", response_model=FilesInResponse)
 async def create_file(
-    file_data: FileOperateRequest = Body(embed=True),
+    file_data: FileMeta = Body(embed=True),
 ) -> FilesInResponse:
-    path = BASE_DIR / Path(file_data.path) / file_data.file_name
+    path = BASE_DIR / Path(file_data.path) / file_data.name
     if file_data.is_dir:
         path.mkdir(exist_ok=True)
     else:
@@ -41,7 +34,7 @@ async def create_file(
 
 @router.post("/delete", response_model=FilesInResponse)
 async def delete_file(
-    file_data: FileOperateRequest = Body(embed=True),
+    file_data: FileMeta = Body(embed=True),
 ) -> FilesInResponse:
     path = BASE_DIR / Path(file_data.path)
     if file_data.is_dir:
