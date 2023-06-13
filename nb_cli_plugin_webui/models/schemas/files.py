@@ -3,22 +3,16 @@ from typing import List
 from pydantic import BaseModel
 
 
-class FileInfo(BaseModel):
+class FileMeta(BaseModel):
     name: str
+    is_dir: int
+    path: str
+
+
+class FileDetails(FileMeta):
     modified_time: str
-    is_dir: int
-    path: str
-
-
-class FileListRequest(BaseModel):
-    path: str
-
-
-class FileOperateRequest(BaseModel):
-    file_name: str
-    is_dir: int
-    path: str
+    absolute_path: str
 
 
 class FilesInResponse(BaseModel):
-    files: List[FileInfo]
+    files: List[FileDetails]
