@@ -99,7 +99,7 @@ async def setting_token():
     if await ConfirmPrompt(_("Do you want it generated?")).prompt_async(
         style=CLI_DEFAULT_STYLE
     ):
-        token = generate_complexity_string()
+        token = generate_complexity_string(use_digits=True, use_punctuation=True)
     else:
         token = await InputPrompt(_("Please enter token:")).prompt_async(
             style=CLI_DEFAULT_STYLE
