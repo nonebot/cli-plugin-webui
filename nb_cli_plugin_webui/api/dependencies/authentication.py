@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, WebSocket, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from nb_cli_plugin_webui.utils.security import jwt
@@ -21,3 +21,14 @@ def get_current_header(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="could not validate credentials",
         )
+
+
+async def ws_validate_key(websocket: WebSocket):
+    await websocket.accept()
+    token = await websocket.receive_text()
+
+    try:
+        jwt.verify_and_read_jwt(token, config.read().secret_key.get_secret_value())
+    except Exception:
+        await websocket.close(status.WS_1008_POLICY_VIOLATION)
+        return
