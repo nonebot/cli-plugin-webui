@@ -1,11 +1,24 @@
 {
   "cSpell.words": [
+    "consts",
+    "creationflags",
     "fastapi",
     "levelname",
     "levelno",
+    "localstore",
     "Loguru",
     "nonebot",
+    "noneprompt",
+    "oneshot",
+    "psutil",
+    "pydantic",
+    "secho",
     "uvicorn",
+    "websockets",
     "webui"
-  ]
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.provider": "none"
 }
