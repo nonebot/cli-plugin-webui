@@ -7,7 +7,7 @@ from noneprompt import InputPrompt, ConfirmPrompt
 
 from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui.core.configs.config import config
-from nb_cli_plugin_webui.models.app.config import WebUIConfig, ServerConfig
+from nb_cli_plugin_webui.models.domain.config import WebUIConfig, ServerConfig
 from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexity_string
 
 
@@ -17,7 +17,7 @@ async def get_user_config():
     if await ConfirmPrompt(_("Do you want it generated?")).prompt_async(
         style=CLI_DEFAULT_STYLE
     ):
-        token = generate_complexity_string()
+        token = generate_complexity_string(use_digits=True, use_punctuation=True)
     else:
         token = await InputPrompt(_("Please enter token:")).prompt_async(
             style=CLI_DEFAULT_STYLE
@@ -88,7 +88,10 @@ async def get_user_config():
         return
 
     user_config = WebUIConfig(
-        secret_key=SecretStr(generate_complexity_string(32)), base_dir=base_dir
+        secret_key=SecretStr(
+            generate_complexity_string(32, use_digits=True, use_punctuation=True)
+        ),
+        base_dir=base_dir,
     )
     if host:
         user_config.server = ServerConfig(host=host, port=port)
