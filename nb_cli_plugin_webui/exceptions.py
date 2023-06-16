@@ -2,6 +2,10 @@ class TokenComplexityError(Exception):
     """token complexity error."""
 
 
+class InvalidJWTTokenError(Exception):
+    """invalid jwt token error."""
+
+
 class ConfigIsNotExist(Exception):
     """config file is not exist."""
 
