@@ -1,6 +1,7 @@
-from fastapi import APIRouter, status
-from fastapi.websockets import WebSocket, WebSocketState, WebSocketDisconnect
+from fastapi import APIRouter
+from fastapi.websockets import WebSocketState, WebSocketDisconnect
 
+from nb_cli_plugin_webui.patch import WebSocket
 from nb_cli_plugin_webui.models.domain.process import ProcessLog
 from nb_cli_plugin_webui.api.dependencies.process.log import LoggerStorageFather
 
@@ -9,9 +10,10 @@ router = APIRouter()
 
 @router.websocket("/logs/{log_key}")
 async def _(websocket: WebSocket, log_key: str):
+    await websocket.accept()
+
     log = LoggerStorageFather[ProcessLog].get_storage(log_key)
     if log is None:
-        await websocket.close(status.WS_1003_UNSUPPORTED_DATA)
         return
 
     async def log_listener(log: ProcessLog):
@@ -26,3 +28,4 @@ async def _(websocket: WebSocket, log_key: str):
         pass
     finally:
         log.unregister_listener(log_listener)
+    return
