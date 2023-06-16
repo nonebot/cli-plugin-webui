@@ -1,10 +1,9 @@
-from fastapi import Depends, APIRouter
+from fastapi import APIRouter
 from nb_cli.handlers.adapter import list_adapters
 
 from nb_cli_plugin_webui.models.schemas.adapter import AdapterInResponse
-from nb_cli_plugin_webui.api.dependencies.authentication import get_current_header
 
-router = APIRouter(dependencies=[Depends(get_current_header)])
+router = APIRouter()
 
 
 @router.get("/list", response_model=AdapterInResponse)
