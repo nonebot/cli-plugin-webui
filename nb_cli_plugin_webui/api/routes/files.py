@@ -9,7 +9,7 @@ from nb_cli_plugin_webui.models.schemas.files import FileMeta, FilesInResponse
 router = APIRouter()
 
 
-@router.post("/list", response_model=FilesInResponse)
+@router.get("/list", response_model=FilesInResponse)
 async def get_file_list(path: str) -> FilesInResponse:
     try:
         data = get_files(BASE_DIR / Path(path))
