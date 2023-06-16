@@ -33,8 +33,8 @@ def verify_and_read_jwt(token: str, secret_key: str) -> str:
     try:
         return JWTUser(**jwt.decode(token, secret_key, algorithms=[ALGORITHM])).token
     except jwt.ExpiredSignatureError as err:
-        raise ValueError(_("Session(cookie) has expired.")) from err
+        raise ValueError(_("Session(token) has expired.")) from err
     except jwt.InvalidTokenError as err:
-        raise ValueError(_("Invalid JWT.")) from err
+        raise ValueError(_("Invalid token.")) from err
     except ValidationError as err:
-        raise ValueError(_("Malformed payload in cookie.")) from err
+        raise ValueError(_("Malformed payload in token.")) from err
