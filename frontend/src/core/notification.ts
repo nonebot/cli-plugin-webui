@@ -1,4 +1,4 @@
-import { Notifications } from "@/store/app";
+import { notifications } from "@/store/app";
 import { ToastOptions } from "vue3-toastify";
 import { Id } from "vue3-toastify";
 import { Content } from "vue3-toastify";
@@ -25,7 +25,7 @@ export class ToastWrapper {
     id: Id,
     content: any,
   ): void {
-    rawNotice = Notifications().notices;
+    rawNotice = notifications().notices;
     rawNotice = rawNotice || [];
     rawNotice.push({
       id: id,
@@ -33,14 +33,14 @@ export class ToastWrapper {
       content: content,
       level: type,
     });
-    Notifications().notices = rawNotice;
+    notifications().notices = rawNotice;
   }
 
   info(content: Content, options?: ToastOptions): void {
     this.addToNotifications("info", toast.info(content, options), content);
   }
 
-  warn(content: Content, options?: ToastOptions): void {
+  warning(content: Content, options?: ToastOptions): void {
     this.addToNotifications("warning", toast.warn(content, options), content);
   }
 
