@@ -1,15 +1,15 @@
 <script lang="ts">
-import { GlobalStore } from "@/store/app";
+import { globalStore } from "@/store/app";
 
 export default {
   created() {
-    GlobalStore().nowPageName = "Plugins";
+    globalStore().nowPageName = "Plugins";
   },
 };
 </script>
 
 <script setup lang="ts"></script>
 
-<template>2</template>
+<template>TODO</template>
 
 <style></style>
