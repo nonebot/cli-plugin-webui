@@ -1,15 +1,17 @@
 import { defineStore } from "pinia";
 import { NoticeDetail } from "@/core/notification";
 
-export const GlobalStore = defineStore("globalStore", {
+export const globalStore = defineStore("globalStore", {
   state: () => {
     return {
       nowPageName: "",
+      isAuthed: false,
+      choiceProjectID: "",
     };
   },
 });
 
-export const Notifications = defineStore("notifications", {
+export const notifications = defineStore("notifications", {
   state: (): { notices: NoticeDetail[] } => {
     return {
       notices: [],
