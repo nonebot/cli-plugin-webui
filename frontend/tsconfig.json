@@ -22,6 +22,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
+    "allowSyntheticDefaultImports": true,
+
     "paths": {
       "@/*": ["src/*"]
     }
