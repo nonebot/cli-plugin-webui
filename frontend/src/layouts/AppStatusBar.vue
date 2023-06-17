@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Notifications } from "@/store/app";
+import { notifications } from "@/store/app";
 
 export default {
   data: () => {
@@ -12,7 +12,7 @@ export default {
   },
   computed: {
     notices() {
-      const notices = Notifications().notices;
+      const notices = notifications().notices;
       if (notices.length !== 0) {
         this.haveNotice = true;
         this.noticeTip = notices.length;
@@ -35,11 +35,11 @@ export default {
       this.openNoticeCard = !this.openNoticeCard;
     },
     dismissNotice(id: number | string) {
-      let notices = Notifications().notices;
+      let notices = notifications().notices;
       notices = notices.filter((item) => {
         return item.id !== id;
       });
-      Notifications().notices = notices;
+      notifications().notices = notices;
     },
   },
 };
@@ -80,7 +80,7 @@ export default {
               class="btn btn-sm btn-circle absolute right-2 top-2"
               @click="changeNoticeCardState()"
             >
-              <img style="filter: invert(1)" src="/svgs/chevron-down.svg" />
+              <img src="/svgs/chevron-down.svg" />
             </label>
             <span class="font-bold">
               <span v-if="haveNotice">
@@ -96,61 +96,56 @@ export default {
           <div
             v-for="notice in notices"
             :key="notice.id"
-            class="rounded-lg alert-card alert shadow-lg"
+            class="alert-card rounded-lg alert shadow-lg"
           >
+            <svg
+              v-if="notice.level === 'info'"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="fill-info stroke-current flex-shrink-0 w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+
+            <svg
+              v-if="notice.level === 'warning'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="fill-warning stroke-current flex-shrink-0 h-6 w-6"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+
+            <svg
+              v-if="notice.level === 'error'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="fill-error stroke-current flex-shrink-0 h-6 w-6"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+
             <div>
-              <svg
-                v-if="notice.level === 'info'"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                class="stroke-current flex-shrink-0 w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-
-              <svg
-                v-if="notice.level === 'warning'"
-                xmlns="http://www.w3.org/2000/svg"
-                class="stroke-current flex-shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-
-              <svg
-                v-if="notice.level === 'error'"
-                style="color: hsl(var(--p))"
-                xmlns="http://www.w3.org/2000/svg"
-                class="stroke-current flex-shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-
-              <div>
-                <h3 class="font-bold">{{ notice.content }}</h3>
-                <div class="text-xs">From {{ notice.header }}</div>
-              </div>
+              <h3 class="font-bold">{{ notice.content }}</h3>
+              <div class="text-xs">From {{ notice.header }}</div>
             </div>
-            <div class="flex-none">
+
+            <div>
               <button
                 class="btn btn-sm btn-ghost"
                 @click="dismissNotice(notice.id)"
