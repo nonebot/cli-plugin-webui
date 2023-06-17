@@ -1,89 +1,58 @@
-<script lang="ts">
-export default {
-  data: () => {
-    return {
-      navList: [
-        { tip: "主页", icon: "/svgs/home.svg", to: "/" },
-        { tip: "插件列表", icon: "/svgs/package.svg", to: "/plugin" },
-      ],
-      activeNav: null as { tip: string; icon: string; to: string } | null,
-    };
-  },
-  created() {
-    const nowRoute = window.location.pathname;
-    const activeNav = this.navList.find((navItem) => nowRoute === navItem.to);
+<script setup lang="ts">
+import NonebotIcon from "@/components/svgs/NonebotIcon.vue";
+import PluginIcon from "@/components/svgs/PluginIcon.vue";
+import { ref } from "vue";
+import { routerTo, isEqual } from "@/core/utils";
+import { globalStore } from "@/store/app";
 
-    if (activeNav) {
-      this.activeNav = activeNav;
-    }
-  },
-  methods: {
-    setActiveNav(item: { tip: string; icon: string; to: string }) {
-      this.activeNav = item;
-    },
-  },
+interface navItem {
+  tip: string;
+  icon: any;
+  to: string;
+}
+
+const navList: navItem[] = [
+  { tip: "主页", icon: NonebotIcon, to: "/" },
+  { tip: "插件列表", icon: PluginIcon, to: "/plugin" },
+];
+const activeNav = ref(null as navItem | null);
+
+const nowRoute = window.location.pathname;
+const _activeNav: navItem = navList.find((navItem) => nowRoute === navItem.to)!;
+if (activeNav) {
+  activeNav.value = _activeNav;
+}
+
+const setActiveNav = (item: navItem) => {
+  if (globalStore().choiceProjectID === "") {
+    return;
+  }
+
+  activeNav.value = item;
 };
 </script>
 
 <template>
   <div class="side-nav">
-    <ul class="menu bg-base-100">
-      <div
-        v-for="i in navList"
-        :key="i.tip"
-        :class="{
-          'tooltip-active': i === activeNav,
-          'tooltip tooltip-right': true,
-        }"
-        :data-tip="i.tip"
-        @click="setActiveNav(i)"
+    <ul class="w-full menu p-0 [&_li>*]:rounded-none">
+      <li
+        :class="{ 'side-nav-active': isEqual(nav, activeNav) }"
+        v-for="nav in navList"
+        :key="nav.tip"
+        @click="setActiveNav(nav), routerTo(nav.to)"
       >
-        <RouterLink :to="i.to">
-          <li :class="{ bordered: i === activeNav }">
-            <a
-              :class="{
-                'active-padding': i !== activeNav,
-                'icon-padding': true,
-              }"
-            >
-              <img class="side-nav-icon" :src="i.icon" />
-            </a>
-          </li>
-        </RouterLink>
-      </div>
+        <a
+          class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
+          :data-tip="nav.tip"
+        >
+          <component :is="nav.icon" class="nav-icon h-9 w-9" />
+        </a>
+      </li>
     </ul>
   </div>
 </template>
 
 <style>
-.side-nav
-  .menu
-  :where(li:not(.menu-title):not(:empty))
-  > :where(*:not(ul):focus),
-.side-nav
-  .menu
-  :where(li:not(.menu-title):not(:empty))
-  > :where(*:not(ul):hover) {
-  background-color: unset;
-}
-
-.side-nav .menu :where(li.bordered > *) {
-  border-left-width: 2px;
-}
-
-.side-nav .menu .tooltip {
-  background: hsl(var(--b2));
-}
-
-.active-padding {
-  padding-left: calc(1rem - 11px) !important;
-}
-
-.tooltip-active {
-  opacity: 1;
-  background: hsl(var(--b1)) !important;
-}
-
 .side-nav {
   height: 100%;
   width: 55px;
@@ -95,20 +64,40 @@ export default {
   background: hsl(var(--b2));
 }
 
-.side-nav-icon {
-  height: 30px;
-  width: 55px;
+.side-nav > ul > li {
+  opacity: 0.35;
 
-  opacity: 0.5;
+  transition: opacity 0.2s ease-in-out;
 }
 
-.tooltip:hover .side-nav-icon,
-.tooltip-active .side-nav-icon {
+.side-nav > ul > li:hover {
   opacity: 1;
 }
 
-.icon-padding {
-  padding-left: calc(1rem - 13px);
-  padding-right: calc(1rem - 9px);
+.nav-custom-style {
+  max-width: 55px;
+
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.side-nav
+  .menu
+  :where(
+    li:not(.menu-title):not(.disabled) > *:not(ul):not(details):not(.menu-title)
+  ):active {
+  background-color: initial;
+}
+
+.side-nav
+  .menu
+  :where(
+    li:not(.menu-title):not(.disabled) > *:not(ul):not(details):not(.menu-title)
+  ):hover {
+  background-color: initial;
+}
+
+.side-nav-active {
+  opacity: 1 !important;
 }
 </style>
