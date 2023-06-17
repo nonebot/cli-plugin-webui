@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "ASGI",
     "consts",
     "creationflags",
     "fastapi",
@@ -13,6 +14,7 @@
     "psutil",
     "pydantic",
     "secho",
+    "starlette",
     "uvicorn",
     "websockets",
     "webui"
