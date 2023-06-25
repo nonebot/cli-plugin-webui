@@ -1,20 +1,21 @@
 # (NoneBot2) cli-plugin-webui
+
 一款为 nb-cli 而生的 WebUI。（前端部分）
 
 ## 环境初始化
-```
-# yarn
-yarn dev
 
-# npm
-npm run dev
+```
+pnpm i
 ```
 
-## 构造页面
-```
-# yarn
-yarn build
+# 页面开发
 
-# npm
-npm run build
+```
+pnpm dev
+```
+
+## 页面构建
+
+```
+pnpm build
 ```
