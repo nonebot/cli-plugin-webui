@@ -1,48 +1,42 @@
-<script lang="ts">
+<script setup lang="ts">
 import { notifications } from "@/store/app";
+import { ref, computed } from "vue";
 
-export default {
-  data: () => {
-    return {
-      openNoticeCard: false,
-      noticeTip: 0,
-      haveNotice: false,
-      manyNotice: false,
-    };
-  },
-  computed: {
-    notices() {
-      const notices = notifications().notices;
-      if (notices.length !== 0) {
-        this.haveNotice = true;
-        this.noticeTip = notices.length;
+const openNoticeCard = ref(false);
+const noticeTip = ref(0);
+const haveNotice = ref(false);
+const manyNotice = ref(false);
 
-        if (notices.length > 5) {
-          this.manyNotice = true;
-          return notices.slice(0, 5);
-        } else {
-          this.manyNotice = false;
-        }
-      } else {
-        this.haveNotice = false;
-        this.noticeTip = 0;
-      }
-      return notices;
-    },
-  },
-  methods: {
-    changeNoticeCardState() {
-      this.openNoticeCard = !this.openNoticeCard;
-    },
-    dismissNotice(id: number | string) {
-      let notices = notifications().notices;
-      notices = notices.filter((item) => {
-        return item.id !== id;
-      });
-      notifications().notices = notices;
-    },
-  },
+const changeNoticeCardState = () => {
+  openNoticeCard.value = !openNoticeCard.value;
 };
+
+const dismissNotice = (id: number | string) => {
+  let notices = notifications().notices;
+  notices = notices.filter((item) => {
+    return item.id !== id;
+  });
+  notifications().notices = notices;
+};
+
+const notices = computed(() => {
+  const notices = notifications().notices;
+  if (notices.length !== 0) {
+    haveNotice.value = true;
+    noticeTip.value = notices.length;
+
+    if (notices.length > 3) {
+      manyNotice.value = true;
+      return notices.slice(0, 3);
+    } else {
+      manyNotice.value = false;
+    }
+  } else {
+    haveNotice.value = false;
+    noticeTip.value = 0;
+  }
+  return notices;
+});
 </script>
 
 <template>
@@ -154,7 +148,7 @@ export default {
               </button>
             </div>
           </div>
-          <p v-if="manyNotice" class="many-notice-tip">仅展示前五条通知</p>
+          <p v-if="manyNotice" class="many-notice-tip">仅展示前三条通知</p>
         </div>
       </div>
     </div>
@@ -180,7 +174,6 @@ export default {
 
 .status-bar-button .badge {
   height: 6px;
-  /* width: 2px; */
   padding-left: 2px;
   padding-right: 2px;
 }
@@ -188,6 +181,7 @@ export default {
 .status-bar {
   height: 22px;
   width: 100%;
+  bottom: 0;
 
   padding-left: 10px;
   padding-right: 10px;
@@ -196,6 +190,7 @@ export default {
 
   display: flex;
   justify-content: space-between;
+  position: fixed;
 }
 
 .status-bar > div {
