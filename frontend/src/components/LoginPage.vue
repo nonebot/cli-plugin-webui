@@ -5,7 +5,7 @@ import { API } from "@/api";
 import { globalStore } from "@/store/app";
 import { router } from "@/router";
 
-const log = new ToastWrapper("Authentication");
+const log = new ToastWrapper("Login");
 
 const token = ref("");
 const checkToken = ref(false);
@@ -42,7 +42,7 @@ async function doLogin() {
     const resp = await api.doLogin(token.value);
     log.success("登录成功");
     localStorage.setItem("jwtToken", resp.jwt_token);
-    globalStore().isAuthed = true;
+    globalStore().isAuth = true;
     router.push("/");
   } catch (error) {
     log.error(`验证失败：${error}`);
@@ -141,7 +141,7 @@ async function doLogin() {
         </div>
 
         <div class="w-full tracking-tight font-light">
-          <div class="mt-2 mb-2 lg:text-8xl sm:text-6xl text-6xl">
+          <div class="mt-2 mb-2 text-6xl lg:text-8xl sm:text-6xl">
             <span class="main-word">N</span>one<span class="main-word">B</span
             >ot
           </div>

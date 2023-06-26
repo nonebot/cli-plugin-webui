@@ -24,7 +24,7 @@ axios.interceptors.response.use(
     if (error.response && error.response.status === 403) {
       localStorage.removeItem("jwtToken");
       router.push("#auth-card");
-      globalStore().isAuthed = false;
+      globalStore().isAuth = false;
     }
     return Promise.reject(error);
   },
