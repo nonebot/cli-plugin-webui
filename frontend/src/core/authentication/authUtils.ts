@@ -11,7 +11,7 @@ export async function checkTokenValidity(): Promise<boolean> {
       localStorage.clear();
       return false;
     }
-    globalStore().isAuthed = true;
+    globalStore().isAuth = true;
     return true;
   }
   return false;
