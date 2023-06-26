@@ -77,9 +77,10 @@ async def start(host: str, port: int):
         )
         return
     else:
-        if not host and not port:
-            conf = config.read()
+        conf = config.read()
+        if not host:
             host = conf.server.host
+        if not port:
             port = int(conf.server.port)
 
     webbrowser.open(f"http://{host}:{port}/")
