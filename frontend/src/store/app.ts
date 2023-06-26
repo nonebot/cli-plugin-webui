@@ -5,7 +5,8 @@ export const globalStore = defineStore("globalStore", {
   state: () => {
     return {
       nowPageName: "",
-      isAuthed: false,
+      showMenu: true,
+      isAuth: false,
       choiceProjectID: "",
     };
   },
