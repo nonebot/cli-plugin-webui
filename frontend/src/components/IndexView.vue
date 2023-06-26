@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import AppTopBar from "@/layouts/AppTopBar.vue";
 import AppSideNav from "@/layouts/AppSideNav.vue";
 import AppStatusBar from "@/layouts/AppStatusBar.vue";
 </script>
 
 <template>
   <div class="webui" style="height: 100vh">
-    <div class="content">
+    <AppTopBar />
+    <div class="content max-[390px]:pt-[40px] pb-[22px]">
       <AppSideNav />
       <div class="view">
         <router-view />
@@ -19,11 +21,12 @@ import AppStatusBar from "@/layouts/AppStatusBar.vue";
 .view {
   width: 100%;
   padding: 30px;
+  overflow-y: auto;
 }
 
 @media screen and (max-width: 1280px) {
   .view {
-    padding: 10px;
+    padding: 16px;
   }
 }
 
@@ -34,7 +37,7 @@ import AppStatusBar from "@/layouts/AppStatusBar.vue";
 }
 
 .content {
-  height: calc(100% - 22px);
+  height: 100%;
   width: 100%;
   display: flex;
 }
