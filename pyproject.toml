@@ -31,6 +31,9 @@ PyJWT = "^2.7.0"
 bcrypt = "^4.0.1"
 passlib = "^1.7.4"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
+httpx = "^0.24.1"
+wcwidth = "^0.2.6"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.10.1"
