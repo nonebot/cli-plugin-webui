@@ -2,7 +2,6 @@ import axios, { AxiosResponse } from "axios";
 
 import { isDebug } from "@/utils";
 import {
-  ProcessLog,
   FileListResponse,
   IsAvailableResponse,
   LoginResponse,
