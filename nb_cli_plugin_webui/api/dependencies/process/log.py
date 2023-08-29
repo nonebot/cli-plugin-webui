@@ -1,6 +1,8 @@
 import asyncio
 from typing import Set, Dict, List, Generic, TypeVar, Callable, Awaitable
 
+from pydantic import BaseModel
+
 from nb_cli_plugin_webui.exceptions import LoggerStorageAlreadyExist
 
 _T = TypeVar("_T")
@@ -23,8 +25,24 @@ class LoggerStorage(Generic[_T]):
         )
         return log_seq
 
-    def get_logs(self, reverse: bool = False) -> List[_T]:
-        return [self.logs[log_seq] for log_seq in sorted(self.logs, reverse=reverse)]
+    def get_logs(
+        self, reverse: bool = False, limit: int = 0, is_dict: bool = False
+    ) -> List[_T]:
+        if is_dict and isinstance(self.logs.get(0), BaseModel):
+            logs = [
+                # Stupid linter
+                self.logs[log_seq].dict()  # type: ignore
+                for log_seq in sorted(self.logs, reverse=reverse)
+            ]
+        else:
+            logs = [
+                self.logs[log_seq] for log_seq in sorted(self.logs, reverse=reverse)
+            ]
+
+        return logs[-limit:] if limit else logs
+
+    def get_count(self) -> int:
+        return len(self.logs)
 
     def register_listener(self, listener: LogListener[_T]) -> None:
         self.listeners.add(listener)
@@ -38,7 +56,10 @@ class LoggerStorage(Generic[_T]):
         )
 
     def remove_log(self, seq: int) -> None:
-        self.logs.pop(seq)
+        try:
+            self.logs.pop(seq)
+        except Exception:
+            pass
         return
 
 

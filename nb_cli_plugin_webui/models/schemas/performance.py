@@ -30,6 +30,7 @@ class DiskInfo(BaseModel):
     total: int
     used: int
     free: int
+    speed: List[int]
 
 
 class NetInfo(BaseModel):

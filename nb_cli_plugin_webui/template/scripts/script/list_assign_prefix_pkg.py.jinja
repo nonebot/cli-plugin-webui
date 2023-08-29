@@ -1,0 +1,15 @@
+import pkg_resources
+
+
+def get_packages_with_prefix(prefix):
+    installed_packages = pkg_resources.working_set
+    matching_packages = [
+        package.project_name.replace("-", "_", 2)
+        for package in installed_packages
+        if package.project_name.startswith(prefix)
+    ]
+    return matching_packages
+
+
+matching_packages = get_packages_with_prefix("{{ pkg_prefix }}")
+print(",".join(matching_packages))

@@ -1,17 +1,19 @@
-import time
+import os
 import asyncio
 import threading
 import subprocess
 from pathlib import Path
-from itertools import count
-from typing import List, Optional, AsyncIterator
+from typing import Dict, Union, Optional, AsyncIterator
 
 import psutil
-from nb_cli.cli import run_sync
+from nb_cli.consts import WINDOWS
+from nb_cli.handlers.process import terminate_process
 
+from nb_cli_plugin_webui.utils import decode_parse
 from nb_cli_plugin_webui.core.log import logger as log
 from nb_cli_plugin_webui.exceptions import ProcessAlreadyRunning
 from nb_cli_plugin_webui.models.domain.process import ProcessLog
+from nb_cli_plugin_webui.models.schemas.process import ProcessInfo, ProcessPerformance
 from nb_cli_plugin_webui.api.dependencies.process.log import (
     LoggerStorage as BaseLoggerStorage,
 )
@@ -22,31 +24,25 @@ class LoggerStorage(BaseLoggerStorage[ProcessLog]):
 
 
 class CustomProcessor:
-    process: Optional[subprocess.Popen] = None
+    process: Optional[asyncio.subprocess.Process] = None
     process_is_running: bool = False
     process_thread: Optional[threading.Thread] = None
 
     def __init__(
         self,
-        command: List[str],
+        *args: Union[str, bytes, "os.PathLike[str]", "os.PathLike[bytes]"],
         cwd: Path,
+        env: Optional[Dict[str, str]] = None,
         log_rotation_time: float = float(),
-        kill_timeout: int = 10,
-        stop_timeout: int = 10,
-        max_retry: int = 3,
-        retry_interval: int = 5,
-        post_delay: float = 3,
     ) -> None:
-        self.command = command
+        self.args = args
         self.cwd = cwd
-        self.kill_timeout = kill_timeout
-        self.stop_timeout = stop_timeout
-        self.max_retry = max_retry
-        self.retry_interval = retry_interval
-        self.post_delay = post_delay
-        self.retry_count = int()
-        self.loop = asyncio.get_running_loop()
+        self.env = env
+        self.process_event = asyncio.Event()
         self.logs = LoggerStorage(log_rotation_time)
+
+        self.output_task = None
+        self.error_task = None
 
     async def _find_duplicate_process(self) -> AsyncIterator[int]:
         for process in psutil.process_iter():
@@ -65,83 +61,89 @@ class CustomProcessor:
 
         return
 
-    def _terminate_process(
-        self, process: subprocess.Popen, timeout: float
-    ) -> Optional[int]:
-        process.terminate()
-        try:
-            return process.wait(timeout)
-        except subprocess.TimeoutExpired:
-            process.kill()
-
-    def _process_executer(self) -> int:
-        self.process = subprocess.Popen(
-            self.command,
-            cwd=self.cwd.absolute(),
-            text=False,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+    async def _process_executer(self) -> Optional[int]:
+        self.process = await asyncio.create_subprocess_exec(
+            *self.args,
+            cwd=self.cwd,
+            env=self.env,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if WINDOWS else 0,
         )
         assert self.process.stdin and self.process.stdout
 
-        for output in iter(self.process.stdout.readline, b""):
-            output = output.strip().decode("utf-8", "replace")
+        async def read_output():
+            async for output in self.process.stdout:  # type: ignore
+                output = decode_parse(output)
+                if not output:
+                    continue
 
-            log_model = ProcessLog(message=output)
-            asyncio.run_coroutine_threadsafe(
-                self.logs.add_log(log_model), loop=self.loop
+                log_model = ProcessLog(message=output)
+                await self.logs.add_log(log_model)
+
+        if self.process.stdout:
+            self.output_task = asyncio.create_task(read_output())
+
+        async def error_exit():
+            if self.process:
+                await self.process.wait()
+                await asyncio.sleep(5)
+                await self.stop()
+
+        self.error_task = asyncio.create_task(error_exit())
+
+    def get_status(self):
+        if not self.process or self.process.returncode is not None:
+            return ProcessInfo(
+                status_code=self.process.returncode if self.process else None,
+                total_log=self.logs.get_count(),
+                is_running=self.process_is_running,
+                performance=None,
             )
 
-        return self.process.returncode
+        with (ps := psutil.Process(self.process.pid)).oneshot():
+            cpu = ps.cpu_percent()
+            mem = ps.memory_percent()
 
-    def _process_worker(self) -> None:
-        for i in count():
-            if not self.process_is_running:
-                break
-            if self.max_retry >= 0 and i >= self.max_retry:
-                break
+        return ProcessInfo(
+            status_code=self.process.returncode,
+            total_log=self.logs.get_count(),
+            is_running=self.process_is_running,
+            performance=ProcessPerformance(cpu=cpu, mem=mem),
+        )
 
-            code = None
-            try:
-                code = self._process_executer()
-            except Exception:
-                log.exception(
-                    f"Thread {self.process_thread!r} raised unknown exception."
-                )
-
-            log.warning(
-                f"Process for {self.command!r} exited with code {code}, retrying... "
-                f"({i}/{self.max_retry})"
-            )
-
-            self.retry_count += 1
-            time.sleep(self.retry_interval)
+    def get_log_record(self) -> LoggerStorage:
+        return self.logs
 
     async def start(self) -> None:
         if self.process_is_running:
             raise ProcessAlreadyRunning
 
+        async for pid in self._find_duplicate_process():
+            log.warning(f"Possible process {pid=} found, terminated.")
+
         self.process_is_running = True
-        self.process_thread = threading.Thread(target=self._process_worker, daemon=True)
-        self.process_thread.start()
+        await self._process_executer()
 
-    @run_sync
-    def stop(self) -> None:
+    async def stop(self):
         self.process_is_running = False
-        if self.process is not None:
-            self._terminate_process(self.process, self.post_delay)
-        if self.process_thread and self.process_thread.is_alive():
-            self.process_thread.join(self.stop_timeout)
-            self.process_thread = None
+        if self.process:
+            pid = self.process.pid
+            await terminate_process(self.process)
+            log.info(f"Process {pid=} terminated.")
 
-    @run_sync
-    def write_stdin(self, data: str) -> int:
+        if self.output_task:
+            self.output_task.cancel()
+
+        if self.error_task:
+            self.error_task.cancel()
+
+        log_model = ProcessLog(message="Process finished.")
+        await self.logs.add_log(log_model)
+
+    async def write_stdin(self, data: bytes) -> int:
         assert self.process and self.process.stdin
-        wrote = self.process.stdin.write(data)
-        self.process.stdin.flush()
-        return wrote
-
-
-class NonebotProcessor(CustomProcessor):
-    ...
+        self.process.stdin.write(data)
+        await self.process.stdin.drain()
+        return len(data)
