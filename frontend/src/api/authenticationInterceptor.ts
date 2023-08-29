@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 import { router } from "@/router";
-import { globalStore } from "@/store/app";
+import { appStore } from "@/store/global";
 
 axios.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
@@ -23,8 +23,8 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 403) {
       localStorage.removeItem("jwtToken");
-      router.push("#auth-card");
-      globalStore().isAuth = false;
+      router.push("/login");
+      appStore().isAuth = false;
     }
     return Promise.reject(error);
   },
