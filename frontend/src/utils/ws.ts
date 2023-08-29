@@ -1,17 +1,4 @@
-import { isDebug } from "./utils";
-
-function getWebSocketURL(path: string): string {
-  let host, port;
-  if (isDebug()) {
-    host = localStorage.getItem("host");
-    port = localStorage.getItem("port");
-  }
-  return `${
-    isDebug()
-      ? `ws://${host}:${port}`
-      : window.location.origin.replace(/^http/, "ws")
-  }${path}`;
-}
+import { isDebug } from ".";
 
 export class WebUIWebSocket {
   path: string;
@@ -19,16 +6,25 @@ export class WebUIWebSocket {
 
   constructor(path: string) {
     this.path = path;
-  }
 
-  init(): WebUIWebSocket {
-    const wsURL = getWebSocketURL(this.path);
+    const wsURL = this.getWebSocketURL(this.path);
     this.client = new WebSocket(wsURL);
-
-    return this;
   }
 
-  connect() {
+  private getWebSocketURL(path: string): string {
+    let host, port;
+    if (isDebug()) {
+      host = localStorage.getItem("host");
+      port = localStorage.getItem("port");
+    }
+    return `${
+      isDebug()
+        ? `ws://${host}:${port}`
+        : window.location.origin.replace(/^http/, "ws")
+    }${path}`;
+  }
+
+  async connect(): Promise<WebSocket> {
     return new Promise<WebSocket>((resolve, reject) => {
       if (!this.client) {
         reject("WebSocket 未初始化");
@@ -36,7 +32,7 @@ export class WebUIWebSocket {
       }
       this.client.addEventListener("open", () => {
         let token = localStorage.getItem("jwtToken");
-        if (token === null) {
+        if (!token) {
           token = "";
         }
         this.client!.send(token);
@@ -47,5 +43,9 @@ export class WebUIWebSocket {
         reject(event);
       });
     });
+  }
+
+  isConnected(): boolean {
+    return this.client?.readyState === WebSocket.OPEN;
   }
 }
