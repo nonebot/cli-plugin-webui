@@ -1,0 +1,30 @@
+import json
+
+import nonebot
+from nonebot.plugin.load import load_plugin
+
+
+def get_plugin_metadata(plugin: str):
+    try:
+        nonebot.logger.remove()
+        nonebot.init()
+        module = load_plugin(plugin)
+    except Exception:
+        return None
+
+    if module is None:
+        return None
+    if module.metadata is None:
+        return None
+
+    return module.metadata
+
+
+result = get_plugin_metadata("{{ plugin_name }}")
+if result:
+    if result.config:
+        schema = json.loads(result.config().schema_json())
+        config = json.loads(result.config().json())
+        print(json.dumps({"schema": schema, "config": config}))
+else:
+    print("Failed")

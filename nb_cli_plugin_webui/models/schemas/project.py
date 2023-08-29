@@ -1,7 +1,14 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List
 
 from pydantic import BaseModel
-from nb_cli.config import Driver, Adapter, SimpleInfo
+
+from nb_cli_plugin_webui.models.schemas.store import Driver
+from nb_cli_plugin_webui.models.schemas.store import Adapter, SimpleInfo
+from nb_cli_plugin_webui.models.schemas.store import Plugin as BasePlugin
+
+
+class Plugin(BasePlugin):
+    config_detail: dict = dict()
 
 
 class NonebotProjectMeta(BaseModel):
@@ -11,21 +18,24 @@ class NonebotProjectMeta(BaseModel):
     mirror_url: str
     adapters: List[SimpleInfo]
     drivers: List[SimpleInfo]
-    plugins: List[str]
+    plugins: List[Plugin]
     plugin_dirs: List[str]
     builtin_plugins: List[str]
+    is_running: bool = False
 
 
 class NonebotProjectList(BaseModel):
-    projects: Dict[str, Optional[NonebotProjectMeta]]
+    projects: Dict[str, NonebotProjectMeta]
 
 
 class CreateProjectData(BaseModel):
+    is_bootstrap: bool
     project_name: str
     project_dir: str
     mirror_url: str
-    driver: Driver
-    adapter: Adapter
+    drivers: List[Driver]
+    adapters: List[Adapter]
+    use_src: bool
 
 
 class CreateProjectResponse(BaseModel):
@@ -38,3 +48,44 @@ class ProjectListResponse(NonebotProjectList):
 
 class DeleteProjectResponse(BaseModel):
     project_id: str
+
+
+class InstallModuleResponse(BaseModel):
+    log_key: str
+
+
+class UninstallModuleResponse(InstallModuleResponse):
+    ...
+
+
+class ModuleConfigSimpleInfo(BaseModel):
+    title: str
+    description: str
+    name: str
+
+
+class ModuleConfigChild(ModuleConfigSimpleInfo):
+    default: Any
+    item_type: str
+    enum: List[Any]
+    configured: Any
+    latest_change: str = str()
+
+
+class ModuleConfigFather(ModuleConfigSimpleInfo):
+    properties: List[ModuleConfigChild]
+
+
+class ModuleConfigResponse(BaseModel):
+    detail: List[ModuleConfigFather]
+
+
+class ModuleSettingRequest(BaseModel):
+    env: str
+    k_type: str
+    k: str
+    v: Any
+
+
+class DotenvListResponse(BaseModel):
+    detail: List[str]

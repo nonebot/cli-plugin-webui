@@ -15,7 +15,7 @@ async def run_asyncio_subprocess_with_logging(
     *args: Union[str, bytes, "os.PathLike[str]", "os.PathLike[bytes]"],
     cwd: Optional[Path] = None,
     stdin: Optional[Union[IO[Any], int]] = None,
-    log_storage: LoggerStorage
+    log_storage: LoggerStorage = LoggerStorage(),
 ) -> Tuple[asyncio.subprocess.Process, LoggerStorage]:
     async def _read_stream(stream: Optional[StreamReader], log_storage: LoggerStorage):
         if stream:

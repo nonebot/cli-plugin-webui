@@ -32,10 +32,8 @@ async def create_file(
     return FilesInResponse(files=data)
 
 
-@router.post("/delete", response_model=FilesInResponse)
-async def delete_file(
-    file_data: FileMeta = Body(embed=True),
-) -> FilesInResponse:
+@router.delete("/delete", response_model=FilesInResponse)
+async def delete_file(file_data: FileMeta) -> FilesInResponse:
     path = BASE_DIR / Path(file_data.path)
     if file_data.is_dir:
         shutil.rmtree(path)
