@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import NonebotIcon from "@/components/svgs/NonebotIcon.vue";
-import PluginIcon from "@/components/svgs/PluginIcon.vue";
-import { ref, computed } from "vue";
-import { routerTo, isEqual } from "@/core/utils";
-import { globalStore } from "@/store/app";
+import NonebotIcon from "@/components/Icons/NonebotIcon.vue";
+import ExtensionIcon from "@/components/Icons/ExtensionIcon.vue";
+import AccountLightOutlineIcon from "@/components/Icons/AccountLightOutlineIcon.vue";
+import SettingIcon from "@/components/Icons/SettingIcon.vue";
+import FileIcon from "@/components/Icons/FileIcon.vue";
+
+import { ref, watch } from "vue";
+import MenuIcon from "@/components/Icons/MenuIcon.vue";
+import { routerTo } from "@/router/client";
+import { appStore } from "@/store/global";
 
 interface navItem {
   tip: string;
@@ -11,66 +16,125 @@ interface navItem {
   to: string;
 }
 
-const navList: navItem[] = [
+const topNavList: navItem[] = [
   { tip: "主页", icon: NonebotIcon, to: "/" },
-  { tip: "插件列表", icon: PluginIcon, to: "/plugin" },
+  { tip: "拓展商店", icon: ExtensionIcon, to: "/store" },
+  { tip: "文件管理", icon: FileIcon, to: "/file" },
 ];
-const activeNav = ref(null as navItem | null);
+
+const buttonNavList: navItem[] = [
+  { tip: "登录设置", icon: AccountLightOutlineIcon, to: "/account" },
+  { tip: "设置", icon: SettingIcon, to: "/setting" },
+];
+
+const activeNav = ref<string>();
+const showMenuModal = ref(false);
 
 const nowRoute = window.location.pathname;
-const _activeNav: navItem = navList.find((navItem) => nowRoute === navItem.to)!;
-if (activeNav) {
-  activeNav.value = _activeNav;
+const _activeNav: navItem | undefined = topNavList.find(
+  (navItem) => nowRoute === navItem.to,
+)!;
+if (_activeNav) {
+  activeNav.value = _activeNav.to;
 }
 
-const setActiveNav = (item: navItem) => {
-  if (globalStore().choiceProjectID === "") {
-    return;
-  }
-
-  activeNav.value = item;
-};
-
-const toggleMenu = () => {
-  globalStore().showMenu = !globalStore().showMenu;
-};
-const showMenu = computed(() => globalStore().showMenu);
+watch(
+  () => appStore().nowPath,
+  (value) => {
+    activeNav.value = value;
+  },
+);
 </script>
 
 <template>
-  <Transition>
+  <div
+    class="z-20 h-auto md:h-full w-full fixed md:w-14 pb-6 transition-all ease-in-out translate-y-0"
+  >
     <div
-      v-if="showMenu"
-      :class="{
-        'z-20 h-full flex': true,
-        'max-[390px]:w-full max-[390px]:fixed max-[390px]:backdrop-blur-sm side-nav-backdrop-background': true,
-        'max-[390px]:hidden': !showMenu,
-      }"
+      class="fixed h-12 w-full visible md:invisible flex items-center pl-4 pr-4 border-b border-[hsl(var(--b3))] bg-base-100"
     >
-      <div class="side-nav">
-        <ul class="w-full menu p-0 [&_li>*]:rounded-none">
-          <li
-            :class="{ 'side-nav-active': isEqual(nav, activeNav) }"
-            v-for="nav in navList"
-            :key="nav.tip"
-            @click="setActiveNav(nav), routerTo(nav.to)"
-          >
-            <a
-              class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
-              :data-tip="nav.tip"
-            >
-              <component :is="nav.icon" class="nav-icon h-9 w-9" />
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div
-        class="h-full"
-        style="width: calc(100% - 55px)"
-        @click="toggleMenu()"
-      ></div>
+      <MenuIcon
+        role="button"
+        class="h-full w-9 mr-4"
+        @click="showMenuModal = true"
+      />
+
+      <div class="pointer-events-none">{{ activeNav }}</div>
     </div>
-  </Transition>
+
+    <div
+      class="side-nav relative md:fixed invisible md:!visible hidden md:flex"
+    >
+      <ul class="w-full menu p-0 [&_li>*]:rounded-none">
+        <li
+          v-for="nav in topNavList"
+          :class="{ 'side-nav-active': activeNav === nav.to }"
+          @click="routerTo(nav.to)"
+        >
+          <a
+            class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
+            :data-tip="nav.tip"
+          >
+            <component :is="nav.icon" class="h-9 w-9" />
+          </a>
+        </li>
+      </ul>
+
+      <div class="h-full"></div>
+
+      <ul class="w-full menu p-0 [&_li>*]:rounded-none">
+        <li
+          v-for="nav in buttonNavList"
+          :class="{ 'side-nav-active': activeNav === nav.to }"
+          @click="routerTo(nav.to)"
+        >
+          <a
+            class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
+            :data-tip="nav.tip"
+          >
+            <component :is="nav.icon" class="h-9 w-9" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showMenuModal }">
+    <form method="dialog" class="modal-box rounded-lg">
+      <h3 class="font-bold text-lg">导航</h3>
+      <ul class="menu">
+        <li
+          v-for="nav in topNavList"
+          @click="routerTo(nav.to), (showMenuModal = false)"
+        >
+          <a>
+            <component :is="nav.icon" class="h-7 w-7" />
+            <span>{{ nav.tip }}</span>
+            <div class="w-full"></div>
+            <span v-if="activeNav === nav.tip" class="badge bg-base-200"
+              >当前位置</span
+            >
+          </a>
+        </li>
+        <li
+          v-for="nav in buttonNavList"
+          @click="routerTo(nav.to), (showMenuModal = false)"
+        >
+          <a>
+            <component :is="nav.icon" class="h-7 w-7" />
+            <span>{{ nav.tip }}</span>
+            <div class="w-full"></div>
+            <span v-if="activeNav === nav.tip" class="badge bg-base-200"
+              >当前位置</span
+            >
+          </a>
+        </li>
+      </ul>
+    </form>
+    <form method="dialog" class="modal-backdrop">
+      <button @click="showMenuModal = false">close</button>
+    </form>
+  </dialog>
 </template>
 
 <style>
@@ -86,16 +150,15 @@ const showMenu = computed(() => globalStore().showMenu);
 
 .side-nav {
   height: 100%;
-  width: 55px;
-
-  display: flex;
+  width: 3.5rem;
   flex-direction: column;
   align-items: center;
-
+  padding-bottom: 1.5rem;
   background: hsl(var(--b2));
 }
 
-.side-nav > ul > li {
+.side-nav > ul > li,
+.side-nav > div {
   opacity: 0.35;
 
   transition: opacity 0.2s ease-in-out;
@@ -116,23 +179,25 @@ const showMenu = computed(() => globalStore().showMenu);
   .menu
   :where(
     li:not(.menu-title):not(.disabled) > *:not(ul):not(details):not(.menu-title)
-  ):active {
-  background-color: initial;
-}
-
+  ):hover,
 .side-nav
   .menu
   :where(
     li:not(.menu-title):not(.disabled) > *:not(ul):not(details):not(.menu-title)
-  ):hover {
+  ):active {
+  background-color: initial;
+}
+
+.side-nav .menu li > *:not(ul):not(.menu-title):not(details):active,
+.side-nav .menu li > *:not(ul):not(.menu-title):not(details).active,
+.side-nav .menu li > details > summary:active,
+.side-nav .menu li > *:not(ul):not(.menu-title):not(details):active,
+.side-nav .menu li > *:not(ul):not(.menu-title):not(details).active,
+.side-nav .menu li > details > summary:active {
   background-color: initial;
 }
 
 .side-nav-active {
   opacity: 1 !important;
-}
-
-.side-nav-backdrop-background {
-  background-color: rgba(128, 128, 128, 0.5);
 }
 </style>
