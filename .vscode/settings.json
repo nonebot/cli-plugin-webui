@@ -3,6 +3,7 @@
     "ASGI",
     "consts",
     "creationflags",
+    "dotenv",
     "fastapi",
     "levelname",
     "levelno",
