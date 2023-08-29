@@ -1,13 +1,29 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref, watch } from "vue";
 import { API } from "@/api";
 import { globalLog as log } from "@/main";
 import { FileInfo } from "@/api/models";
-import { limitContent } from "@/core/utils";
+import { limitContent } from "@/utils";
+
+const showModal = ref(false);
+const showCreateFolderModal = ref(false);
+
+const openModal = () => {
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+defineExpose({
+  openModal,
+  closeModal,
+});
 
 const nowPath = ref("");
-const nowPathStack = ref([] as string[]);
-const files = ref([] as FileInfo[]);
+const nowPathStack = ref<string[]>([]);
+const files = ref<FileInfo[]>([]);
 const selectedFolder = ref("Unknown");
 const newFolderName = ref("");
 
@@ -36,6 +52,8 @@ const createFile = async (fileName: string, path: string) => {
     return;
   }
   newFolderName.value = "";
+  showCreateFolderModal.value = false;
+  openModal();
 };
 
 const deleteFile = async (
@@ -54,7 +72,7 @@ const deleteFile = async (
 };
 
 const nextDir = (path: string, is_dir: number) => {
-  if (is_dir === 0) {
+  if (!is_dir) {
     return;
   }
   nowPath.value = path;
@@ -62,7 +80,7 @@ const nextDir = (path: string, is_dir: number) => {
 };
 
 const choiceDir = (path: string, is_dir: number) => {
-  if (is_dir === 0) {
+  if (!is_dir) {
     log.warning("请选择文件夹");
     return;
   }
@@ -80,26 +98,16 @@ const convertTime = (time: string) => {
   return `${year}/${mouth}/${day} ${hours}:${minutes}`;
 };
 
-getFiles(nowPath.value);
-
-onMounted(() => {
-  const selected = document.getElementById("selected")!;
-  selected.addEventListener("click", (event) => {
-    event.preventDefault();
-
-    if (selectedFolder.value === "Unknown") {
-      log.warning("你未选择文件夹");
-      return;
-    }
-
-    window.location.href = selected.getAttribute("href")!;
-  });
+watch(showModal, () => {
+  if (showModal.value) {
+    getFiles(nowPath.value);
+  }
 });
 </script>
 
 <template>
-  <div class="modal" id="folder-select">
-    <div class="modal-box rounded">
+  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
+    <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">NoneBot 实例安装位置</h3>
       <div class="text-sm breadcrumbs">
         <ul>
@@ -107,7 +115,7 @@ onMounted(() => {
           <li v-for="(dir, index) in nowPathStack">
             <a @click="nextDir(nowPathStack.slice(0, index + 1).join('\\'), 1)">
               <svg
-                v-if="dir !== ''"
+                v-if="dir"
                 class="w-4 h-4 mr-2 stroke-current"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -138,7 +146,7 @@ onMounted(() => {
           </thead>
           <tbody>
             <tr
-              v-if="files.length !== 0"
+              v-if="files.length"
               v-for="i in files"
               :key="i.name"
               class="hover"
@@ -230,24 +238,36 @@ onMounted(() => {
       <p class="overflow-x-auto text-sm">{{ selectedFolder }}</p>
 
       <div class="modal-action">
-        <a href="#create-dir" class="btn rounded-lg h-10 min-h-0">新建文件夹</a>
+        <button
+          class="btn rounded-lg h-10 min-h-0"
+          @click="showCreateFolderModal = true"
+        >
+          新建文件夹
+        </button>
+
         <button class="btn rounded-lg h-10 min-h-0" @click="getFiles(nowPath)">
           刷新
         </button>
-        <div class="w-full"></div>
-        <a
-          href="#create-nonebot-user"
-          id="selected"
-          class="btn btn-primary rounded-lg h-10 min-h-0 text-white"
-          @click="emit('onSelectedFolder', selectedFolder)"
-          >选择</a
-        >
-      </div>
-    </div>
-  </div>
 
-  <div class="modal" id="create-dir">
-    <div class="modal-box rounded">
+        <div class="w-full"></div>
+
+        <button
+          class="btn btn-primary rounded-lg h-10 min-h-0 text-white"
+          @click="emit('onSelectedFolder', selectedFolder), closeModal()"
+        >
+          选择
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog
+    :class="{
+      'modal pl-0 md:pl-14': true,
+      'modal-open': showCreateFolderModal,
+    }"
+  >
+    <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">新建文件夹</h3>
       <input
         v-model="newFolderName"
@@ -256,16 +276,22 @@ onMounted(() => {
         class="mt-4 input input-bordered w-full text-sm"
       />
       <div class="modal-action">
-        <a href="#folder-select" class="btn rounded-lg h-10 min-h-0">取消</a>
-        <a
-          href="#folder-select"
+        <button
+          class="btn rounded-lg h-10 min-h-0"
+          @click="showCreateFolderModal = false"
+        >
+          取消
+        </button>
+
+        <button
           class="btn btn-primary rounded-lg h-10 min-h-0 text-white"
           @click="createFile(newFolderName, nowPath)"
-          >创建</a
         >
+          新建文件夹
+        </button>
       </div>
-    </div>
-  </div>
+    </form>
+  </dialog>
 </template>
 
 <style>

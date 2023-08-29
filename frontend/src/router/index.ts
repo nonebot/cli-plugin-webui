@@ -3,11 +3,13 @@ import { createRouter, createWebHistory } from "vue-router";
 import LoginPage from "@/components/LoginPage.vue";
 import IndexView from "@/components/IndexView.vue";
 import HomePage from "@/components/HomePage.vue";
-import PluginManage from "@/components/PluginManage.vue";
+import NonebotStore from "@/components/NonebotStore.vue";
+import FileExplorer from "@/components/FileExplorer.vue";
+import SettingPage from "@/components/SettingPage.vue";
 
-import { checkTokenValidity } from "@/core/authentication/authUtils";
+import { checkTokenValidity } from "./client";
 import { globalLog as log } from "@/main";
-import { globalStore } from "@/store/app";
+import { appStore as store } from "@/store/global";
 
 const routes = [
   {
@@ -26,9 +28,19 @@ const routes = [
         component: HomePage,
       },
       {
-        name: "Plugin",
-        path: "/plugin",
-        component: PluginManage,
+        name: "Store",
+        path: "/store",
+        component: NonebotStore,
+      },
+      {
+        name: "FileExplorer",
+        path: "/file",
+        component: FileExplorer,
+      },
+      {
+        name: "Setting",
+        path: "/setting",
+        component: SettingPage,
       },
     ],
   },
@@ -39,18 +51,18 @@ export const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
   const login = await checkTokenValidity();
   if (!login && to.name !== "Login") {
     log.warning("请先验证");
     router.push("/login");
   }
-
   if (
-    globalStore().choiceProjectID === "" &&
+    !store().choiceProject.project_id &&
     to.path !== "/" &&
     to.path !== "/login"
   ) {
+    router.push("/");
     log.warning("请先选择一项实例");
     return false;
   }

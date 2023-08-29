@@ -1,44 +1,25 @@
 <script setup lang="ts">
-import AppTopBar from "@/layouts/AppTopBar.vue";
 import AppSideNav from "@/layouts/AppSideNav.vue";
 import AppStatusBar from "@/layouts/AppStatusBar.vue";
 </script>
 
 <template>
-  <div class="webui" style="height: 100vh">
-    <AppTopBar />
-    <div class="content max-[390px]:pt-[40px] pb-[22px]">
-      <AppSideNav />
-      <div class="view">
-        <router-view />
-      </div>
-    </div>
-    <AppStatusBar />
+  <AppSideNav />
+  <div class="view pl-0 md:pl-14 pt-12 md:pt-0">
+    <router-view />
   </div>
+  <AppStatusBar />
 </template>
 
 <style>
 .view {
-  width: 100%;
-  padding: 30px;
-  overflow-y: auto;
-}
-
-@media screen and (max-width: 1280px) {
-  .view {
-    padding: 16px;
-  }
-}
-
-.webui {
-  overflow: hidden;
-
-  background: hsl(var(--b1));
-}
-
-.content {
+  position: fixed;
+  top: 0;
+  left: 0;
   height: 100%;
+  padding-bottom: 1.5rem;
+
   width: 100%;
-  display: flex;
+  overflow: hidden;
 }
 </style>
