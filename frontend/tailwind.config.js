@@ -21,8 +21,12 @@ export default {
           warning: "#FBBD23",
           error: "#F87272",
         },
+        dark: {
+          ...require("daisyui/src/theming/themes")["[data-theme=dark]"],
+          primary: "#EA5252",
+          neutral: "#2a323c",
+        },
       },
-      "dark",
     ],
   },
 };
