@@ -1,3 +1,4 @@
+import asyncio
 import platform
 from sys import platform as pf
 
@@ -18,20 +19,37 @@ if pf == "win32":
     from win32com import client
 
 
-_last_net_io = [0, 0]
-_now_net_io = [0, 0]
+_LAST_DISK_IO = [0, 0]
+_NOW_DISK_IO = [0, 0]
+_LAST_NET_IO = [0, 0]
+_NOW_NET_IO = [0, 0]
 
 
 @scheduler.scheduled_job("interval", seconds=1, misfire_grace_time=15)
-async def _():
-    global _last_net_io, _now_net_io
+async def get_disk_io():
+    global _LAST_DISK_IO, _NOW_DISK_IO
+
+    disk_counters = psutil.disk_io_counters()
+    if disk_counters is None:
+        return
+
+    _NOW_DISK_IO = [
+        disk_counters.read_bytes - _LAST_DISK_IO[0],
+        disk_counters.write_bytes - _LAST_DISK_IO[1],
+    ]
+    _LAST_DISK_IO = [disk_counters.read_bytes, disk_counters.write_bytes]
+
+
+@scheduler.scheduled_job("interval", seconds=1, misfire_grace_time=15)
+async def get_net_io():
+    global _LAST_NET_IO, _NOW_NET_IO
 
     net_counters = psutil.net_io_counters()
-    _now_net_io = [
-        net_counters.bytes_sent - _last_net_io[0],
-        net_counters.bytes_recv - _last_net_io[1],
+    _NOW_NET_IO = [
+        net_counters.bytes_sent - _LAST_NET_IO[0],
+        net_counters.bytes_recv - _LAST_NET_IO[1],
     ]
-    _last_net_io = [net_counters.bytes_sent, net_counters.bytes_recv]
+    _LAST_NET_IO = [net_counters.bytes_sent, net_counters.bytes_recv]
 
 
 class PerformanceMonitor:
@@ -46,7 +64,7 @@ class PerformanceMonitor:
         )
 
     @staticmethod
-    def get_cpu_info() -> CpuInfo:
+    async def get_cpu_info() -> CpuInfo:
         cpu_name = platform.processor()
         if pf == "win32":
             pythoncom.CoInitialize()
@@ -58,7 +76,12 @@ class PerformanceMonitor:
         _freq = psutil.cpu_freq()
         cpu_max_freq = f"{'%.2f'%(_freq.max / 1000)}"
         cpu_current_freq = f"{'%.2f'%(_freq.current / 1000)}"
-        cpu_percent = psutil.cpu_percent(interval=0.1)
+
+        psutil.cpu_percent(percpu=True)
+        await asyncio.sleep(0.5)
+        raw_cpu_percent = psutil.cpu_percent(percpu=True)
+        cpu_percent = sum(raw_cpu_percent) / len(raw_cpu_percent)
+
         process = len(psutil.pids())
 
         return CpuInfo(
@@ -102,7 +125,9 @@ class PerformanceMonitor:
             disk_used = disk.used
             disk_free = disk.free
 
-        return DiskInfo(total=disk_total, used=disk_used, free=disk_free)
+        return DiskInfo(
+            total=disk_total, used=disk_used, free=disk_free, speed=_NOW_DISK_IO
+        )
 
     @staticmethod
     def get_net_info() -> NetInfo:
@@ -112,5 +137,5 @@ class PerformanceMonitor:
             recv_total=net.bytes_recv,
             package_sent=net.packets_sent,
             package_recv=net.packets_recv,
-            speed=_now_net_io,
+            speed=_NOW_NET_IO,
         )
