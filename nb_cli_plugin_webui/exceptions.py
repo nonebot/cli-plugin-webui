@@ -32,3 +32,7 @@ class NonebotProjectFileIsNotExist(Exception):
 
 class NonebotProjectIsNotExist(Exception):
     """target nonebot project is not exist."""
+
+
+class InvalidKeyException(Exception):
+    """invalid key is provided."""
