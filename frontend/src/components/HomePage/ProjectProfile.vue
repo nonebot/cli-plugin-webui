@@ -100,7 +100,7 @@ const genPluginList = () => {
                       store()
                         .choiceProject.plugins.map((obj) => obj.module_name)
                         .slice(0, 2),
-                    ),
+                    )
                   }}
                   ...
                 </div>
