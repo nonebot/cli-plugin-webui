@@ -1,4 +1,4 @@
-import { router } from "@/router";
+import { SimpleInfo } from "@/api/models";
 
 export function isDebug(): boolean {
   const isDebugString = localStorage.getItem("isDebug");
@@ -7,10 +7,6 @@ export function isDebug(): boolean {
 
 export function limitContent(text: string, limit: number): string {
   return text.slice(0, limit) + (text.length > limit ? "..." : "");
-}
-
-export function routerTo(to: string): void {
-  router.push(to);
 }
 
 export function isEqual(obj1: any, obj2: any): boolean {
@@ -39,4 +35,20 @@ export function isEqual(obj1: any, obj2: any): boolean {
   }
 
   return true;
+}
+
+export function parseStringArray(data: string[]): string {
+  if (data.length !== 0 && Array.isArray(data)) {
+    return data.join("、");
+  } else {
+    return "unknown";
+  }
+}
+
+export function parseSimpleInfo(data: SimpleInfo[]): string {
+  if (data.length !== 0 && Array.isArray(data)) {
+    return data.map((item) => item.name).join("、");
+  } else {
+    return "unknown";
+  }
 }
