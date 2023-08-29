@@ -14,7 +14,7 @@ from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexit
 
 
 @click.group(
-    cls=ClickAliasedGroup, invoke_without_command=True, help=_("Start NB CLI UI.")
+    cls=ClickAliasedGroup, invoke_without_command=True, help=_("Start up NB CLI UI.")
 )
 @click.pass_context
 @run_async
@@ -69,9 +69,9 @@ async def webui(ctx: click.Context):
     default=None,
 )
 @run_async
-async def start(host: str, port: int):
+async def run(host: str, port: int):
     if not config.exist:
-        click.secho(_("Cannot find config file."))
+        click.secho(_("Cannot find config file of webui."))
         click.secho(
             _("Please run: nb ui init (If you are running this for the first time)")
         )
@@ -91,7 +91,7 @@ async def start(host: str, port: int):
 @run_async
 async def setting_token():
     if not config.exist:
-        click.secho(_("Cannot find config file."))
+        click.secho(_("Cannot find config file of webui."))
         click.secho(
             _("Please run: nb ui init (If you are running this for the first time)")
         )
