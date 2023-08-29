@@ -4,7 +4,10 @@ import App from "@/App.vue";
 import { registerPlugins } from "@/plugins";
 
 import "@/api/authenticationInterceptor";
-import { ToastWrapper } from "./core/notification";
+import { ToastWrapper } from "@/utils/notification";
+import { webuiConfig } from "@/config";
+
+webuiConfig.init();
 
 const app = createApp(App);
 
