@@ -73,7 +73,7 @@ async def create_nonebot_project(
 
             try:
                 shutil.rmtree(project_dir)
-            except Exception:
+            except OSError:
                 return
 
             log_model = CustomLog(message="All files about project have been cleared.")
@@ -187,7 +187,7 @@ async def delete_nonebot_project(project_id: str) -> DeleteProjectResponse:
 
     try:
         shutil.rmtree(data.project_dir)
-    except Exception as err:
+    except OSError as err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"删除实例失败 {err=}"
         )
