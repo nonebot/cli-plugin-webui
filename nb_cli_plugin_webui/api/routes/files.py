@@ -14,7 +14,7 @@ async def get_file_list(path: str) -> FilesInResponse:
     try:
         data = get_files(BASE_DIR / Path(path))
     except FileNotFoundError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="未找到文件")
 
     return FilesInResponse(files=data)
 

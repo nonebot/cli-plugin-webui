@@ -36,7 +36,9 @@ async def install_nonebot_project_module(
     try:
         project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     try:
         module = Plugin.parse_obj(module)
@@ -83,7 +85,9 @@ async def install_nonebot_project_module(
             pattern = r"nonebot-(.*?)-"
             _match = re.search(pattern, module.project_link)
             if _match is None:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="模块类型未找到"
+                )
             module_type = _match.group(1)
         else:
             module_type = "driver"
@@ -120,7 +124,9 @@ async def uninstall_nonebot_project_module(
     try:
         project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     try:
         module = Plugin.parse_obj(module)
@@ -163,7 +169,9 @@ async def uninstall_nonebot_project_module(
         pattern = r"nonebot-(.*?)-"
         _match = re.search(pattern, module.project_link)
         if _match is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="模块类型未找到"
+            )
         module_type = _match.group(1)
 
         try:
