@@ -16,7 +16,7 @@ async def login(
     login_data: LoginData = Body(embed=True),
 ) -> LoginResponse:
     if not login_data.check_token():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="缺少登录密钥")
 
     jwt_token = jwt.create_access_for_header(
         login_data.mark, config.read().secret_key.get_secret_value()

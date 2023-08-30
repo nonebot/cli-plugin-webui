@@ -13,7 +13,7 @@ router = APIRouter()
 async def get_nonebot_project_process_status(project_id: str) -> ProcessInfo:
     process = ProcessManager.get_process(project_id)
     if process is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="无法找到实例进程")
 
     return process.get_status()
 

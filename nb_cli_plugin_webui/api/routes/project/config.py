@@ -26,7 +26,9 @@ async def get_dotenv_file_list(project_id: str) -> DotenvListResponse:
     try:
         project_detail = project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     project_dir = Path(project_detail.project_dir)
     cache_list = list()
@@ -45,12 +47,16 @@ async def create_dotenv_file(
     try:
         project_detail = project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     project_dir = Path(project_detail.project_dir)
     for i in project_dir.iterdir():
         if env == i.name:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="已存在相同的文件"
+            )
 
     with open(project_dir / env, "w", encoding="utf-8") as w:
         w.write(str())
@@ -66,7 +72,9 @@ async def delete_dotenv_file(
     try:
         project_detail = project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     project_dir = Path(project_detail.project_dir)
     for i in project_dir.iterdir():
@@ -74,7 +82,7 @@ async def delete_dotenv_file(
             i.unlink()
             return {"detail": "OK"}
 
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="文件未找到")
 
 
 @router.post("/dotenv/active")
@@ -85,7 +93,9 @@ async def active_dotenv_file(
     try:
         project_detail = project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     project_dir = Path(project_detail.project_dir)
     for i in project_dir.iterdir():
@@ -93,7 +103,7 @@ async def active_dotenv_file(
             project.write_to_env(".env", "ENVIRONMENT", env.replace(".env.", str()))
             return {"detail": "OK"}
 
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="未找到对应的设置项")
 
 
 @router.get("/meta/list", response_model=ModuleConfigResponse)
@@ -102,7 +112,9 @@ async def get_meta_config_list(project_id: str) -> ModuleConfigResponse:
     try:
         project_detail = project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     config_props = NonebotProjectMeta.schema()["properties"]
     cache_list: List[ModuleConfigChild] = list()
@@ -140,7 +152,9 @@ async def get_nonebot_config_list(project_id: str) -> ModuleConfigResponse:
     try:
         project_detail = project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     config_detail = await get_nonebot_config_detail(
         Path(project_detail.project_dir), project.config_manager.python_path
@@ -183,7 +197,9 @@ async def get_plugin_config_list(project_id: str) -> ModuleConfigResponse:
     try:
         project_detail = project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     plugin_list = project_detail.plugins
     result: List[ModuleConfigFather] = list()
@@ -248,7 +264,9 @@ async def write_dotenv_file(
     try:
         project_detail = project.read()
     except NonebotProjectIsNotExist:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     if module_type == "project":
         target_config = data.k.split(":")[-1]
@@ -283,7 +301,10 @@ async def write_dotenv_file(
 
                         conf = detail_props[prop].get("configured")
                         if conf is None:
-                            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+                            raise HTTPException(
+                                status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="未找到对应的设置项",
+                            )
                         plugin.config_detail["properties"][prop]["configured"] = data.v
                         plugin.config_detail["properties"][prop][
                             "latest_change"
@@ -292,4 +313,4 @@ async def write_dotenv_file(
                         project_detail.plugins = plugin_list
                         project.store(project_detail)
 
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="未找到实例位置")

@@ -17,6 +17,7 @@ from nb_cli.handlers.project import create_project, generate_run_script
 from nb_cli_plugin_webui.api.dependencies.files import BASE_DIR
 from nb_cli_plugin_webui.models.schemas.store import SimpleInfo
 from nb_cli_plugin_webui.utils import generate_complexity_string
+from nb_cli_plugin_webui.exceptions import NonebotProjectIsNotExist
 from nb_cli_plugin_webui.api.dependencies.pip import call_pip_install
 from nb_cli_plugin_webui.models.domain.process import LogLevel, CustomLog
 from nb_cli_plugin_webui.api.dependencies.project import NonebotProjectManager
@@ -187,7 +188,9 @@ async def delete_nonebot_project(project_id: str) -> DeleteProjectResponse:
     try:
         shutil.rmtree(data.project_dir)
     except Exception as err:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"删除实例失败 {err=}"
+        )
 
     manager.remove()
 
@@ -229,8 +232,10 @@ async def run_nonebot_project(project_id: str = Body(embed=True)) -> None:
     project = NonebotProjectManager(project_id)
     try:
         project.read()
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    except NonebotProjectIsNotExist:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
 
     project_details = project.read()
     project_dir = Path(project_details.project_dir)
@@ -249,7 +254,10 @@ async def run_nonebot_project(project_id: str = Body(embed=True)) -> None:
     process = ProcessManager.get_process(project_id)
     if process:
         if process.process_is_running:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"实例 {project_id=} 正在运行中",
+            )
         else:
             await process.start()
     else:
@@ -297,7 +305,9 @@ async def run_nonebot_project(project_id: str = Body(embed=True)) -> None:
 async def stop_nonebot_project(project_id: str = Body(embed=True)):
     process = ProcessManager.get_process(project_id)
     if process is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="无法找到对应的实例进程"
+        )
 
     await process.stop()
 
@@ -310,7 +320,9 @@ async def write_nonebot_project_process(
 ):
     process = ProcessManager.get_process(project_id)
     if process is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="无法找到对应的实例进程"
+        )
 
     result = None
     if process.process_is_running:
@@ -319,7 +331,7 @@ async def write_nonebot_project_process(
             result = await process.write_stdin(content.encode())
         except Exception as err:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)
+                status_code=status.HTTP_400_BAD_REQUEST, detail=f"写入进程失败 {err=}"
             )
     else:
         process.args = (content,)
