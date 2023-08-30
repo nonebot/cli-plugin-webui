@@ -27,7 +27,8 @@ async def create_file(
     if file_data.is_dir:
         path.mkdir(exist_ok=True)
     else:
-        ...
+        with open(path, "w", encoding="utf-8") as w:
+            w.write(str())
     data = get_files(Path(file_data.path))
     return FilesInResponse(files=data)
 
@@ -36,7 +37,12 @@ async def create_file(
 async def delete_file(file_data: FileMeta) -> FilesInResponse:
     path = BASE_DIR / Path(file_data.path)
     if file_data.is_dir:
-        shutil.rmtree(path)
+        try:
+            shutil.rmtree(path)
+        except OSError as err:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=f"删除文件失败 {err=}"
+            )
     else:
         path.unlink()
     data = get_files(Path(file_data.path).parent)
