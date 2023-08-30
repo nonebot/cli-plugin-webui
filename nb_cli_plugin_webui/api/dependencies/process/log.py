@@ -58,7 +58,7 @@ class LoggerStorage(Generic[_T]):
     def remove_log(self, seq: int) -> None:
         try:
             self.logs.pop(seq)
-        except Exception:
+        except KeyError:
             pass
         return
 

@@ -19,7 +19,7 @@ def find_available_port(start_port: int, end_port: int) -> int:
         finally:
             sock.close()
 
-    raise Exception("No available ports in this range.")
+    raise ValueError(_("No available ports in this range."))
 
 
 def check_token_complexity(token: str) -> None:

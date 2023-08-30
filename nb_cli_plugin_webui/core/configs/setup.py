@@ -7,6 +7,7 @@ from noneprompt import InputPrompt, ConfirmPrompt
 
 from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui.core.configs.config import config
+from nb_cli_plugin_webui.exceptions import TokenComplexityError
 from nb_cli_plugin_webui.models.domain.config import WebUIConfig, ServerConfig
 from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexity_string
 
@@ -26,7 +27,7 @@ async def get_user_config():
             try:
                 check_token_complexity(token)
                 break
-            except Exception as err:
+            except TokenComplexityError as err:
                 click.secho(str(err))
 
             token = await InputPrompt(_("Please enter again:")).prompt_async(
