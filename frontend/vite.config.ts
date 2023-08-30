@@ -14,4 +14,7 @@ export default defineConfig({
   server: {
     port: 15551,
   },
+  build: {
+    outDir: "../nb_cli_plugin_webui/dist",
+  },
 });
