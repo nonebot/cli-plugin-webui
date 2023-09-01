@@ -89,7 +89,7 @@ export class API {
       path: path,
     };
     return await this.baseGetRequest<FileListResponse>(
-      "/files/list",
+      "/file/list",
       requestData,
     );
   }
@@ -107,7 +107,7 @@ export class API {
       },
     };
     return await this.basePostRequest<FileListResponse>(
-      "/files/create",
+      "/file/create",
       requestData,
     );
   }
@@ -125,7 +125,7 @@ export class API {
       },
     };
     return await this.baseDeleteRequest<FileListResponse>(
-      "/files/delete",
+      "/file/delete",
       requestData,
     );
   }
