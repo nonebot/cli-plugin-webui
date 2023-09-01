@@ -16,6 +16,7 @@
     "pydantic",
     "secho",
     "starlette",
+    "tomlkit",
     "uvicorn",
     "websockets",
     "webui"
