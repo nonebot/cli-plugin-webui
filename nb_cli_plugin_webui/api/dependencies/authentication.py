@@ -23,7 +23,7 @@ class CustomAuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next) -> Response:
         path = request.url.path
         for p in self.pass_paths:
-            if p in path:
+            if p == path:
                 response = await call_next(request)
                 return response
 
