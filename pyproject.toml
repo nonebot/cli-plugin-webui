@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "web ui support for nb-cli"
 authors = ["Kyomotoi <kyomotoiowo@gmail.com>"]
 license = "MIT"
+packages = [{ include = 'nb_cli_plugin_webui' }]
+include = ["nb_cli_plugin_webui/dist/**/*"]
 readme = "README.md"
 homepage = "https://github.com/nonebot/cli-plugin-webui"
 repository = "https://github.com/nonebot/cli-plugin-webui"
