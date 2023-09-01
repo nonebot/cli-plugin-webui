@@ -40,4 +40,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: dist
-          path: ../nb_cli_plugin_webui/dist
+          path: nb_cli_plugin_webui/dist
