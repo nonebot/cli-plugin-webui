@@ -31,6 +31,9 @@
         "[typescriptreact]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
+        "[vue]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
         "files.exclude": {
           "**/__pycache__": true
         },
