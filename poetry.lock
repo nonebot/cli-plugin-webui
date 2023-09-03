@@ -448,7 +448,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "nb-cli"
-version = "1.2.2"
+version = "1.2.3"
 description = "CLI for nonebot2"
 category = "main"
 optional = false
@@ -985,7 +985,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.1"
-content-hash = "f7c0b0df0f395e8cc91413e4ce89434cbed6478a07889f60062dc843538b086f"
+content-hash = "a10bf2b2d83a7e2bd3a1a82bbec312c7c7823941928b53eaab8836efc53d118f"
 
 [metadata.files]
 anyio = [
@@ -1336,8 +1336,8 @@ mypy-extensions = [
     {file = "mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
 ]
 nb-cli = [
-    {file = "nb-cli-1.2.2.tar.gz", hash = "sha256:ecef59e636dd86672beea516932d42c134068572c160ab09d0e541ebe838912f"},
-    {file = "nb_cli-1.2.2-py3-none-any.whl", hash = "sha256:b38079daae7ad97a12ed1f2c58d8e3b611b7b01718b368f893effecfeda7ed09"},
+    {file = "nb-cli-1.2.3.tar.gz", hash = "sha256:b3fc95873852c258fbaaa1979af95a7f83369c67c85d314cb015ee7b1275c4f9"},
+    {file = "nb_cli-1.2.3-py3-none-any.whl", hash = "sha256:db0019bbffcf1004ccc0eae1f1f85453d55f22cb2fbbf21cfb02b9248007fdae"},
 ]
 nodeenv = [
     {file = "nodeenv-1.8.0-py2.py3-none-any.whl", hash = "sha256:df865724bb3c3adc86b3876fa209771517b0cfe596beff01a92700e0e8be4cec"},
