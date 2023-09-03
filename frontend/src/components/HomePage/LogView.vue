@@ -132,10 +132,7 @@ const handleKeydown = async (event: KeyboardEvent) => {
 };
 
 onMounted(async () => {
-  if (
-    appStore().choiceProject.project_id &&
-    appStore().choiceProject.is_running
-  ) {
+  if (appStore().choiceProject.project_id && appStore().choiceProject.is_running) {
     viewProject.value = appStore().choiceProject.project_id;
     await handleWebSocket();
   }
