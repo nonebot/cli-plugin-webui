@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import CreateProject from "./CreateProject.vue";
+import AddProjectByCreate from "@/components/HomePage/Modals/AddProjectByCreate.vue";
 
 import { ref } from "vue";
 
-const createProjectModal = ref<InstanceType<typeof CreateProject> | null>();
+const createProjectModal = ref<InstanceType<typeof AddProjectByCreate> | null>();
 const showModal = ref(false);
 
 const openModal = () => {
@@ -21,15 +21,12 @@ defineExpose({
 </script>
 
 <template>
-  <CreateProject ref="createProjectModal" />
+  <AddProjectByCreate ref="createProjectModal" />
 
   <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">创建/添加 NoneBot 实例</h3>
-      <button
-        class="btn btn-sm btn-circle absolute right-2 top-2"
-        @click="closeModal()"
-      >
+      <button class="btn btn-sm btn-circle absolute right-2 top-2" @click="closeModal()">
         ✕
       </button>
 
@@ -46,9 +43,7 @@ defineExpose({
 
         <div class="flex flex-col justify-center">
           <div>已有 NoneBot 实例？</div>
-          <button
-            class="mt-2 btn btn-primary rounded-lg h-10 min-h-0 text-white"
-          >
+          <button class="mt-2 btn btn-primary rounded-lg h-10 min-h-0 text-white">
             即刻添加！
           </button>
         </div>

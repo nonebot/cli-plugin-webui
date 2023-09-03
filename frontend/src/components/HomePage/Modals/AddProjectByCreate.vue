@@ -225,10 +225,7 @@ watch(showModal, async () => {
 
 <template>
   <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
-    <form
-      method="dialog"
-      class="modal-box rounded-lg flex flex-col flex-nowarp"
-    >
+    <form method="dialog" class="modal-box rounded-lg flex flex-col flex-nowarp">
       <h3 class="font-bold text-lg">创建 NoneBot 实例</h3>
 
       <div
@@ -303,9 +300,7 @@ watch(showModal, async () => {
           <label class="label">
             <span class="label-text">
               驱动器
-              <div class="badge badge-ghost">
-                已选：{{ projectDriver.length }} 个
-              </div>
+              <div class="badge badge-ghost">已选：{{ projectDriver.length }} 个</div>
             </span>
           </label>
           <select
@@ -326,9 +321,7 @@ watch(showModal, async () => {
           <label class="label">
             <span class="label-text">
               适配器
-              <div class="badge badge-ghost">
-                已选：{{ projectAdapter.length }} 个
-              </div>
+              <div class="badge badge-ghost">已选：{{ projectAdapter.length }} 个</div>
             </span>
           </label>
           <select
@@ -337,10 +330,7 @@ watch(showModal, async () => {
             @change="selectAdapter(selectedAdapter!)"
           >
             <option disabled value="">请选择</option>
-            <option
-              v-for="item in genSelectAdapterList()"
-              :value="item.adapter"
-            >
+            <option v-for="item in genSelectAdapterList()" :value="item.adapter">
               <div v-if="item.selected">√&nbsp;</div>
               <div v-else>&nbsp;</div>
               {{ item.adapter.name }} - {{ item.adapter.desc }}
@@ -376,10 +366,7 @@ watch(showModal, async () => {
       </div>
 
       <div class="modal-action">
-        <button
-          class="btn rounded-lg h-10 min-h-0"
-          @click="clear(true), closeModal()"
-        >
+        <button class="btn rounded-lg h-10 min-h-0" @click="clear(true), closeModal()">
           取消
         </button>
 
@@ -394,10 +381,5 @@ watch(showModal, async () => {
   </dialog>
 
   <FolderSelect ref="folderSelectModal" @onSelectedFolder="selectedFolder" />
-  <LogShow
-    ref="logShowModal"
-    @is-retry="isRetry"
-    @is-o-k="clear"
-    :logKey="logKey"
-  />
+  <LogShow ref="logShowModal" @is-retry="isRetry" @is-o-k="clear" :logKey="logKey" />
 </template>
