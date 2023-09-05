@@ -1,13 +1,31 @@
-import pkg_resources
+import sys
+from typing import List
 
 
-def get_packages_with_prefix(prefix):
-    installed_packages = pkg_resources.working_set
-    matching_packages = [
-        package.project_name.replace("-", "_", 2)
-        for package in installed_packages
-        if package.project_name.startswith(prefix)
-    ]
+def get_packages_with_prefix(prefix: str) -> List[str]:
+    matching_packages = list()
+
+    if sys.version_info >= (3, 10):
+        import importlib.metadata
+
+        installed_packages = importlib.metadata.packages_distributions()
+        for key, value in installed_packages.items():
+            if prefix in key:
+                matching_packages.extend(value)
+
+        matching_packages = list(set(matching_packages))
+    else:
+        import pkg_resources
+
+        installed_packages = pkg_resources.working_set
+        matching_packages = list(
+            set(
+                package.project_name
+                for package in installed_packages
+                if package.project_name.startswith(prefix)
+            )
+        )
+
     return matching_packages
 
 
