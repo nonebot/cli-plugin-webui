@@ -24,6 +24,7 @@ async def get_plugin_list(python_path: Optional[str] = None) -> list:
     result = list()
     if raw_content:
         result = raw_content.split(",")
+        result = [plugin.replace("-", "_", 2) for plugin in result]
 
     return result
 
