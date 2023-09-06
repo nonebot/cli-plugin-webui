@@ -1,11 +1,10 @@
 from pathlib import Path
 from typing import Union
 
-from nb_cli_plugin_webui import PLUGIN_NAME
 from nb_cli_plugin_webui.models.domain.config import WebUIConfig
-from nb_cli_plugin_webui.utils.localstore import get_config_file
+from nb_cli_plugin_webui.utils.store import get_config_file
 
-CONFIG_PATH = get_config_file(PLUGIN_NAME, "webui-config.json")
+CONFIG_PATH = get_config_file("config.json")
 CONFIG_CACHE: Union[WebUIConfig, None] = None
 
 
