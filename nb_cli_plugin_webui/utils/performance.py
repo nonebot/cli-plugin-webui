@@ -3,7 +3,6 @@ import platform
 from sys import platform as pf
 
 import psutil
-import pythoncom
 
 from nb_cli_plugin_webui.utils.apscheduler import scheduler
 from nb_cli_plugin_webui.models.schemas.performance import (
@@ -15,7 +14,8 @@ from nb_cli_plugin_webui.models.schemas.performance import (
 )
 
 if pf == "win32":
-    import wmi
+    import wmi  # type: ignore
+    import pythoncom
     from win32com import client
 
 
