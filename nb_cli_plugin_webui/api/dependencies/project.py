@@ -19,11 +19,7 @@ from nb_cli_plugin_webui.models.schemas.project import (
     NonebotProjectList,
     NonebotProjectMeta,
 )
-from nb_cli_plugin_webui.exceptions import (
-    InvalidKeyException,
-    NonebotProjectIsNotExist,
-    NonebotProjectFileIsNotExist,
-)
+from nb_cli_plugin_webui.exceptions import InvalidKeyException, NonebotProjectIsNotExist
 
 
 class NonebotProjectManager:
@@ -48,9 +44,9 @@ class NonebotProjectManager:
         try:
             return NonebotProjectList.parse_file(cls.project_file_path)
         except PathNotAFileError:
-            raise NonebotProjectFileIsNotExist
-        except FileNotFoundError as err:
-            raise err
+            raise NonebotProjectIsNotExist
+        except FileNotFoundError:
+            raise NonebotProjectIsNotExist
 
     @classmethod
     def get_projects(cls) -> Dict[str, NonebotProjectMeta]:
@@ -88,10 +84,10 @@ class NonebotProjectManager:
 
     def read(self) -> NonebotProjectMeta:
         data = self._load()
-
         info = data.projects.get(self.project_id)
         if info is None:
             raise NonebotProjectIsNotExist
+
         self.config_manager = ConfigManager(
             working_dir=Path(info.project_dir), use_venv=True
         )
