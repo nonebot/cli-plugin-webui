@@ -25,7 +25,7 @@ def init_application() -> FastAPI:
     conf = config.read()
     app = FastAPI(**conf.server.fastapi_kwargs)
     app.add_middleware(
-        CustomAuthMiddleware, pass_paths=["/api/auth/login", "/login", "/"]
+        CustomAuthMiddleware, pass_paths=["/api/auth/login", "/login", "/", "/assets/*"]
     )
     app.add_middleware(
         CORSMiddleware,
