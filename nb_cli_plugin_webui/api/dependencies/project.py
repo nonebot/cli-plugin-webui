@@ -6,8 +6,7 @@ from nb_cli.config import ConfigManager
 from dotenv import set_key, dotenv_values
 from nb_cli.config import SimpleInfo as CliSimpleInfo
 
-from nb_cli_plugin_webui import PLUGIN_NAME
-from nb_cli_plugin_webui.utils.localstore import get_data_file
+from nb_cli_plugin_webui.utils.store import get_data_file
 from nb_cli_plugin_webui.models.schemas.store import SimpleInfo
 from nb_cli_plugin_webui.api.dependencies.store.manage import PLUGIN_MANAGER
 from nb_cli_plugin_webui.api.dependencies.plugin import (
@@ -24,7 +23,7 @@ from nb_cli_plugin_webui.exceptions import InvalidKeyException, NonebotProjectIs
 
 class NonebotProjectManager:
     project_file_name = "webui-nonebot-projects.json"
-    project_file_path = get_data_file(PLUGIN_NAME, project_file_name)
+    project_file_path = get_data_file(project_file_name)
 
     meta_modifiable_key = {"project_name", "mirror_url", "plugin_dirs"}
 
