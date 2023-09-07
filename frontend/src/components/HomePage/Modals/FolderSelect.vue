@@ -84,7 +84,7 @@ const choiceDir = (path: string, is_dir: number) => {
     log.warning("请选择文件夹");
     return;
   }
-  selectedFolder.value = path + "\\(实例名称)";
+  selectedFolder.value = path + "/(实例名称)";
 };
 
 const convertTime = (time: string) => {
@@ -235,7 +235,7 @@ watch(showModal, () => {
       </div>
 
       <p class="pt-4">当前选择：</p>
-      <p class="overflow-x-auto text-sm">{{ selectedFolder }}</p>
+      <p class="overflow-x-auto text-sm">(Base Dir)/{{ selectedFolder }}</p>
 
       <div class="modal-action">
         <button

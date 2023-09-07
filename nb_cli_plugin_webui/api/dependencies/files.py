@@ -9,18 +9,18 @@ BASE_DIR = Path(_conf.base_dir)
 
 
 def get_files(path: Path) -> List[FileDetails]:
-    path = BASE_DIR / path
     data = list()
     for file in path.iterdir():
+        path = (path / file.name).relative_to(BASE_DIR)
+        absolute_path = (BASE_DIR / path / file.name).resolve()
+
         data.append(
             FileDetails(
                 name=file.name,
                 is_dir=1 if file.is_dir() else 0,
-                path=str(Path(path / file.name).relative_to(BASE_DIR).resolve()),
+                path=str(path).replace("\\", "/"),
                 modified_time=str(file.stat().st_mtime),
-                absolute_path=str(
-                    Path(path / file.name).relative_to(BASE_DIR).resolve()
-                ),
+                absolute_path=str(absolute_path).replace("\\", "/"),
             )
         )
     return data
