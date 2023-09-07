@@ -28,7 +28,7 @@ class StoreManager(Generic[_T]):
         self.page = int()
         self.search_result: List[_T] = list()
 
-    async def load_item(self):
+    async def load_item(self) -> None:
         self.items = await load_module_data(self.module_type)  # type: ignore
 
     def get_item(self, *, is_search: bool = False) -> List[_T]:
