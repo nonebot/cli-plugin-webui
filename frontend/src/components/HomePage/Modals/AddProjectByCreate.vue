@@ -279,7 +279,7 @@ watch(showModal, async () => {
           </button>
           <label class="label">
             <span class="label-text overflow-x-auto text-xs">
-              (Base Dir)\{{ projectFolder.replace("(实例名称)", projectName) }}
+              (Base Dir)/{{ projectFolder.replace("(实例名称)", projectName) }}
             </span>
           </label>
         </div>
@@ -338,7 +338,7 @@ watch(showModal, async () => {
           </select>
         </div>
 
-        <div class="form-control w-full max-w-[75%]">
+        <div v-if="!projectIsBootstrap" class="form-control w-full max-w-[75%]">
           <label class="label">
             <span class="label-text">插件存储位置</span>
           </label>
