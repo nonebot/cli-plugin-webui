@@ -45,11 +45,7 @@ const config = computed(() => {
             ),
           }"
           :id="`${config.name}:${father.name}:${child.name}`"
-          @click="
-            settingStore().setActive(
-              `${config.name}:${father.name}:${child.name}`,
-            )
-          "
+          @click="settingStore().setActive(`${config.name}:${father.name}:${child.name}`)"
         >
           <div
             :id="`${config.title}:${father.title}:${child.title}`"
@@ -67,11 +63,7 @@ const config = computed(() => {
                 ),
               }"
             >
-              <label
-                tabindex="0"
-                class="tooltip tooltip-right"
-                data-tip="更多操作"
-              >
+              <label tabindex="0" class="tooltip tooltip-right" data-tip="更多操作">
                 <SettingIcon class="h-5 w-5" />
               </label>
               <ul
@@ -81,11 +73,15 @@ const config = computed(() => {
                 <li :class="{ disabled: !child.default }">
                   <a
                     @click="
-                      config.setAction(
-                        `${father.name}:${child.name}`,
-                        child.default,
-                        child.item_type,
-                      )
+                      () => {
+                        if (child.default) {
+                          config.setAction(
+                            `${father.name}:${child.name}`,
+                            child.default,
+                            child.item_type,
+                          );
+                        }
+                      }
                     "
                     >恢复默认值</a
                   >
@@ -105,8 +101,7 @@ const config = computed(() => {
 
             <NumberInput
               v-if="
-                (child.item_type === 'number' ||
-                  child.item_type === 'integer') &&
+                (child.item_type === 'number' || child.item_type === 'integer') &&
                 !child.enum.length
               "
               :input-i-d="`${father.name}:${child.name}`"
@@ -120,8 +115,7 @@ const config = computed(() => {
 
             <StringOrObjectInput
               v-if="
-                (child.item_type === 'string' ||
-                  child.item_type === 'object') &&
+                (child.item_type === 'string' || child.item_type === 'object') &&
                 !child.enum.length
               "
               :input-i-d="`${father.name}:${child.name}`"
