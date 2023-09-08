@@ -12,11 +12,11 @@ import {
   ProcessInfo,
   StoreListResponse,
   InstallModuleResponse,
-  UninstallModuleResponse,
   SimpleInfo,
   ModuleConfigResponse,
   DotenvListResponse,
   LogHistoryResponse,
+  NonebotProjectMeta,
 } from "./models";
 
 export class API {
@@ -51,10 +51,7 @@ export class API {
     }
   }
 
-  private async baseDeleteRequest<T>(
-    endpoint: string,
-    params = {},
-  ): Promise<T> {
+  private async baseDeleteRequest<T>(endpoint: string, params = {}): Promise<T> {
     const url = this.generateBaseURL() + endpoint;
     try {
       const resp: AxiosResponse<T> = await axios.delete(url, {
@@ -74,10 +71,7 @@ export class API {
         mark: mark,
       },
     };
-    return await this.basePostRequest<LoginResponse>(
-      "/auth/login",
-      requestData,
-    );
+    return await this.basePostRequest<LoginResponse>("/auth/login", requestData);
   }
 
   async isAvailable(): Promise<IsAvailableResponse> {
@@ -88,10 +82,7 @@ export class API {
     const requestData = {
       path: path,
     };
-    return await this.baseGetRequest<FileListResponse>(
-      "/file/list",
-      requestData,
-    );
+    return await this.baseGetRequest<FileListResponse>("/file/list", requestData);
   }
 
   async createFile(
@@ -106,10 +97,7 @@ export class API {
         path: path,
       },
     };
-    return await this.basePostRequest<FileListResponse>(
-      "/file/create",
-      requestData,
-    );
+    return await this.basePostRequest<FileListResponse>("/file/create", requestData);
   }
 
   async deleteFile(
@@ -124,10 +112,7 @@ export class API {
         path: path,
       },
     };
-    return await this.baseDeleteRequest<FileListResponse>(
-      "/file/delete",
-      requestData,
-    );
+    return await this.baseDeleteRequest<FileListResponse>("/file/delete", requestData);
   }
 
   async createProject(data: CreateProjectData): Promise<CreateProjectResponse> {
@@ -141,9 +126,7 @@ export class API {
   }
 
   async getProjectList(): Promise<NonebotProjectListResponse> {
-    return await this.baseGetRequest<NonebotProjectListResponse>(
-      "/project/list",
-    );
+    return await this.baseGetRequest<NonebotProjectListResponse>("/project/list");
   }
 
   async deleteProject(projectID: string): Promise<DeleteProjectResponse> {
@@ -269,10 +252,7 @@ export class API {
         content: content,
       },
     };
-    return await this.basePostRequest<StoreListResponse>(
-      "/store/search",
-      requestData,
-    );
+    return await this.basePostRequest<StoreListResponse>("/store/search", requestData);
   }
 
   async installModule(
@@ -291,20 +271,13 @@ export class API {
     );
   }
 
-  async uninstallModule(
-    projectID: string,
-    env: string,
-    module: SimpleInfo,
-  ): Promise<UninstallModuleResponse> {
+  async uninstallModule(projectID: string, env: string, module: any): Promise<void> {
     const requestData = {
       project_id: projectID,
       env: env,
       module: module,
     };
-    return await this.basePostRequest<UninstallModuleResponse>(
-      "/project/module/uninstall",
-      requestData,
-    );
+    return await this.basePostRequest<void>("/project/module/uninstall", requestData);
   }
 
   async getProjectMetaConfig(projectID: string): Promise<ModuleConfigResponse> {
@@ -327,9 +300,7 @@ export class API {
     );
   }
 
-  async getProjectPluginConfigList(
-    projectID: string,
-  ): Promise<ModuleConfigResponse> {
+  async getProjectPluginConfigList(projectID: string): Promise<ModuleConfigResponse> {
     const requestData = {
       project_id: projectID,
     };
@@ -354,10 +325,7 @@ export class API {
       project_id: projectID,
       env: env,
     };
-    return await this.basePostRequest<void>(
-      "/project/config/dotenv/create",
-      requestData,
-    );
+    return await this.basePostRequest<void>("/project/config/dotenv/create", requestData);
   }
 
   async deleteDotenvFile(projectID: string, env: string): Promise<void> {
@@ -365,10 +333,7 @@ export class API {
       project_id: projectID,
       env: env,
     };
-    return await this.basePostRequest<void>(
-      "/project/config/dotenv/delete",
-      requestData,
-    );
+    return await this.basePostRequest<void>("/project/config/dotenv/delete", requestData);
   }
 
   async activeDotenvFile(projectID: string, env: string): Promise<void> {
@@ -376,10 +341,7 @@ export class API {
       project_id: projectID,
       env: env,
     };
-    return await this.basePostRequest<void>(
-      "/project/config/dotenv/active",
-      requestData,
-    );
+    return await this.basePostRequest<void>("/project/config/dotenv/active", requestData);
   }
 
   async configSet(
@@ -401,5 +363,12 @@ export class API {
       },
     };
     return await this.basePostRequest<void>("/project/config/set", requestData);
+  }
+
+  async getProjectDetail(projectID: string): Promise<NonebotProjectMeta> {
+    const requestData = {
+      project_id: projectID,
+    };
+    return await this.baseGetRequest("/project/detail", requestData);
   }
 }
