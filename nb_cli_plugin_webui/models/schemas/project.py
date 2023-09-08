@@ -58,10 +58,6 @@ class InstallModuleResponse(BaseModel):
     log_key: str
 
 
-class UninstallModuleResponse(InstallModuleResponse):
-    ...
-
-
 class ModuleConfigSimpleInfo(BaseModel):
     title: str
     description: str
@@ -92,4 +88,8 @@ class ModuleSettingRequest(BaseModel):
 
 
 class DotenvListResponse(BaseModel):
+    detail: List[str]
+
+
+class ScanPluginResponse(BaseModel):
     detail: List[str]
