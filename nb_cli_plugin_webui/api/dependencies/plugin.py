@@ -16,7 +16,7 @@ async def get_plugin_list(python_path: Optional[str] = None) -> list:
     proc = await create_process(
         python_path,
         "-c",
-        await t.render_async(pkg_prefix="nonebot-plugin"),
+        await t.render_async(pkg_prefix="nonebot_plugin"),
         stdout=asyncio.subprocess.PIPE,
     )
     stdout, _ = await proc.communicate()
@@ -24,7 +24,7 @@ async def get_plugin_list(python_path: Optional[str] = None) -> list:
     result = list()
     if raw_content:
         result = raw_content.split(",")
-        result = [plugin.replace("-", "_", 2) for plugin in result]
+        result = [plugin.replace("-", "_") for plugin in result]
 
     return result
 
@@ -56,3 +56,23 @@ async def get_plugin_config_detail(
             config_schema["properties"][i]["latest_change"] = ".env"
 
     return config_schema
+
+
+async def get_loaded_plugins(python_path: Optional[str] = None) -> list:
+    if python_path is None:
+        python_path = await get_default_python()
+
+    t = templates.get_template("scripts/plugin/get_loaded_plugins.py.jinja")
+    proc = await create_process(
+        python_path,
+        "-c",
+        await t.render_async(),
+        stdout=asyncio.subprocess.PIPE,
+    )
+    stdout, _ = await proc.communicate()
+    raw_content = stdout.decode().strip()
+    result = list()
+    if raw_content:
+        result = raw_content.split(",")
+
+    return result

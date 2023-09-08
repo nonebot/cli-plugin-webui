@@ -1,0 +1,7 @@
+import nonebot
+
+
+nonebot.init()
+nonebot.load_from_toml("pyproject.toml")
+plugins = nonebot.get_loaded_plugins()
+print(",".join([plugin.name for plugin in plugins]))
