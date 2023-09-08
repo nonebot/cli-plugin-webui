@@ -156,9 +156,14 @@ async def get_nonebot_config_list(project_id: str) -> ModuleConfigResponse:
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
         )
 
-    config_detail = await get_nonebot_config_detail(
-        Path(project_detail.project_dir), project.config_manager.python_path
-    )
+    try:
+        config_detail = await get_nonebot_config_detail(
+            Path(project_detail.project_dir), project.config_manager.python_path
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="获取 Nonebot 配置失败"
+        )
 
     config_props = config_detail["properties"]
     cache_list: List[ModuleConfigChild] = list()
