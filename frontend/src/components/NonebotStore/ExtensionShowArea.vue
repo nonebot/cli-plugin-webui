@@ -16,7 +16,6 @@ const titleItems = {
   driver: { tip: "驱动器", icon: DriverIcon },
 };
 
-const nowPage = ref(0);
 const pages = ref<any[]>([]);
 const bar = ref<HTMLElement>();
 const content = ref<HTMLElement>();
@@ -31,22 +30,6 @@ const getTitle = computed(() => {
       return titleItems.plugin;
   }
 });
-
-const turnPage = (page: number | string) => {
-  if (typeof page !== "number") {
-    return;
-  }
-
-  if (page >= 0) {
-    nowPage.value = page;
-  } else {
-    nowPage.value = 0;
-  }
-
-  if (page >= nonebotExtensionStore().totalPage) {
-    nowPage.value = nonebotExtensionStore().totalPage;
-  }
-};
 
 const generatePageNumbers = (
   currentPage: number,
@@ -76,7 +59,11 @@ const generatePageNumbers = (
   }
 };
 
-generatePageNumbers(nowPage.value, nonebotExtensionStore().totalPage, 7);
+generatePageNumbers(
+  nonebotExtensionStore().nowPage,
+  nonebotExtensionStore().totalPage,
+  7,
+);
 
 onMounted(() => {
   hideScrollBarWhileSwiping(bar.value!, content.value!);
@@ -85,21 +72,29 @@ onMounted(() => {
 watch(
   () => nonebotExtensionStore().totalPage,
   () => {
-    nowPage.value = 0;
-    generatePageNumbers(nowPage.value, nonebotExtensionStore().totalPage, 7);
+    nonebotExtensionStore().nowPage;
+    generatePageNumbers(
+      nonebotExtensionStore().nowPage,
+      nonebotExtensionStore().totalPage,
+      7,
+    );
   },
 );
 
-watch(nowPage, () => {
-  if (appStore().choiceProject.project_id) {
-    nonebotExtensionStore().updateData(
-      appStore().choiceProject.project_id,
-      nowPage.value,
-    );
-  }
+watch(
+  () => nonebotExtensionStore().nowPage,
+  () => {
+    if (appStore().choiceProject.project_id) {
+      nonebotExtensionStore().updateData(appStore().choiceProject.project_id);
+    }
 
-  generatePageNumbers(nowPage.value, nonebotExtensionStore().totalPage, 7);
-});
+    generatePageNumbers(
+      nonebotExtensionStore().nowPage,
+      nonebotExtensionStore().totalPage,
+      7,
+    );
+  },
+);
 </script>
 
 <template>
@@ -159,9 +154,11 @@ watch(nowPage, () => {
             <button
               :class="{
                 'join-item btn btn-sm': true,
-                'btn-disabled': nowPage <= 0,
+                'btn-disabled': nonebotExtensionStore().nowPage <= 0,
               }"
-              @click="turnPage(nowPage - 1)"
+              @click="
+                nonebotExtensionStore().turnPage(nonebotExtensionStore().nowPage - 1)
+              "
             >
               «
             </button>
@@ -170,9 +167,9 @@ watch(nowPage, () => {
               v-for="page in pages"
               :class="{
                 'join-item btn btn-sm': true,
-                'btn-active': page - 1 === nowPage,
+                'btn-active': page - 1 === nonebotExtensionStore().nowPage,
               }"
-              @click="turnPage(page - 1)"
+              @click="nonebotExtensionStore().turnPage(page - 1)"
             >
               {{ page }}
             </button>
@@ -181,9 +178,12 @@ watch(nowPage, () => {
               :class="{
                 'join-item btn btn-sm': true,
                 'btn-disabled':
-                  nowPage === nonebotExtensionStore().totalPage - 1,
+                  nonebotExtensionStore().nowPage ===
+                  nonebotExtensionStore().totalPage - 1,
               }"
-              @click="turnPage(nowPage + 1)"
+              @click="
+                nonebotExtensionStore().turnPage(nonebotExtensionStore().nowPage + 1)
+              "
             >
               »
             </button>

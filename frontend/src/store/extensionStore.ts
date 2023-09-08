@@ -4,6 +4,7 @@ import { ToastWrapper } from "@/utils/notification";
 import { Adapter, Driver, Plugin } from "@/api/models";
 
 const api = new API();
+const log = new ToastWrapper("Nonebot Store");
 
 export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
   state() {
@@ -11,6 +12,7 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
       searchInput: "",
       requesting: false,
       storeData: [] as Plugin[] | Adapter[] | Driver[],
+      nowPage: 0,
       totalPage: 0,
       totalItem: 0,
       choiceClass: "plugin",
@@ -23,13 +25,24 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
       this.choiceClass = cls;
     },
 
-    async updateData(projectID: string, page: number) {
-      const log = new ToastWrapper("Nonebot Store");
+    turnPage(page: number) {
+      if (page >= 0) {
+        this.nowPage = page;
+      } else {
+        this.nowPage = 0;
+      }
+
+      if (page >= this.totalPage) {
+        this.nowPage = this.totalPage;
+      }
+    },
+
+    async updateData(projectID: string) {
       const isSearch = this.searchInput ? true : false;
       this.requesting = true;
       if (this.choiceClass === "plugin") {
         await api
-          .getPlugins(page, isSearch, projectID)
+          .getPlugins(this.nowPage, isSearch, projectID)
           .then((resp) => {
             this.requesting = false;
             this.totalPage = resp.total_page;
@@ -44,7 +57,7 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
 
       if (this.choiceClass === "adapter") {
         await api
-          .getAdapters(page, isSearch, projectID)
+          .getAdapters(this.nowPage, isSearch, projectID)
           .then((resp) => {
             this.requesting = false;
             this.storeData = resp.data;
@@ -59,7 +72,7 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
 
       if (this.choiceClass === "driver") {
         await api
-          .getDrivers(page, isSearch, projectID)
+          .getDrivers(this.nowPage, isSearch, projectID)
           .then((resp) => {
             this.requesting = false;
             this.storeData = resp.data;
