@@ -80,8 +80,8 @@ export interface NonebotProjectMeta {
 
   is_running: boolean;
 
-  use_run_script: boolean
-  run_script_name: string
+  use_run_script: boolean;
+  run_script_name: string;
 }
 
 export interface NonebotProjectListResponse {
@@ -124,8 +124,6 @@ export interface StoreListResponse {
 }
 
 export interface InstallModuleResponse extends CreateProjectResponse {}
-
-export interface UninstallModuleResponse extends CreateProjectResponse {}
 
 interface ModuleConfigSimpleInfo {
   title: string;

@@ -53,23 +53,29 @@ watch(
     <div
       class="fixed h-12 w-full visible md:invisible flex items-center pl-4 pr-4 border-b border-[hsl(var(--b3))] bg-base-100"
     >
-      <MenuIcon
-        role="button"
-        class="h-full w-9 mr-4"
-        @click="showMenuModal = true"
-      />
+      <MenuIcon role="button" class="h-full w-9 mr-4" @click="showMenuModal = true" />
 
       <div class="pointer-events-none">{{ activeNav }}</div>
     </div>
 
-    <div
-      class="side-nav relative md:fixed invisible md:!visible hidden md:flex"
-    >
+    <div class="side-nav relative md:fixed invisible md:!visible hidden md:flex">
       <ul class="w-full menu p-0 [&_li>*]:rounded-none">
         <li
           v-for="nav in topNavList"
-          :class="{ 'side-nav-active': activeNav === nav.to }"
-          @click="routerTo(nav.to)"
+          :class="{
+            'side-nav-active': activeNav === nav.to,
+            disabled: nav.to === '/store' && appStore().choiceProject.use_run_script,
+          }"
+          @click="
+            () => {
+              if (
+                nav.to !== '/store' ||
+                !(nav.to === '/store' && appStore().choiceProject.use_run_script)
+              ) {
+                routerTo(nav.to);
+              }
+            }
+          "
         >
           <a
             class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
@@ -103,17 +109,12 @@ watch(
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">导航</h3>
       <ul class="menu">
-        <li
-          v-for="nav in topNavList"
-          @click="routerTo(nav.to), (showMenuModal = false)"
-        >
+        <li v-for="nav in topNavList" @click="routerTo(nav.to), (showMenuModal = false)">
           <a>
             <component :is="nav.icon" class="h-7 w-7" />
             <span>{{ nav.tip }}</span>
             <div class="w-full"></div>
-            <span v-if="activeNav === nav.tip" class="badge bg-base-200"
-              >当前位置</span
-            >
+            <span v-if="activeNav === nav.tip" class="badge bg-base-200">当前位置</span>
           </a>
         </li>
         <li
@@ -124,9 +125,7 @@ watch(
             <component :is="nav.icon" class="h-7 w-7" />
             <span>{{ nav.tip }}</span>
             <div class="w-full"></div>
-            <span v-if="activeNav === nav.tip" class="badge bg-base-200"
-              >当前位置</span
-            >
+            <span v-if="activeNav === nav.tip" class="badge bg-base-200">当前位置</span>
           </a>
         </li>
       </ul>

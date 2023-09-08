@@ -33,7 +33,16 @@ class ProjectMetaConfig extends BaseConfig {
           k,
           v,
         );
-        await api.getProjectMetaConfig(store().choiceProject.project_id);
+      } catch (error: any) {}
+
+      try {
+        appStore().choiceProject = await api.getProjectDetail(
+          appStore().choiceProject.project_id,
+        );
+      } catch (error: any) {}
+
+      try {
+        await getProjectMetaConfig();
       } catch (error: any) {}
     };
 
@@ -76,7 +85,7 @@ class NonebotConfig extends BaseConfig {
           k,
           v,
         );
-        await api.getNonebotConfig(store().choiceProject.project_id);
+        await getNonebotConfig();
       } catch (error: any) {}
     };
 

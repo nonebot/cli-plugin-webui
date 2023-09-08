@@ -227,29 +227,37 @@ async def get_nonebot_projects() -> ProjectListResponse:
     return ProjectListResponse(projects=new_data)
 
 
-@router.post("/run")
-async def run_nonebot_project(project_id: str = Body(embed=True)) -> None:
+@router.get("/detail")
+async def get_nonebot_project_detail(project_id: str):
     project = NonebotProjectManager(project_id)
     try:
-        project.read()
+        return project.read()
     except NonebotProjectIsNotExist:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
         )
 
-    project_details = project.read()
-    project_dir = Path(project_details.project_dir)
+
+@router.post("/run")
+async def run_nonebot_project(project_id: str = Body(embed=True)) -> None:
+    project = NonebotProjectManager(project_id)
+    try:
+        project_detail = project.read()
+    except NonebotProjectIsNotExist:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
+        )
+
+    project_dir = Path(project_detail.project_dir)
 
     env = os.environ.copy()
     env["TERM"] = "xterm-color"
     if sys.platform == "win32":
-        venv_path = project_dir / Path(".venv\\Scripts")
+        venv_path = project_dir / Path(".venv/Scripts")
         env["PATH"] = f"{venv_path.absolute()};" + env["PATH"]
     else:
-        venv_path = project_dir / Path(".venv\\bin")
+        venv_path = project_dir / Path(".venv/bin")
         env["PATH"] = f"{venv_path.absolute()}:" + env["PATH"]
-
-    run_script_file = project_dir / "bot.py"
 
     process = ProcessManager.get_process(project_id)
     if process:
@@ -265,7 +273,23 @@ async def run_nonebot_project(project_id: str = Body(embed=True)) -> None:
         if python_path is None:
             python_path = await get_default_python()
 
-        if run_script_file.is_file():
+        raw_adapters = project_detail.adapters
+        new_adapters: List[CliSimpleInfo] = list()
+        for adapter in raw_adapters:
+            new_adapters.append(
+                CliSimpleInfo(name=adapter.name, module_name=adapter.module_name)
+            )
+        run_script = await generate_run_script(
+            adapters=new_adapters,
+            builtin_plugins=project_detail.builtin_plugins,
+        )
+
+        if project_detail.use_run_script:
+            run_script_file = project_dir / project_detail.run_script_name
+            if not run_script_file.is_file():
+                with open(run_script_file, "w", encoding="utf-8") as w:
+                    w.write(run_script)
+
             process = CustomProcessor(
                 python_path,
                 run_script_file,
@@ -274,18 +298,6 @@ async def run_nonebot_project(project_id: str = Body(embed=True)) -> None:
                 log_rotation_time=5 * 60,
             )
         else:
-            raw_adapters = project_details.adapters
-            new_adapters: List[CliSimpleInfo] = list()
-            for adapter in raw_adapters:
-                new_adapters.append(
-                    CliSimpleInfo(name=adapter.name, module_name=adapter.module_name)
-                )
-
-            run_script = await generate_run_script(
-                adapters=new_adapters,
-                builtin_plugins=project_details.builtin_plugins,
-            )
-
             process = CustomProcessor(
                 python_path,
                 "-c",
