@@ -47,25 +47,3 @@ async def call_pip_install(
         stdin=stdin,
         log_storage=log_storage,
     )
-
-
-@requires_pip
-async def call_pip_uninstall(
-    package: Union[str, List[str]],
-    pip_args: Optional[List[str]] = None,
-    *,
-    python_path: Optional[str] = None,
-    stdin: Optional[Union[IO[Any], int]] = None,
-    log_storage: LoggerStorage,
-) -> Tuple[asyncio.subprocess.Process, LoggerStorage]:
-    if isinstance(package, str):
-        package = [package]
-    if pip_args is None:
-        pip_args = list()
-
-    return await call_pip(
-        ["uninstall", *package, *pip_args],
-        python_path=python_path,
-        stdin=stdin,
-        log_storage=log_storage,
-    )
