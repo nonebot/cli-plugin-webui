@@ -84,7 +84,7 @@ class StoreManager(Generic[_T]):
             elif isinstance(i, Driver):
                 for driver in project_info.drivers:
                     i.is_download = i.module_name == driver.module_name
-                    if i.module_name == driver.module_name:
+                    if i.is_download:
                         break
 
         return page_items
