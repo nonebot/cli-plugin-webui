@@ -5,7 +5,7 @@ import { nonebotExtensionStore } from "@/store/extensionStore";
 import { appStore } from "@/store/global";
 
 if (appStore().choiceProject.project_id) {
-  nonebotExtensionStore().updateData(appStore().choiceProject.project_id, 0);
+  nonebotExtensionStore().updateData(appStore().choiceProject.project_id);
 }
 </script>
 
