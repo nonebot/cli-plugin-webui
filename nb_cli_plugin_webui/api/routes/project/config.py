@@ -269,6 +269,9 @@ async def write_dotenv_file(
         )
 
     if module_type == "project":
+        if data.k_type == "boolean":
+            setattr(data, "v", bool(data.v))
+
         target_config = data.k.split(":")[-1]
         project.modify_meta(target_config, data.v)
         return
