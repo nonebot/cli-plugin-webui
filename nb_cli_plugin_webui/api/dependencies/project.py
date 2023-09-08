@@ -25,7 +25,13 @@ class NonebotProjectManager:
     project_file_name = "webui-nonebot-projects.json"
     project_file_path = get_data_file(project_file_name)
 
-    meta_modifiable_key = {"project_name", "mirror_url", "plugin_dirs"}
+    meta_modifiable_key = {
+        "project_name",
+        "mirror_url",
+        "plugin_dirs",
+        "use_run_script",
+        "run_script_name",
+    }
 
     def __init__(
         self,
@@ -130,9 +136,6 @@ class NonebotProjectManager:
     async def update_plugin_config_schema(self) -> None:
         plugin_list = await get_plugin_list(self.config_manager.python_path)
         for plugin in plugin_list:
-            if PLUGIN_MANAGER is None:
-                break
-
             PLUGIN_MANAGER.search_item(self.read(), plugin)
             search_result = PLUGIN_MANAGER.get_item(is_search=True)
             if not search_result:

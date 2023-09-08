@@ -21,7 +21,11 @@ class NonebotProjectMeta(BaseModel):
     plugins: List[Plugin]
     plugin_dirs: List[str]
     builtin_plugins: List[str]
+
     is_running: bool = False
+
+    use_run_script: bool = False
+    run_script_name: str = "bot.py"
 
 
 class NonebotProjectList(BaseModel):

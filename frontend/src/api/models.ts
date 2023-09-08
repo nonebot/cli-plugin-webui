@@ -77,7 +77,11 @@ export interface NonebotProjectMeta {
   plugins: Plugin[];
   plugin_dirs: string[];
   builtin_plugins: string[];
+
   is_running: boolean;
+
+  use_run_script: boolean
+  run_script_name: string
 }
 
 export interface NonebotProjectListResponse {
