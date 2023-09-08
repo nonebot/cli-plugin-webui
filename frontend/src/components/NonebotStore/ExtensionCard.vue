@@ -23,9 +23,7 @@ const log = new ToastWrapper("Nonebot Store");
 const logKey = ref("");
 const showInstallTipsModal = ref(false);
 const logShowModal = ref<InstanceType<typeof LogShow> | null>();
-const extensionDetailModal = ref<InstanceType<
-  typeof ExtensionDetailModal
-> | null>();
+const extensionDetailModal = ref<InstanceType<typeof ExtensionDetailModal> | null>();
 
 const itemData = computed(() => {
   return props.itemData;
@@ -61,9 +59,7 @@ const isRetry = async (data: boolean) => {
 
 <template>
   <div class="extension-card card card-compact w-full bg-base-200 rounded-lg">
-    <div
-      class="card-body bg-base-200 rounded-lg transition-all hover:shadow-lg"
-    >
+    <div class="card-body bg-base-200 rounded-lg transition-all hover:shadow-lg">
       <dialog
         :class="{
           'modal pl-0 md:pl-14': true,
@@ -85,10 +81,7 @@ const isRetry = async (data: boolean) => {
               取消
             </button>
 
-            <button
-              class="btn rounded-lg h-10 min-h-0"
-              @click="doInstall(true)"
-            >
+            <button class="btn rounded-lg h-10 min-h-0" @click="doInstall(true)">
               无视风险，继续安装！
             </button>
           </div>
@@ -98,7 +91,7 @@ const isRetry = async (data: boolean) => {
       <LogShow
         ref="logShowModal"
         @is-retry="isRetry"
-        @is-o-k="console.log"
+        @is-o-k="nonebotExtensionStore().updateData(appStore().choiceProject.project_id)"
         :log-key="logKey"
       />
 
