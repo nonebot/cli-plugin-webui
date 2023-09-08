@@ -130,7 +130,10 @@ class NonebotProjectManager:
         )
 
         data = self.read()
-        data.adapters.remove(adapter)
+        for a in data.adapters:
+            if a.module_name == adapter.module_name:
+                data.adapters.remove(a)
+                break
         self.store(data)
 
     async def update_plugin_config_schema(self) -> None:
@@ -200,7 +203,7 @@ class NonebotProjectManager:
         env_path = Path(data.project_dir) / env
         env_data = dotenv_values(env_path)
         raw_drivers = env_data.get("DRIVER")
-        if raw_drivers is None:
+        if not raw_drivers:
             set_key(env_path, "DRIVER", driver.module_name)
         else:
             if driver.module_name not in raw_drivers:
@@ -209,7 +212,10 @@ class NonebotProjectManager:
 
     def remove_driver(self, env: str, driver: SimpleInfo) -> None:
         data = self.read()
-        data.drivers.remove(driver)
+        for d in data.drivers:
+            if d.module_name == driver.module_name:
+                data.drivers.remove(d)
+                break
         self.store(data)
 
         env_path = Path(data.project_dir) / env
