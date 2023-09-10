@@ -7,7 +7,7 @@ import CheckIcon from "@/components/Icons/CheckIcon.vue";
 
 import { API } from "@/api";
 import { appStore as store } from "@/store/global";
-import { globalLog as log } from "@/main";
+import { notice } from "@/utils/notification";
 
 const api = new API();
 
@@ -17,8 +17,8 @@ const runProject = async () => {
     .then(() => {
       store().projectIsRunning();
     })
-    .catch((error) => {
-      log.error(`运行实例失败：${error}`);
+    .catch((error: any) => {
+      notice.error(`运行实例失败：${error.detail}`);
       return;
     });
 };
@@ -29,8 +29,8 @@ const stopProject = async () => {
     .then(() => {
       store().projectIsStop();
     })
-    .catch((error) => {
-      log.error(`停止实例失败：${error}`);
+    .catch((error: any) => {
+      notice.error(`停止实例失败：${error.detail}`);
       return;
     });
 };
@@ -42,7 +42,7 @@ const restartProject = async () => {
     });
   };
 
-  log.info("重启中...");
+  notice.info("重启中...");
   await stopProject();
 
   const pollingInterval = 2000;
@@ -59,9 +59,9 @@ const restartProject = async () => {
 
   if (!store().choiceProject.is_running) {
     await runProject();
-    log.info("实例已重启");
+    notice.info("实例已重启");
   } else {
-    log.warning("重启失败，无法确定实例是否已停止");
+    notice.warning("重启失败，无法确定实例是否已停止");
   }
 };
 
@@ -69,8 +69,8 @@ const deleteProject = async () => {
   const project = store().choiceProject;
   try {
     await api.deleteProject(project.project_id);
-  } catch (error) {
-    log.error(`删除操作失败：${error}`);
+  } catch (error: any) {
+    notice.error(`删除操作失败：${error.detail}`);
     return;
   }
   store().choiceProject = Object();

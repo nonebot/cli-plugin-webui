@@ -1,7 +1,7 @@
 import { WebUIWebSocket } from "@/utils/ws";
 import { SystemStatsData } from "@/components/HomePage/models";
 import { systemStatStore } from "@/store/status";
-import { globalLog as log } from "@/main";
+import { notice } from "@/utils/notification";
 
 export function handlePlatformPerformanceWebsocket() {
   const store = systemStatStore();
@@ -23,15 +23,13 @@ export function handlePlatformPerformanceWebsocket() {
       store.websocket.connect();
       connected = true;
     } catch (error: any) {
-      console.log(
-        `连接至平台性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`,
-      );
+      notice.error(`连接至平台性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`);
       retries++;
     }
   }
 
   if (!connected) {
-    log.error("连接至性能性能检测 WebSocket 失败");
+    notice.error("连接至性能性能检测 WebSocket 失败");
     return;
   }
 
@@ -42,9 +40,7 @@ export function handlePlatformPerformanceWebsocket() {
     if (store.timeList.length >= 100) {
       store.timeList.shift();
     }
-    store.timeList.push(
-      `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
-    );
+    store.timeList.push(`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
 
     const convertToMB = (value: number) => value / 1024 / 1024;
     const convertToKbps = (value: number) => value / 1024 / 8;

@@ -18,7 +18,7 @@ import { limitContent } from "@/utils";
 const props = defineProps<{ itemData: T }>();
 
 const api = new API();
-const log = new ToastWrapper("Nonebot Store");
+const notice = new ToastWrapper("Nonebot Store");
 
 const logKey = ref("");
 const showInstallTipsModal = ref(false);
@@ -43,7 +43,7 @@ const doInstall = async (pass?: boolean) => {
         logKey.value = resp.log_key;
       })
       .catch((error) => {
-        log.error(`安装拓展失败：${error}`);
+        notice.error(`安装拓展失败：${error}`);
       });
   } else {
     showInstallTipsModal.value = true;

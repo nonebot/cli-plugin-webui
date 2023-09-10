@@ -8,6 +8,7 @@ import { computed, ref } from "vue";
 import { routerTo } from "@/router/client";
 import { API } from "@/api";
 import { appStore } from "@/store/global";
+import { notice } from "@/utils/notification";
 import { nonebotExtensionStore } from "@/store/extensionStore";
 
 const showModal = ref(false);
@@ -41,12 +42,14 @@ const uninstallModule = async () => {
     );
     closeModal();
   } catch (error: any) {
-    console.log(error);
+    notice.error(`卸载模块时失败：${error.detail}`);
   }
 
   try {
     await nonebotExtensionStore().updateData(appStore().choiceProject.project_id);
-  } catch (error: any) {}
+  } catch (error: any) {
+    notice.error(`更新 NoneBot 拓展列表时失败：${error.detail}`);
+  }
 };
 </script>
 

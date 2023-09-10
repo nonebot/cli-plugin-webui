@@ -4,7 +4,7 @@ import { ToastWrapper } from "@/utils/notification";
 import { Adapter, Driver, Plugin } from "@/api/models";
 
 const api = new API();
-const log = new ToastWrapper("Nonebot Store");
+const notice = new ToastWrapper("Nonebot Store");
 
 export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
   state() {
@@ -51,7 +51,7 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
           })
           .catch((error) => {
             this.requesting = false;
-            log.error(`获取插件列表失败：${error}`);
+            notice.error(`获取插件列表失败：${error.detail}`);
           });
       }
 
@@ -66,7 +66,7 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
           })
           .catch((error) => {
             this.requesting = false;
-            log.error(`获取适配器列表失败：${error}`);
+            notice.error(`获取适配器列表失败：${error.detail}`);
           });
       }
 
@@ -81,15 +81,13 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
           })
           .catch((error) => {
             this.requesting = false;
-            log.error(`获取驱动器列表失败：${error}`);
+            notice.error(`获取驱动器列表失败：${error.detail}`);
           });
       }
     },
 
     async updateDataBySearch(projectID: string) {
       this.requesting = true;
-
-      const log = new ToastWrapper("Nonebot Store");
       await api
         .searchStore(projectID, this.choiceClass, this.searchInput)
         .then((resp) => {
@@ -100,13 +98,12 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
         })
         .catch((error) => {
           this.requesting = false;
-          log.error(`搜索商店失败：${error}`);
+          notice.error(`搜索 NoneBot 拓展商店失败：${error.detail}`);
         });
     },
 
     async refresh() {
       this.requesting = true;
-      const log = new ToastWrapper("Nonebot Store");
       await api
         .refreshStore()
         .then(() => {
@@ -114,7 +111,7 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
         })
         .catch((error) => {
           this.requesting = false;
-          log.error(`Nonebot 商店刷新失败：${error}`);
+          notice.error(`NoneBot 拓展商店刷新失败：${error.detail}`);
         });
     },
 

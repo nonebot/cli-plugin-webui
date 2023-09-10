@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { API } from "@/api";
-import { globalLog as log } from "@/main";
+import { notice } from "@/utils/notification";
 import { FileInfo } from "@/api/models";
 import { limitContent } from "@/utils";
 
@@ -36,8 +36,8 @@ const getFiles = async (path: string) => {
     const resp = await api.getFileList(path);
     files.value = resp.files;
     nowPathStack.value = nowPath.value.split("\\");
-  } catch (error) {
-    log.error(`获取文件列表失败：${error}`);
+  } catch (error: any) {
+    notice.error(`获取文件列表失败：${error.detail}`);
     return;
   }
 };
@@ -47,8 +47,8 @@ const createFile = async (fileName: string, path: string) => {
     const resp = await api.createFile(fileName, true, path);
     files.value = resp.files;
     nowPathStack.value = nowPath.value.split("\\");
-  } catch (error) {
-    log.error(`创建文件夹失败：${error}`);
+  } catch (error: any) {
+    notice.error(`创建文件夹失败：${error.detail}`);
     return;
   }
   newFolderName.value = "";
@@ -56,17 +56,13 @@ const createFile = async (fileName: string, path: string) => {
   openModal();
 };
 
-const deleteFile = async (
-  fileName: string,
-  isFolder: boolean,
-  path: string,
-) => {
+const deleteFile = async (fileName: string, isFolder: boolean, path: string) => {
   try {
     const resp = await api.deleteFile(fileName, isFolder, path);
     files.value = resp.files;
     nowPathStack.value = nowPath.value.split("\\");
-  } catch (error) {
-    log.error(`删除文件失败：${error}`);
+  } catch (error: any) {
+    notice.error(`删除文件失败：${error.detail}`);
     return;
   }
 };
@@ -81,7 +77,7 @@ const nextDir = (path: string, is_dir: number) => {
 
 const choiceDir = (path: string, is_dir: number) => {
   if (!is_dir) {
-    log.warning("请选择文件夹");
+    notice.warning("请选择文件夹");
     return;
   }
   selectedFolder.value = path + "/(实例名称)";
@@ -204,9 +200,7 @@ watch(showModal, () => {
                       height="20"
                     >
                       <title>删除文件</title>
-                      <path
-                        d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
-                      />
+                      <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
                     </svg>
                     <svg
                       class="swap-off fill-current"
@@ -214,9 +208,7 @@ watch(showModal, () => {
                       viewBox="0 0 24 24"
                       width="20"
                       height="20"
-                      @click="
-                        deleteFile(i.name, i.is_dir ? true : false, i.path)
-                      "
+                      @click="deleteFile(i.name, i.is_dir ? true : false, i.path)"
                     >
                       <title>确认</title>
                       <path
@@ -238,10 +230,7 @@ watch(showModal, () => {
       <p class="overflow-x-auto text-sm">(Base Dir)/{{ selectedFolder }}</p>
 
       <div class="modal-action">
-        <button
-          class="btn rounded-lg h-10 min-h-0"
-          @click="showCreateFolderModal = true"
-        >
+        <button class="btn rounded-lg h-10 min-h-0" @click="showCreateFolderModal = true">
           新建文件夹
         </button>
 

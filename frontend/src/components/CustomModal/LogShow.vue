@@ -4,7 +4,7 @@ import { WebUIWebSocket } from "@/utils/ws";
 import { ToastWrapper } from "@/utils/notification";
 import { ref, watch } from "vue";
 
-const log = new ToastWrapper("Log Show");
+const notice = new ToastWrapper("Log Show");
 
 const emit = defineEmits(["isRetry", "isOK"]);
 
@@ -36,7 +36,7 @@ const showLog = () => {
   ws.connect();
 
   if (!ws.client) {
-    log.error("WebSocket 未初始化");
+    notice.error("WebSocket 未初始化");
     return;
   }
 
@@ -108,9 +108,7 @@ watch(props, () => {
         </div>
 
         <div class="modal-action">
-          <button class="btn rounded-lg h-10 min-h-0" @click="closeModal()">
-            取消
-          </button>
+          <button class="btn rounded-lg h-10 min-h-0" @click="closeModal()">取消</button>
 
           <button
             :class="{
