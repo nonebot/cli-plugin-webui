@@ -4,7 +4,7 @@ import { WebUIWebSocket } from "@/utils/ws";
 import { systemStatStore, projectStatStore } from "@/store/status";
 import { appStore } from "@/store/global";
 import { ProcessInfo } from "@/api/models";
-import { globalLog as log } from "@/main";
+import { notice } from "@/utils/notification";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
 const viewProject = ref("");
@@ -40,15 +40,13 @@ const handleWebSocket = () => {
       ws.value!.connect();
       connected = true;
     } catch (error: any) {
-      console.log(
-        `连接至实例性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`,
-      );
+      notice.error(`连接至实例性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`);
       retries++;
     }
   }
 
   if (!connected) {
-    log.error("连接至性能检测 WebSocket 失败");
+    notice.error("连接至性能检测 WebSocket 失败");
     return;
   }
 
@@ -72,16 +70,12 @@ const handleWebSocket = () => {
     if (projectStatStore().cpuList.length >= 100) {
       projectStatStore().cpuList.shift();
     }
-    projectStatStore().cpuList.push(
-      Number(wsData.performance!.cpu.toFixed(3)) * 100,
-    );
+    projectStatStore().cpuList.push(Number(wsData.performance!.cpu.toFixed(3)) * 100);
 
     if (projectStatStore().memList.length >= 100) {
       projectStatStore().memList.shift();
     }
-    projectStatStore().memList.push(
-      Number(wsData.performance!.mem.toFixed(3)) * 100,
-    );
+    projectStatStore().memList.push(Number(wsData.performance!.mem.toFixed(3)) * 100);
   };
 };
 
@@ -92,10 +86,7 @@ const clearList = () => {
 };
 
 onMounted(() => {
-  if (
-    appStore().choiceProject.project_id &&
-    appStore().choiceProject.is_running
-  ) {
+  if (appStore().choiceProject.project_id && appStore().choiceProject.is_running) {
     viewProject.value = appStore().choiceProject.project_id;
     handleWebSocket();
   }
@@ -141,10 +132,7 @@ watch(
     <h3 class="xs:text-base md:text-xl">性能监控</h3>
 
     <Transition>
-      <div
-        v-if="appStore().choiceProject.project_id"
-        class="mt-2 m-auto flex flex-wrap"
-      >
+      <div v-if="appStore().choiceProject.project_id" class="mt-2 m-auto flex flex-wrap">
         <div class="w-1/2 h-44">
           <div class="relative h-full flex flex-col">
             <h3 class="text-xs font-bold">实例 CPU 利用率 (%)</h3>

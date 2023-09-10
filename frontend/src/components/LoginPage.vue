@@ -8,7 +8,8 @@ import { API } from "@/api";
 import { appStore } from "@/store/global";
 import { router } from "@/router";
 
-const log = new ToastWrapper("Login");
+const api = new API();
+const notice = new ToastWrapper("Login");
 
 const token = ref("");
 const checkToken = ref(false);
@@ -18,21 +19,21 @@ const port = ref("");
 
 watch(isDebug, () => {
   localStorage.setItem("isDebug", isDebug.value ? "1" : "0");
-  log.info(`已${isDebug.value ? "启用" : "禁用"}开发模式`);
+  notice.info(`已${isDebug.value ? "启用" : "禁用"}开发模式`);
 });
 
 async function doLogin() {
   if (!token.value) {
-    log.warning("缺少 Token");
+    notice.warning("缺少 Token");
     return;
   }
   if (isDebug.value) {
     if (!host.value) {
-      log.warning("缺少 Host");
+      notice.warning("缺少 Host");
       return;
     }
     if (!port.value) {
-      log.warning("缺少 Port");
+      notice.warning("缺少 Port");
       return;
     }
 
@@ -40,15 +41,14 @@ async function doLogin() {
     localStorage.setItem("port", port.value);
   }
 
-  const api = new API();
   try {
     const resp = await api.doLogin(token.value);
-    log.success("登录成功");
+    notice.success("登录成功");
     localStorage.setItem("jwtToken", resp.jwt_token);
     appStore().isAuth = true;
     router.push("/");
-  } catch (error) {
-    log.error(`验证失败：${error}`);
+  } catch (error: any) {
+    notice.error(`验证失败：${error.detail}`);
   }
 }
 </script>
@@ -127,8 +127,7 @@ async function doLogin() {
 
         <div class="w-full tracking-tight font-light">
           <div class="mt-2 mb-2 text-6xl lg:text-8xl sm:text-6xl">
-            <span class="main-word">N</span>one<span class="main-word">B</span
-            >ot
+            <span class="main-word">N</span>one<span class="main-word">B</span>ot
           </div>
           <p class="text-lg">跨平台 PYTHON 异步机器人框架</p>
         </div>

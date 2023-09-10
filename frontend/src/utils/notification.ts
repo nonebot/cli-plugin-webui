@@ -18,9 +18,7 @@ export class ToastWrapper {
   }
 
   private getNowTheme(): ToastTheme | undefined {
-    return document.documentElement.getAttribute("data-theme") as
-      | ToastTheme
-      | undefined;
+    return document.documentElement.getAttribute("data-theme") as ToastTheme | undefined;
   }
 
   private addToNotifications(
@@ -67,3 +65,5 @@ export class ToastWrapper {
     toast.success(content, { theme: this.getNowTheme(), ...options });
   }
 }
+
+export const notice = new ToastWrapper("WebUI");

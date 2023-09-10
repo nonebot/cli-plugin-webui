@@ -4,7 +4,7 @@ import { API } from "@/api";
 import AnsiUp from "ansi_up";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { WebUIWebSocket } from "@/utils/ws";
-import { globalLog as log } from "@/main";
+import { notice } from "@/utils/notification";
 import { ProcessLog } from "@/api/models";
 
 const ansiUp = new AnsiUp();
@@ -52,7 +52,7 @@ const getHistoryLog = async (logID: string, logCount: number) => {
       }
     })
     .catch((error) => {
-      log.error(`获取历史日志失败：${error}`);
+      notice.error(`获取历史日志失败：${error.detail}`);
     });
 };
 
@@ -85,13 +85,13 @@ const handleWebSocket = async () => {
       ws.value!.connect();
       connected = true;
     } catch (error: any) {
-      console.log(`连接至日志 WebSocket 失败...(${retries + 1}/${maxRetries})`);
+      notice.error(`连接至日志 WebSocket 失败...(${retries + 1}/${maxRetries})`);
       retries++;
     }
   }
 
   if (!connected) {
-    log.error("连接至日志 WebSocket 失败");
+    notice.error("连接至日志 WebSocket 失败");
     return;
   }
 

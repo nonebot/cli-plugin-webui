@@ -3,7 +3,7 @@ import LogShow from "@/components/CustomModal/LogShow.vue";
 import FolderSelect from "@/components/HomePage/Modals/FolderSelect.vue";
 
 import { API } from "@/api";
-import { globalLog as log } from "@/main";
+import { notice } from "@/utils/notification";
 import { Driver, Adapter } from "@/api/models";
 import { onMounted, ref, watch } from "vue";
 
@@ -64,8 +64,8 @@ const getDrivers = async () => {
   try {
     const resp = await api.getDrivers(0, false, "", true);
     driverList.value = resp.data;
-  } catch (error) {
-    log.error(`获取驱动器列表失败：${error}`);
+  } catch (error: any) {
+    notice.error(`获取驱动器列表失败：${error.detail}`);
     return;
   }
 };
@@ -74,8 +74,8 @@ const getAdapters = async () => {
   try {
     const resp = await api.getAdapters(0, false, "", true);
     adapterList.value = resp.data;
-  } catch (error) {
-    log.error(`获取适配器列表失败：${error}`);
+  } catch (error: any) {
+    notice.error(`获取适配器列表失败：${error.detail}`);
     return;
   }
 };
@@ -121,7 +121,7 @@ const doCheck = () => {
       throw new Error("缺少适配器");
     }
   } catch (error) {
-    log.warning(`检查未通过：${error}`);
+    notice.warning(`检查未通过：${error}`);
     throw error;
   }
 };
@@ -138,8 +138,8 @@ const doCreate = async () => {
       use_src: projectUseSrc.value,
     });
     logKey.value = resp.log_key;
-  } catch (error) {
-    log.error(`初始化项目失败：${error}`);
+  } catch (error: any) {
+    notice.error(`初始化项目失败：${error.detail}`);
     return;
   }
 };

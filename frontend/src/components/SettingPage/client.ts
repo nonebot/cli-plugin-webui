@@ -5,6 +5,7 @@ import { appStore as store } from "@/store/global";
 import { webuiConfig } from "@/config";
 import { settingStore } from "@/store/setting";
 import { appStore } from "@/store/global";
+import { notice } from "@/utils/notification";
 
 const api = new API();
 
@@ -19,7 +20,7 @@ class ProjectMetaConfig extends BaseConfig {
     try {
       resp = await api.getProjectMetaConfig(projectID);
     } catch (error: any) {
-      console.log(`获取 project meta 失败：${error}`);
+      notice.error(`获取 project meta 失败：${error.detail}`);
       throw error;
     }
 
@@ -33,17 +34,26 @@ class ProjectMetaConfig extends BaseConfig {
           k,
           v,
         );
-      } catch (error: any) {}
+      } catch (error: any) {
+        notice.error(`更新 meta 设置失败：${error.detail}`);
+        return;
+      }
 
       try {
         appStore().choiceProject = await api.getProjectDetail(
           appStore().choiceProject.project_id,
         );
-      } catch (error: any) {}
+      } catch (error: any) {
+        notice.error(`更新 meta 设置失败：${error.detail}`);
+        return;
+      }
 
       try {
         await getProjectMetaConfig();
-      } catch (error: any) {}
+      } catch (error: any) {
+        notice.error(`获取 meta 设置失败：${error.detail}`);
+        return;
+      }
     };
 
     const getAction = () => {};
@@ -71,7 +81,7 @@ class NonebotConfig extends BaseConfig {
     try {
       resp = await api.getNonebotConfig(projectID);
     } catch (error: any) {
-      console.log(`获取 nonebot config 失败：${error}`);
+      notice.error(`获取 NoneBot 设置失败：${error.detail}`);
       throw error;
     }
 
@@ -85,8 +95,17 @@ class NonebotConfig extends BaseConfig {
           k,
           v,
         );
+      } catch (error: any) {
+        notice.error(`更新 NoneBot 设置失败：${error.detail}`);
+        return;
+      }
+
+      try {
         await getNonebotConfig();
-      } catch (error: any) {}
+      } catch (error: any) {
+        notice.error(`获取 NoneBot 设置失败：${error.detail}`);
+        return;
+      }
     };
 
     const getAction = () => {};
@@ -114,7 +133,7 @@ class PluginConfig extends BaseConfig {
     try {
       resp = await api.getProjectPluginConfigList(projectID);
     } catch (error: any) {
-      console.log(`获取 nb plugin config 失败：${error}`);
+      notice.error(`获取 NoneBot 插件设置失败：${error}`);
       throw error;
     }
 
@@ -128,8 +147,17 @@ class PluginConfig extends BaseConfig {
           k,
           v,
         );
+      } catch (error: any) {
+        notice.error(`更新 NoneBot 插件设置失败：${error.detail}`);
+        return;
+      }
+
+      try {
         await getNonebotPluginConfig();
-      } catch (error: any) {}
+      } catch (error: any) {
+        notice.error(`获取 NoneBot 插件设置失败：${error.detail}`);
+        return;
+      }
     };
 
     const getAction = () => {};
@@ -153,7 +181,9 @@ const pluginConfig = new PluginConfig();
 export const getWebUIConfig = () => {
   try {
     settingStore().webuiConfigList = webuiConfig.genConfig();
-  } catch (error: any) {}
+  } catch (error: any) {
+    notice.error(`获取 WebUI 设置失败：${error.detail}`);
+  }
 };
 
 export const getProjectMetaConfig = async () => {

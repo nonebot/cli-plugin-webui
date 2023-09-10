@@ -3,14 +3,12 @@ import AddProjectChoice from "@/components/HomePage/Modals/AddProjectChoice.vue"
 
 import { API } from "@/api";
 import { NonebotProjectMeta } from "@/api/models";
-import { globalLog as log } from "@/main";
+import { notice } from "@/utils/notification";
 import { appStore as store } from "@/store/global";
 import { parseSimpleInfo } from "@/utils";
 import { ref } from "vue";
 
-const addProjectChoiceModal = ref<InstanceType<
-  typeof AddProjectChoice
-> | null>();
+const addProjectChoiceModal = ref<InstanceType<typeof AddProjectChoice> | null>();
 
 const choiceProjectInfo = ref<NonebotProjectMeta>();
 
@@ -25,8 +23,8 @@ const getProjectList = async () => {
   try {
     const resp = await api.getProjectList();
     store().projectList = resp.projects;
-  } catch (error) {
-    log.error(`获取实例列表失败：${error}`);
+  } catch (error: any) {
+    notice.error(`获取实例列表失败：${error.detail}`);
     return;
   }
 };

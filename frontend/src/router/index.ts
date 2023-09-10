@@ -8,7 +8,7 @@ import FileExplorer from "@/components/FileExplorer.vue";
 import SettingPage from "@/components/SettingPage.vue";
 
 import { checkTokenValidity } from "./client";
-import { globalLog as log } from "@/main";
+import { notice } from "@/utils/notification";
 import { appStore as store } from "@/store/global";
 
 const routes = [
@@ -54,16 +54,12 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   const login = await checkTokenValidity();
   if (!login && to.name !== "Login") {
-    log.warning("请先验证");
+    notice.warning("请先验证");
     router.push("/login");
   }
-  if (
-    !store().choiceProject.project_id &&
-    to.path !== "/" &&
-    to.path !== "/login"
-  ) {
+  if (!store().choiceProject.project_id && to.path !== "/" && to.path !== "/login") {
     router.push("/");
-    log.warning("请先选择一项实例");
+    notice.warning("请先选择一项实例");
     return false;
   }
 });
