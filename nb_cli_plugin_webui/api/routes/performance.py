@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter
 from fastapi.websockets import WebSocketState
 
@@ -16,6 +18,7 @@ async def _(websocket: WebSocket):
         while websocket.client_state == WebSocketState.CONNECTED:
             data = await get_system_stats()
             await websocket.send_json(SystemStatsResponse(system_stats=data).dict())
+            await asyncio.sleep(1)
     except Exception:
         await websocket.close()
     return
