@@ -10,8 +10,8 @@ import { handlePlatformPerformanceWebsocket } from "./HomePage/client";
 import { systemStatStore } from "@/store/status";
 import { onMounted, onUnmounted } from "vue";
 
-onMounted(() => {
-  handlePlatformPerformanceWebsocket();
+onMounted(async () => {
+  await handlePlatformPerformanceWebsocket();
 });
 
 onUnmounted(() => {
@@ -23,9 +23,7 @@ onUnmounted(() => {
 
 <template>
   <div class="overflow-hidden h-full w-full flex flex-col flex-nowarp">
-    <div
-      class="overflow-y-auto show-area-scrollbar grow p-4 md:p-6 flex flex-col gap-8"
-    >
+    <div class="overflow-y-auto show-area-scrollbar grow p-4 md:p-6 flex flex-col gap-8">
       <WelcomeAndGuide />
 
       <ProjectOverview />
