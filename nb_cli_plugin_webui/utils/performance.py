@@ -73,9 +73,13 @@ class PerformanceMonitor:
             cpu_name = cpus[0].Name.strip()
 
         cpu_cores = psutil.cpu_count(False)
-        _freq = psutil.cpu_freq()
-        cpu_max_freq = f"{'%.2f'%(_freq.max / 1000)}"
-        cpu_current_freq = f"{'%.2f'%(_freq.current / 1000)}"
+        _freq = int()
+        cpu_max_freq = "0"
+        cpu_current_freq = "0"
+        if pf != "darwin":
+            _freq = psutil.cpu_freq()
+            cpu_max_freq = f"{'%.2f'%(_freq.max / 1000)}"
+            cpu_current_freq = f"{'%.2f'%(_freq.current / 1000)}"
 
         psutil.cpu_percent(percpu=True)
         await asyncio.sleep(0.5)
