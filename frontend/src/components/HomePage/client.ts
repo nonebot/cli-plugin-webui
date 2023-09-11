@@ -3,7 +3,7 @@ import { SystemStatsData } from "@/components/HomePage/models";
 import { systemStatStore } from "@/store/status";
 import { notice } from "@/utils/notification";
 
-export function handlePlatformPerformanceWebsocket() {
+export async function handlePlatformPerformanceWebsocket() {
   const store = systemStatStore();
 
   if (store.websocket?.isConnected()) {
@@ -20,7 +20,7 @@ export function handlePlatformPerformanceWebsocket() {
 
   while (!connected && retries < maxRetries) {
     try {
-      store.websocket.connect();
+      await store.websocket.connect();
       connected = true;
     } catch (error: any) {
       notice.error(`连接至平台性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`);
