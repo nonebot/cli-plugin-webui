@@ -54,7 +54,7 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   const login = await checkTokenValidity();
   if (!login && to.name !== "Login") {
-    notice.warning("请先验证");
+    notice.warning("登陆凭证失效");
     router.push("/login");
   }
   if (!store().choiceProject.project_id && to.path !== "/" && to.path !== "/login") {

@@ -1,5 +1,6 @@
 import { API } from "@/api";
 import { router } from "@/router";
+import { notice } from "@/utils/notification";
 import { appStore as store } from "@/store/global";
 
 export async function checkTokenValidity(): Promise<boolean> {
@@ -20,6 +21,7 @@ export async function checkTokenValidity(): Promise<boolean> {
 
 export function routerTo(to: string): void {
   if (!store().choiceProject.project_id) {
+    notice.warning("请先选择一项实例");
     return;
   }
   store().nowPath = to;
