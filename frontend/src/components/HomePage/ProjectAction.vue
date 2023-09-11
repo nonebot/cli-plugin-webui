@@ -8,29 +8,46 @@ import CheckIcon from "@/components/Icons/CheckIcon.vue";
 import { API } from "@/api";
 import { appStore as store } from "@/store/global";
 import { notice } from "@/utils/notification";
+import { ref } from "vue";
 
 const api = new API();
 
+const oprateLock = ref(false);
+
+const oLock = () => {
+  oprateLock.value = true;
+};
+
+const oUnlock = () => {
+  oprateLock.value = false;
+};
+
 const runProject = async () => {
+  oLock();
   await api
     .runProject(store().choiceProject.project_id)
     .then(() => {
       store().projectIsRunning();
+      oUnlock();
     })
     .catch((error: any) => {
       notice.error(`运行实例失败：${error.detail}`);
+      oUnlock();
       return;
     });
 };
 
 const stopProject = async () => {
+  oLock();
   await api
     .stopProject(store().choiceProject.project_id)
     .then(() => {
       store().projectIsStop();
+      oUnlock();
     })
     .catch((error: any) => {
       notice.error(`停止实例失败：${error.detail}`);
+      oUnlock();
       return;
     });
 };
@@ -43,6 +60,7 @@ const restartProject = async () => {
   };
 
   notice.info("重启中...");
+  oLock();
   await stopProject();
 
   const pollingInterval = 2000;
@@ -63,9 +81,11 @@ const restartProject = async () => {
   } else {
     notice.warning("重启失败，无法确定实例是否已停止");
   }
+  oUnlock();
 };
 
 const deleteProject = async () => {
+  oLock();
   const project = store().choiceProject;
   try {
     await api.deleteProject(project.project_id);
@@ -74,6 +94,7 @@ const deleteProject = async () => {
     return;
   }
   store().choiceProject = Object();
+  oUnlock();
 };
 </script>
 
@@ -90,7 +111,7 @@ const deleteProject = async () => {
             <button
               :class="{
                 'btn btn-sm rounded hover:bg-[hsl(var(--bc)/0.1)] transition-all ease-in': true,
-                'btn-disabled': store().choiceProject.is_running,
+                'btn-disabled': store().choiceProject.is_running || oprateLock,
               }"
               title="启动"
               @click="runProject()"
@@ -101,7 +122,7 @@ const deleteProject = async () => {
             <button
               :class="{
                 'btn btn-sm rounded hover:bg-[hsl(var(--bc)/0.1)] transition-all ease-in': true,
-                'btn-disabled': !store().choiceProject.is_running,
+                'btn-disabled': !store().choiceProject.is_running || oprateLock,
               }"
               title="停止"
               @click="stopProject()"
@@ -112,7 +133,7 @@ const deleteProject = async () => {
             <button
               :class="{
                 'btn btn-sm rounded hover:bg-[hsl(var(--bc)/0.1)] transition-all ease-in': true,
-                'btn-disabled': !store().choiceProject.is_running,
+                'btn-disabled': !store().choiceProject.is_running || oprateLock,
               }"
               title="重启"
               @click="restartProject()"
@@ -123,7 +144,7 @@ const deleteProject = async () => {
             <label
               :class="{
                 'swap btn btn-sm rounded hover:bg-[hsl(var(--bc)/0.1)] transition-all ease-in': true,
-                'btn-disabled': store().choiceProject.is_running,
+                'btn-disabled': store().choiceProject.is_running || oprateLock,
               }"
             >
               <input type="checkbox" />
