@@ -160,7 +160,8 @@ watch(
   async () => {
     if (
       viewProject.value === appStore().choiceProject.project_id &&
-      appStore().choiceProject.is_running
+      appStore().choiceProject.is_running &&
+      !ws.value?.isConnected()
     ) {
       await handleWebSocket();
     }
