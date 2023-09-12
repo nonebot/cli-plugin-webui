@@ -8,17 +8,18 @@ _conf = config.read()
 BASE_DIR = Path(_conf.base_dir)
 
 
-def get_files(path: Path) -> List[FileDetails]:
+def get_files(path: Path, path_relative: Path = Path()) -> List[FileDetails]:
     data = list()
     for file in path.iterdir():
-        path = (path / file.name).relative_to(BASE_DIR)
-        absolute_path = (BASE_DIR / path / file.name).resolve()
-
+        if file.name == ".DS_Store":
+            continue
+        _path = (path / file.name).relative_to(path_relative)
+        absolute_path = (path / file.name).resolve()
         data.append(
             FileDetails(
                 name=file.name,
                 is_dir=1 if file.is_dir() else 0,
-                path=str(path).replace("\\", "/"),
+                path=str(_path).replace("\\", "/"),
                 modified_time=str(file.stat().st_mtime),
                 absolute_path=str(absolute_path).replace("\\", "/"),
             )

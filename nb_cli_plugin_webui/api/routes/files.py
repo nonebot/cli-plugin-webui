@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/list", response_model=FilesInResponse)
 async def get_file_list(path: str) -> FilesInResponse:
     try:
-        data = get_files(BASE_DIR / Path(path))
+        data = get_files(BASE_DIR / Path(path), BASE_DIR)
     except FileNotFoundError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="未找到文件")
 
@@ -23,13 +23,13 @@ async def get_file_list(path: str) -> FilesInResponse:
 async def create_file(
     file_data: FileMeta = Body(embed=True),
 ) -> FilesInResponse:
-    path = BASE_DIR / Path(file_data.path) / file_data.name
+    path = BASE_DIR / file_data.name
     if file_data.is_dir:
         path.mkdir(exist_ok=True)
     else:
         with open(path, "w", encoding="utf-8") as w:
             w.write(str())
-    data = get_files(Path(file_data.path))
+    data = get_files(Path(file_data.path), BASE_DIR)
     return FilesInResponse(files=data)
 
 
@@ -45,5 +45,5 @@ async def delete_file(file_data: FileMeta) -> FilesInResponse:
             )
     else:
         path.unlink()
-    data = get_files(Path(file_data.path).parent)
+    data = get_files(Path(file_data.path).parent, BASE_DIR)
     return FilesInResponse(files=data)
