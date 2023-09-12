@@ -7,6 +7,7 @@ import { ToastWrapper } from "@/utils/notification";
 import { API } from "@/api";
 import { appStore } from "@/store/global";
 import { router } from "@/router";
+import { AxiosError } from "axios";
 
 const api = new API();
 const notice = new ToastWrapper("Login");
@@ -41,15 +42,21 @@ async function doLogin() {
     localStorage.setItem("port", port.value);
   }
 
-  try {
-    const resp = await api.doLogin(token.value);
-    notice.success("登录成功");
-    localStorage.setItem("jwtToken", resp.jwt_token);
-    appStore().isAuth = true;
-    router.push("/");
-  } catch (error: any) {
-    notice.error(`验证失败：${error.detail}`);
-  }
+  await api
+    .doLogin(token.value)
+    .then((resp) => {
+      notice.success("登录成功");
+      localStorage.setItem("jwtToken", resp.jwt_token);
+      appStore().isAuth = true;
+      router.push("/");
+    })
+    .catch((error: AxiosError) => {
+      if (error.response) {
+        notice.error(`验证失败：${(error.response.data as { detail: string })?.detail}`);
+      } else {
+        notice.error(`验证失败：${error.message}`);
+      }
+    });
 }
 </script>
 
