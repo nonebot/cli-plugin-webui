@@ -89,7 +89,3 @@ class ModuleSettingRequest(BaseModel):
 
 class DotenvListResponse(BaseModel):
     detail: List[str]
-
-
-class ScanPluginResponse(BaseModel):
-    detail: List[str]

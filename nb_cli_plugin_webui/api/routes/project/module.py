@@ -1,21 +1,15 @@
 import re
 import asyncio
 from typing import Any
-from pathlib import Path
 
-from fastapi import Body, APIRouter, HTTPException, status
-
-from nb_cli.config import ConfigManager
 from nb_cli.handlers.pip import call_pip_uninstall
+from fastapi import Body, APIRouter, HTTPException, status
 
 from nb_cli_plugin_webui.utils import generate_complexity_string
 from nb_cli_plugin_webui.exceptions import NonebotProjectIsNotExist
+from nb_cli_plugin_webui.api.dependencies.pip import call_pip_install
 from nb_cli_plugin_webui.models.domain.process import LogLevel, CustomLog
-from nb_cli_plugin_webui.api.dependencies.plugin import get_loaded_plugins
 from nb_cli_plugin_webui.api.dependencies.project import NonebotProjectManager
-from nb_cli_plugin_webui.api.dependencies.pip import (
-    call_pip_install,
-)
 from nb_cli_plugin_webui.api.dependencies.process.log import (
     LoggerStorage,
     LoggerStorageFather,
@@ -23,7 +17,6 @@ from nb_cli_plugin_webui.api.dependencies.process.log import (
 from nb_cli_plugin_webui.models.schemas.project import (
     Plugin,
     SimpleInfo,
-    ScanPluginResponse,
     InstallModuleResponse,
 )
 
@@ -192,17 +185,3 @@ async def uninstall_nonebot_project_module(
         )
 
     return {"detail": "ok"}
-
-
-@router.post("/scan_plugin", response_model=ScanPluginResponse)
-async def scan_plugin(
-    project_dir: str = Body(embed=True), use_venv: bool = Body(embed=True)
-) -> ScanPluginResponse:
-    _project_dir = Path(project_dir)
-    if not _project_dir.is_dir():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="非法路径")
-
-    config_manager = ConfigManager(working_dir=_project_dir, use_venv=use_venv)
-    plugins = await get_loaded_plugins(config_manager.python_path)
-
-    return ScanPluginResponse(detail=plugins)
