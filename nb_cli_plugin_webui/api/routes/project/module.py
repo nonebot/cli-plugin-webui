@@ -1,6 +1,7 @@
 import re
 import asyncio
 from typing import Any
+from pathlib import Path
 
 from nb_cli.handlers.pip import call_pip_uninstall
 from fastapi import Body, APIRouter, HTTPException, status
@@ -9,7 +10,10 @@ from nb_cli_plugin_webui.utils import generate_complexity_string
 from nb_cli_plugin_webui.exceptions import NonebotProjectIsNotExist
 from nb_cli_plugin_webui.api.dependencies.pip import call_pip_install
 from nb_cli_plugin_webui.models.domain.process import LogLevel, CustomLog
-from nb_cli_plugin_webui.api.dependencies.project import NonebotProjectManager
+from nb_cli_plugin_webui.api.dependencies.project import (
+    NonebotProjectManager,
+    check_toml,
+)
 from nb_cli_plugin_webui.api.dependencies.process.log import (
     LoggerStorage,
     LoggerStorageFather,
@@ -18,6 +22,7 @@ from nb_cli_plugin_webui.models.schemas.project import (
     Plugin,
     SimpleInfo,
     InstallModuleResponse,
+    CheckProjectTomlResponse,
 )
 
 router = APIRouter()
@@ -185,3 +190,42 @@ async def uninstall_nonebot_project_module(
         )
 
     return {"detail": "ok"}
+
+
+@router.post("/check_toml", response_model=CheckProjectTomlResponse)
+async def scan_nonebot(
+    project_dir: str = Body(embed=True),
+) -> CheckProjectTomlResponse:
+    path = Path(project_dir)
+    try:
+        check = check_toml(path)
+    except FileNotFoundError:
+        return CheckProjectTomlResponse(
+            is_pass=False, level="error", msg="未找到文件 'pyproject.toml'"
+        )
+    except Exception as err:
+        return CheckProjectTomlResponse(
+            is_pass=False, level="error", msg=f"其它未知错误：{err}"
+        )
+
+    msg = str()
+    if not check.project_name:
+        msg += "未找到项目名称,"
+    if not check.adapters:
+        msg += "未找到适配器,"
+    if not check.plugins:
+        msg += "未找到插件,"
+    if not check.plugin_dirs:
+        msg += "未找到插件目录,"
+    if not check.builtin_plugins:
+        msg += "未找到内置插件,"
+
+    if not msg:
+        msg = "检查通过"
+        return CheckProjectTomlResponse(
+            is_pass=True, level="success", msg=msg, detail=check
+        )
+    else:
+        return CheckProjectTomlResponse(
+            is_pass=True, level="warning", msg=msg, detail=check
+        )

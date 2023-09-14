@@ -23,12 +23,18 @@ from nb_cli_plugin_webui.models.domain.process import LogLevel, CustomLog
 from nb_cli_plugin_webui.api.dependencies.project import NonebotProjectManager
 from nb_cli_plugin_webui.api.dependencies.process.manager import ProcessManager
 from nb_cli_plugin_webui.api.dependencies.process.process import CustomProcessor
+from nb_cli_plugin_webui.api.dependencies.store.manage import (
+    PLUGIN_MANAGER,
+    ADAPTER_MANAGER,
+)
 from nb_cli_plugin_webui.api.dependencies.process.log import (
     LoggerStorage,
     LoggerStorageFather,
 )
 from nb_cli_plugin_webui.models.schemas.project import (
+    AddProjectData,
     CreateProjectData,
+    AddProjectResponse,
     NonebotProjectMeta,
     ProjectListResponse,
     CreateProjectResponse,
@@ -178,6 +184,144 @@ async def create_nonebot_project(
     )
 
     return CreateProjectResponse(log_key=log_key)
+
+
+@router.post("/add", response_model=AddProjectResponse)
+async def add_nonebot_project(
+    project_data: AddProjectData = Body(embed=True),
+) -> AddProjectResponse:
+    project_dir = Path(project_data.project_dir)
+    if not project_dir.is_dir():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="无效的路径")
+
+    store_plugin_data = PLUGIN_MANAGER.get_item()
+    store_adapter_data = ADAPTER_MANAGER.get_item()
+
+    installed_plugin_data = list()
+    for plugin in store_plugin_data:
+        if plugin.module_name in project_data.plugins:
+            installed_plugin_data.append(plugin)
+
+    installed_adapter_data = list()
+    for adapter in store_adapter_data:
+        if adapter.module_name in project_data.adapters:
+            installed_adapter_data.append(adapter)
+
+    project_name = project_data.project_name.replace(" ", "-")
+
+    context = ProjectContext()
+    context.variables["project_name"] = project_name
+
+    context.variables["adapters"] = json.dumps(
+        {adapter.project_link: adapter.dict() for adapter in installed_adapter_data}
+    )
+    context.packages.extend(
+        [adapter.project_link for adapter in installed_adapter_data]
+    )
+
+    log = LoggerStorage()
+    log_key = generate_complexity_string(8)
+    LoggerStorageFather.add_storage(log, log_key)
+
+    async def notice(log: LoggerStorage):
+        async def _err_parse(err: Exception):
+            log_model = CustomLog(level=LogLevel.ERROR, message=str(err))
+            await log.add_log(log_model)
+
+            log_model = CustomLog(message="❗ Failed...")
+            await log.add_log(log_model)
+
+        # Time for frontend ready
+        await asyncio.sleep(1)
+
+        log_model = CustomLog(message="Processing at 3s...")
+        await log.add_log(log_model)
+
+        await asyncio.sleep(3)
+
+        plugins = [plugin.project_link for plugin in installed_plugin_data]
+        adapters = [adapter.project_link for adapter in installed_adapter_data]
+
+        log_model = CustomLog(message=f"Project name: {project_name}")
+        await log.add_log(log_model)
+
+        log_model = CustomLog(message=f"Project Dir: {project_dir.absolute()}")
+        await log.add_log(log_model)
+
+        log_model = CustomLog(message=f"Project Plugin: {', '.join(plugins)}")
+        await log.add_log(log_model)
+
+        log_model = CustomLog(
+            message=f"Project Plugin Dirs: {', '.join(project_data.plugin_dirs)}"
+        )
+        await log.add_log(log_model)
+
+        log_model = CustomLog(message=f"Project Adapter: {', '.join(adapters)}")
+        await log.add_log(log_model)
+
+        log_model = CustomLog(message=str())
+        await log.add_log(log_model)
+
+        venv_exist = False
+        venv_path = project_dir / ".venv"
+        config_manager = ConfigManager(working_dir=project_dir, use_venv=True)
+        if not venv_path.is_dir():
+            log_model = CustomLog(
+                message=f"Not found virtualenv in {venv_path}, will create it..."
+            )
+            await log.add_log(log_model)
+        else:
+            venv_exist = True
+
+        if not venv_exist:
+            try:
+                log_model = CustomLog(message="Initialization dependencies...")
+                await log.add_log(log_model)
+
+                await create_virtualenv(
+                    venv_path, prompt=project_name, python_path=None
+                )
+            except Exception as err:
+                await _err_parse(err)
+                return
+
+        try:
+            log_model = CustomLog(message="Installing dependencies...")
+            await log.add_log(log_model)
+
+            proc, log = await call_pip_install(
+                ["nonebot2", *context.packages],
+                ["-i", project_data.mirror_url],
+                log_storage=log,
+                python_path=config_manager.python_path,
+            )
+            await proc.wait()
+        except Exception as err:
+            await _err_parse(err)
+            return
+
+        project_id = generate_complexity_string(6)
+        manager = NonebotProjectManager(project_id)
+        manager.add(
+            project_name=project_name,
+            project_dir=project_dir,
+            mirror_url=project_data.mirror_url,
+            adapters=installed_adapter_data,
+            plugins=installed_plugin_data,
+            plugin_dirs=project_data.plugin_dirs,
+        )
+
+        manager.write_to_env(".env", "ENVIRONMENT", "prod")
+
+        log_model = CustomLog(message="✨ Done!")
+        await log.add_log(log_model)
+
+    asyncio.create_task(notice(log))
+    asyncio.get_running_loop().call_later(
+        600, LoggerStorageFather.storages.pop, log_key
+    )
+
+    return AddProjectResponse(log_key=log_key)
 
 
 @router.delete("/delete", response_model=DeleteProjectResponse)
