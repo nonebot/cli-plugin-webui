@@ -53,9 +53,7 @@ const dismissNotice = (id: number | string) => {
     >
       <button class="status-bar-button" @click="changeNoticeCardState()">
         <div class="indicator">
-          <span
-            :class="{ 'indicator-item badge badge-secondary': haveNotice }"
-          ></span>
+          <span :class="{ 'indicator-item badge badge-secondary': haveNotice }"></span>
           <BellIcon class="h-4 w-4" />
         </div>
       </button>
@@ -116,10 +114,7 @@ const dismissNotice = (id: number | string) => {
           </div>
 
           <div>
-            <button
-              class="btn btn-sm btn-ghost"
-              @click="dismissNotice(notice.id)"
-            >
+            <button class="btn btn-sm btn-ghost" @click="dismissNotice(notice.id)">
               Close
             </button>
           </div>
