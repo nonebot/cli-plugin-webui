@@ -72,7 +72,7 @@ else:
                         task.cancel()
                 return result  # type: ignore
             except Exception as err:
-                log.debug(str(err))
+                log.error(f"获取 {module_name} 列表失败: {err}")
 
         raise ModuleLoadFailed(
             _("Failed to get {module_type} list.").format(module_type=module_type)
