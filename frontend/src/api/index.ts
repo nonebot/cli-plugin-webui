@@ -17,6 +17,8 @@ import {
   DotenvListResponse,
   LogHistoryResponse,
   NonebotProjectMeta,
+  CheckProjectTomlResponse,
+  AddProjectData,
 } from "./models";
 
 export class API {
@@ -370,5 +372,22 @@ export class API {
       project_id: projectID,
     };
     return await this.baseGetRequest("/project/detail", requestData);
+  }
+
+  async checkProjectToml(projectDir: string): Promise<CheckProjectTomlResponse> {
+    const requestData = {
+      project_dir: projectDir,
+    };
+    return await this.basePostRequest<CheckProjectTomlResponse>(
+      "/project/module/check_toml",
+      requestData,
+    );
+  }
+
+  async addProject(data: AddProjectData): Promise<CreateProjectResponse> {
+    const requestData = {
+      project_data: data,
+    };
+    return await this.basePostRequest<CreateProjectResponse>("/project/add", requestData);
   }
 }

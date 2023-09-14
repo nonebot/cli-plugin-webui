@@ -150,3 +150,31 @@ export interface ModuleConfigResponse {
 export interface DotenvListResponse {
   detail: string[];
 }
+
+export interface CheckProjectTomlDetail {
+  project_name: string;
+  adapters: {
+    name: string;
+    module_name: string;
+  }[];
+  plugins: string[];
+  plugin_dirs: string[];
+  builtin_plugins: string[];
+}
+
+export interface CheckProjectTomlResponse {
+  is_pass: boolean;
+  level: "success" | "warn" | "error";
+  msg: string;
+  detail?: CheckProjectTomlDetail;
+}
+
+export interface AddProjectData {
+  project_name: string;
+  project_dir: string;
+  mirror_url: string;
+  adapters: string[];
+  plugins: string[];
+  plugin_dirs: string[];
+  builtin_plugins: string[];
+}

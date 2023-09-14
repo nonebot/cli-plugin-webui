@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
+import tomlkit
 from pydantic import PathNotAFileError
 from nb_cli.config import ConfigManager
 from dotenv import set_key, dotenv_values
@@ -9,6 +10,7 @@ from nb_cli.config import SimpleInfo as CliSimpleInfo
 from nb_cli_plugin_webui.utils.store import get_data_file
 from nb_cli_plugin_webui.models.schemas.store import SimpleInfo
 from nb_cli_plugin_webui.api.dependencies.store.manage import PLUGIN_MANAGER
+from nb_cli_plugin_webui.exceptions import InvalidKeyException, NonebotProjectIsNotExist
 from nb_cli_plugin_webui.api.dependencies.plugin import (
     get_plugin_list,
     get_plugin_config_detail,
@@ -17,8 +19,8 @@ from nb_cli_plugin_webui.models.schemas.project import (
     Plugin,
     NonebotProjectList,
     NonebotProjectMeta,
+    CheckProjectTomlDetail,
 )
-from nb_cli_plugin_webui.exceptions import InvalidKeyException, NonebotProjectIsNotExist
 
 
 class NonebotProjectManager:
@@ -254,3 +256,29 @@ class NonebotProjectManager:
             set_key(env_path, k, v)
         else:
             set_key(env_path, k, v)
+
+
+def check_toml(working_dir: Path) -> CheckProjectTomlDetail:
+    path = working_dir / "pyproject.toml"
+    if not path.is_file():
+        raise FileNotFoundError
+    data = tomlkit.loads(path.read_text(encoding="utf-8"))
+
+    project_name = data.get("project", dict()).get("name", str())
+    tool_detail = data.get("tool", dict())
+
+    nonebot_info = tool_detail.get("nonebot", dict())
+    adapters = nonebot_info.get("adapters", list())
+    plugins = nonebot_info.get("plugins", list())
+    plugin_dirs = nonebot_info.get("plugin_dirs", list())
+
+    # TODO
+    builtin_plugins = list()
+
+    return CheckProjectTomlDetail(
+        project_name=project_name,
+        adapters=adapters,
+        plugins=plugins,
+        plugin_dirs=plugin_dirs,
+        builtin_plugins=builtin_plugins,
+    )

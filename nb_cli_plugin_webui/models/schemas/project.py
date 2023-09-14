@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel
 
@@ -46,6 +46,10 @@ class CreateProjectResponse(BaseModel):
     log_key: str
 
 
+class AddProjectResponse(BaseModel):
+    log_key: str
+
+
 class ProjectListResponse(NonebotProjectList):
     ...
 
@@ -89,3 +93,28 @@ class ModuleSettingRequest(BaseModel):
 
 class DotenvListResponse(BaseModel):
     detail: List[str]
+
+
+class AddProjectData(BaseModel):
+    project_name: str
+    project_dir: str
+    mirror_url: str
+    adapters: List[str]
+    plugins: List[str]
+    plugin_dirs: List[str]
+    builtin_plugins: List[str]
+
+
+class CheckProjectTomlDetail(BaseModel):
+    project_name: str
+    adapters: List[Dict[str, str]]
+    plugins: List[str]
+    plugin_dirs: List[str]
+    builtin_plugins: List[str]
+
+
+class CheckProjectTomlResponse(BaseModel):
+    is_pass: bool
+    level: Literal["success", "warning", "error"]
+    msg: str
+    detail: Optional[CheckProjectTomlDetail] = None
