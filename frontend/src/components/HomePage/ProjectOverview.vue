@@ -1,35 +1,24 @@
 <script setup lang="ts">
 import AddProjectChoice from "@/components/HomePage/Modals/AddProjectChoice.vue";
 
-import { API } from "@/api";
+import { onMounted, ref } from "vue";
 import { NonebotProjectMeta } from "@/api/models";
-import { notice } from "@/utils/notification";
 import { appStore as store } from "@/store/global";
 import { parseSimpleInfo } from "@/utils";
-import { ref } from "vue";
+import { getProjectList } from "@/components/HomePage/client";
 
 const addProjectChoiceModal = ref<InstanceType<typeof AddProjectChoice> | null>();
 
 const choiceProjectInfo = ref<NonebotProjectMeta>();
-
-const api = new API();
 
 const choiceProject = (data: NonebotProjectMeta) => {
   store().choiceProject = data;
   choiceProjectInfo.value = data;
 };
 
-const getProjectList = async () => {
-  try {
-    const resp = await api.getProjectList();
-    store().projectList = resp.projects;
-  } catch (error: any) {
-    notice.error(`获取实例列表失败：${error.detail}`);
-    return;
-  }
-};
-
-getProjectList();
+onMounted(async () => {
+  await getProjectList();
+});
 </script>
 
 <template>

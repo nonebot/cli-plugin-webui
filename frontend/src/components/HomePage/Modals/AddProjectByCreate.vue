@@ -6,6 +6,7 @@ import { API } from "@/api";
 import { notice } from "@/utils/notification";
 import { Driver, Adapter } from "@/api/models";
 import { onMounted, ref, watch } from "vue";
+import { mirrorList, getProjectList } from "../client";
 
 const logShowModal = ref<InstanceType<typeof LogShow> | null>();
 const folderSelectModal = ref<InstanceType<typeof FolderSelect> | null>();
@@ -25,22 +26,6 @@ defineExpose({
 });
 
 const api = new API();
-
-const mirrorList = [
-  { name: "PyPI", url: "https://pypi.org/simple" },
-  {
-    name: "校园网联合镜像站",
-    url: "https://mirrors.cernet.edu.cn/pypi/web/simple",
-  },
-  { name: "清华大学", url: "https://pypi.tuna.tsinghua.edu.cn/simple" },
-  {
-    name: "北京外国语大学",
-    url: "https://mirrors.bfsu.edu.cn/pypi/web/simple",
-  },
-  { name: "腾讯云", url: "https://mirrors.cloud.tencent.com/pypi/simple" },
-  { name: "中科院", url: "https://pypi.mirrors.ustc.edu.cn/simple" },
-  { name: "豆瓣", url: "https://pypi.douban.com/simple" },
-];
 
 const driverList = ref<Driver[]>([]);
 const adapterList = ref<Adapter[]>([]);
@@ -90,8 +75,11 @@ const isRetry = async (data: boolean) => {
   }
 };
 
-const clear = (data: boolean) => {
+const allDone = async (data: boolean) => {
   if (data) {
+    await getProjectList();
+    notice.success("添加成功");
+
     projectIsBootstrap.value = true;
     projectName.value = "";
     projectFolder.value = "";
@@ -366,7 +354,7 @@ watch(showModal, async () => {
       </div>
 
       <div class="modal-action">
-        <button class="btn rounded-lg h-10 min-h-0" @click="clear(true), closeModal()">
+        <button class="btn rounded-lg h-10 min-h-0" @click="allDone(true), closeModal()">
           取消
         </button>
 
@@ -381,5 +369,5 @@ watch(showModal, async () => {
   </dialog>
 
   <FolderSelect ref="folderSelectModal" @onSelectedFolder="selectedFolder" />
-  <LogShow ref="logShowModal" @is-retry="isRetry" @is-o-k="clear" :logKey="logKey" />
+  <LogShow ref="logShowModal" @is-retry="isRetry" @is-o-k="allDone" :logKey="logKey" />
 </template>
