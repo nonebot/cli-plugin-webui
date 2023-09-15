@@ -396,6 +396,15 @@ async def run_nonebot_project(project_id: str = Body(embed=True)) -> None:
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"实例 {project_id=} 不存在"
         )
 
+    if not project_detail.adapters:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="实例未安装任何适配器"
+        )
+    if not project_detail.drivers:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="实例未安装任何驱动器"
+        )
+
     project_dir = Path(project_detail.project_dir)
 
     env = os.environ.copy()
