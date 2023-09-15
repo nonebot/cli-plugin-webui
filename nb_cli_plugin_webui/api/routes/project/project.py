@@ -49,6 +49,9 @@ async def create_nonebot_project(
     project_data: CreateProjectData = Body(embed=True),
 ) -> CreateProjectResponse:
     project_name = project_data.project_name.replace(" ", "-")
+    base_project_dir = BASE_DIR / Path(project_data.project_dir)
+    project_dir = base_project_dir / project_name
+    config_manager = ConfigManager(working_dir=project_dir, use_venv=True)
 
     context = ProjectContext()
     context.variables["project_name"] = project_name
@@ -62,11 +65,13 @@ async def create_nonebot_project(
     )
     context.packages.extend([adapter.project_link for adapter in project_data.adapters])
 
+    project_dirs = list()
     if not project_data.is_bootstrap:
         context.variables["use_src"] = project_data.use_src
-
-    base_project_dir = BASE_DIR / Path(project_data.project_dir)
-    project_dir = base_project_dir / project_name
+        if project_data.use_src:
+            project_dirs.append("src/plugins")
+        else:
+            project_dirs.append(f"{project_name}/plugins")
 
     log = LoggerStorage()
     log_key = generate_complexity_string(8)
@@ -139,8 +144,6 @@ async def create_nonebot_project(
             await _err_parse(err)
             return
 
-        config_manager = ConfigManager(working_dir=project_dir, use_venv=True)
-
         try:
             log_model = CustomLog(message="Installing dependencies...")
             await log.add_log(log_model)
@@ -171,6 +174,7 @@ async def create_nonebot_project(
             mirror_url=project_data.mirror_url,
             adapters=_adapters,
             drivers=_drivers,
+            plugin_dirs=project_dirs,
         )
 
         manager.write_to_env(".env", "ENVIRONMENT", "prod")
