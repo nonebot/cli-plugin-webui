@@ -21,7 +21,7 @@ class LoguruHandler(logging.Handler):
         except ValueError:
             level = str(record.levelno)
 
-        frame, depth = logging.currentframe(), 2
+        frame, depth = logging.currentframe(), 9
         while frame and frame.f_code.co_filename == logging.__file__:
             frame = cast(FrameType, frame.f_back)
             depth += 1
