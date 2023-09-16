@@ -1,51 +1,58 @@
+import { defineStore } from "pinia";
 import { isDebug } from ".";
+import { reactive } from "vue";
 
-export class WebUIWebSocket {
-  path: string;
-  client: WebSocket | undefined;
+export function getWebSocketURL(path: string): string {
+  let host, port;
+  if (isDebug()) {
+    host = localStorage.getItem("host");
+    port = localStorage.getItem("port");
+  }
+  return `${
+    isDebug() ? `ws://${host}:${port}` : window.location.origin.replace(/^http/, "ws")
+  }${path}`;
+}
+
+interface State {
+  connected: boolean;
+}
+
+const stateStore = defineStore("stateStore", () => {
+  const state: State = reactive({
+    connected: false,
+  });
+
+  return state;
+});
+
+export class WebsocketWrapper {
+  client: WebSocket;
+  state: ReturnType<typeof stateStore>;
 
   constructor(path: string) {
-    this.path = path;
-
-    const wsURL = this.getWebSocketURL(this.path);
-    this.client = new WebSocket(wsURL);
+    this.client = new WebSocket(getWebSocketURL(path));
+    this.state = stateStore();
   }
 
-  private getWebSocketURL(path: string): string {
-    let host, port;
-    if (isDebug()) {
-      host = localStorage.getItem("host");
-      port = localStorage.getItem("port");
-    }
-    return `${
-      isDebug()
-        ? `ws://${host}:${port}`
-        : window.location.origin.replace(/^http/, "ws")
-    }${path}`;
-  }
-
-  async connect(): Promise<WebSocket> {
-    return new Promise<WebSocket>((resolve, reject) => {
-      if (!this.client) {
-        reject("WebSocket 未初始化");
-        return;
+  connect() {
+    this.client.addEventListener("open", () => {
+      let token = localStorage.getItem("jwtToken");
+      if (!token) {
+        token = "";
       }
-      this.client.addEventListener("open", () => {
-        let token = localStorage.getItem("jwtToken");
-        if (!token) {
-          token = "";
-        }
-        this.client!.send(token);
+      this.client?.send(token);
 
-        resolve(this.client as WebSocket);
-      });
-      this.client.addEventListener("error", (event) => {
-        reject(event);
-      });
+      if (this.client.readyState === WebSocket.OPEN) {
+        this.state.connected = true;
+      }
+    });
+
+    this.client.addEventListener("close", () => {
+      this.state.connected = false;
     });
   }
 
-  isConnected(): boolean {
-    return this.client?.readyState === WebSocket.OPEN;
+  close(code: number = 1000, reason?: string) {
+    this.client?.close(code, reason);
   }
 }

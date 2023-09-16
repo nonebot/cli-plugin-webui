@@ -6,17 +6,19 @@ import LogView from "@/components/HomePage/LogView.vue";
 import WelcomeAndGuide from "@/components/HomePage/WelcomeAndGuide.vue";
 import ProjectAction from "@/components/HomePage/ProjectAction.vue";
 
-import { handlePlatformPerformanceWebsocket } from "./HomePage/client";
-import { systemStatStore } from "@/store/status";
+import {
+  handlePlatformMonitorWebsocket,
+  websocketForPlatformMonitor,
+} from "./HomePage/client";
 import { onMounted, onUnmounted } from "vue";
 
-onMounted(async () => {
-  await handlePlatformPerformanceWebsocket();
+onMounted(() => {
+  handlePlatformMonitorWebsocket();
 });
 
 onUnmounted(() => {
-  if (systemStatStore().websocket?.isConnected()) {
-    systemStatStore().websocket?.client?.close();
+  if (websocketForPlatformMonitor?.state.connected) {
+    websocketForPlatformMonitor.close();
   }
 });
 </script>

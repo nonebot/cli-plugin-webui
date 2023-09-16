@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ProcessLog } from "@/api/models";
-import { WebUIWebSocket } from "@/utils/ws";
+import { WebsocketWrapper } from "@/utils/ws";
 import { ToastWrapper } from "@/utils/notification";
 import { ref, watch } from "vue";
 
 const notice = new ToastWrapper("Log Show");
+const websocket = ref<WebsocketWrapper>();
 
 const emit = defineEmits(["isRetry", "isOK"]);
 
@@ -31,16 +32,33 @@ const isFailed = ref(false);
 const isDone = ref(false);
 const logShowArea = ref<HTMLElement>();
 
-const showLog = () => {
-  const ws = new WebUIWebSocket(`/api/log/logs/${props.logKey}`);
-  ws.connect();
+const handleWebSocket = () => {
+  if (websocket.value?.state.connected) {
+    websocket.value.close();
+  }
 
-  if (!ws.client) {
-    notice.error("WebSocket 未初始化");
+  websocket.value = new WebsocketWrapper(`/api/log/logs/${props.logKey}`);
+
+  const maxRetries = 3;
+  let retries = 0;
+  let connected = false;
+
+  while (!connected && retries < maxRetries) {
+    try {
+      websocket.value.connect();
+      connected = true;
+    } catch (error: any) {
+      notice.error(`连接至日志 WebSocket 失败...(${retries + 1}/${maxRetries})`);
+      retries++;
+    }
+  }
+
+  if (!connected) {
+    notice.error("连接至日志 WebSocket 失败");
     return;
   }
 
-  ws.client.onmessage = (event) => {
+  websocket.value.client!.onmessage = (event: MessageEvent) => {
     const data: ProcessLog = JSON.parse(event.data.toString());
     if (logShowArea.value) {
       logShowArea.value.innerHTML += `
@@ -55,10 +73,10 @@ const showLog = () => {
     }
 
     if (data.message === "✨ Done!") {
-      ws.client?.close();
+      websocket.value?.close();
       isDone.value = true;
     } else if (data.message === "❗ Failed...") {
-      ws.client?.close();
+      websocket.value?.close();
       isFailed.value = true;
     }
   };
@@ -88,7 +106,7 @@ const clearState = () => {
 
 watch(props, () => {
   clearState();
-  showLog();
+  handleWebSocket();
 });
 </script>
 

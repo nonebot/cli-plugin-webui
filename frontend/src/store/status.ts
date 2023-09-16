@@ -1,10 +1,8 @@
 import { defineStore } from "pinia";
-import { WebUIWebSocket } from "@/utils/ws";
 
 export const systemStatStore = defineStore("systemStatStore", {
   state() {
     return {
-      websocket: null as WebUIWebSocket | null,
       diskReadSpeedList: Array(100).fill(0) as number[],
       diskWriteSpeedList: Array(100).fill(0) as number[],
       netSentSpeedList: Array(100).fill(0) as number[],

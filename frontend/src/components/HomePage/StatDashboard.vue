@@ -1,35 +1,21 @@
 <script setup lang="ts">
 import StatDashboardChart from "@/components/HomePage/StatDashboardChart.vue";
-import { WebUIWebSocket } from "@/utils/ws";
+import { WebsocketWrapper } from "@/utils/ws";
 import { systemStatStore, projectStatStore } from "@/store/status";
 import { appStore } from "@/store/global";
 import { ProcessInfo } from "@/api/models";
 import { notice } from "@/utils/notification";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 const viewProject = ref("");
-const ws = ref<WebUIWebSocket>();
+const websocket = ref<WebsocketWrapper>();
 
-const handleWebSocket = () => {
-  if (ws.value?.isConnected()) {
-    ws.value.client?.close();
+const handleProjectMonitorWebSocket = () => {
+  if (websocket.value?.state.connected) {
+    websocket.value.close();
   }
 
-  const newWebSocket = () => {
-    ws.value = new WebUIWebSocket(`/api/project/status/${viewProject.value}`);
-  };
-
-  if (!ws.value) {
-    newWebSocket();
-  } else {
-    if (
-      ws.value.isConnected() &&
-      viewProject.value !== appStore().choiceProject.project_id
-    ) {
-      ws.value.client?.close();
-    }
-    newWebSocket();
-  }
+  websocket.value = new WebsocketWrapper(`/api/project/status/${viewProject.value}`);
 
   const maxRetries = 3;
   let retries = 0;
@@ -37,7 +23,7 @@ const handleWebSocket = () => {
 
   while (!connected && retries < maxRetries) {
     try {
-      ws.value!.connect();
+      websocket.value.connect();
       connected = true;
     } catch (error: any) {
       notice.error(`连接至实例性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`);
@@ -52,7 +38,7 @@ const handleWebSocket = () => {
 
   projectStatStore().clearList();
 
-  ws.value!.client!.onmessage = (event) => {
+  websocket.value.client.onmessage = (event: MessageEvent) => {
     const wsData: ProcessInfo = JSON.parse(event.data);
 
     if (!wsData.performance) {
@@ -88,35 +74,23 @@ const clearList = () => {
 onMounted(() => {
   if (appStore().choiceProject.project_id && appStore().choiceProject.is_running) {
     viewProject.value = appStore().choiceProject.project_id;
-    handleWebSocket();
+    handleProjectMonitorWebSocket();
   }
 });
 
-onUnmounted(() => {
-  if (ws.value?.isConnected()) {
-    ws.value?.client?.close();
-  }
+onBeforeUnmount(() => {
+  websocket.value?.close();
 });
 
 watch(
   () => appStore().choiceProject,
   (newValue) => {
-    if (viewProject.value !== newValue.project_id) {
-      viewProject.value = newValue.project_id;
-    }
-    handleWebSocket();
-  },
-);
-
-watch(
-  () => appStore().choiceProject.is_running,
-  () => {
-    if (
-      viewProject.value === appStore().choiceProject.project_id &&
-      appStore().choiceProject.is_running
-    ) {
+    viewProject.value = newValue.project_id;
+    if (newValue.is_running) {
       clearList();
-      handleWebSocket();
+      handleProjectMonitorWebSocket();
+    } else {
+      websocket.value?.close();
     }
   },
 );

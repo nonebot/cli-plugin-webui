@@ -1,4 +1,4 @@
-import { WebUIWebSocket } from "@/utils/ws";
+import { WebsocketWrapper } from "@/utils/ws";
 import { SystemStatsData } from "@/components/HomePage/models";
 import { systemStatStore } from "@/store/status";
 import { notice } from "@/utils/notification";
@@ -24,16 +24,16 @@ export const mirrorList = [
   { name: "豆瓣", url: "https://pypi.douban.com/simple" },
 ];
 
-export function handlePlatformPerformanceWebsocket() {
+export let websocketForPlatformMonitor: WebsocketWrapper;
+
+export function handlePlatformMonitorWebsocket() {
   const store = systemStatStore();
 
-  if (store.websocket?.isConnected()) {
-    store.websocket?.client?.close();
+  if (websocketForPlatformMonitor?.state.connected) {
+    websocketForPlatformMonitor.close();
   }
 
-  if (!store.websocket) {
-    store.websocket = new WebUIWebSocket("/api/performance/ws");
-  }
+  websocketForPlatformMonitor = new WebsocketWrapper("/api/performance/ws");
 
   const maxRetries = 3;
   let retries = 0;
@@ -41,7 +41,7 @@ export function handlePlatformPerformanceWebsocket() {
 
   while (!connected && retries < maxRetries) {
     try {
-      store.websocket.connect();
+      websocketForPlatformMonitor?.connect();
       connected = true;
     } catch (error: any) {
       notice.error(`连接至平台性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`);
@@ -50,11 +50,11 @@ export function handlePlatformPerformanceWebsocket() {
   }
 
   if (!connected) {
-    notice.error("连接至性能性能检测 WebSocket 失败");
+    notice.error("连接至平台性能检测 WebSocket 失败");
     return;
   }
 
-  store.websocket!.client!.onmessage = (event: MessageEvent) => {
+  websocketForPlatformMonitor.client.onmessage = (event: MessageEvent) => {
     const wsData: SystemStatsData = JSON.parse(event.data);
     const date = new Date();
 

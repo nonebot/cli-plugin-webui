@@ -2,8 +2,8 @@
 import { appStore } from "@/store/global";
 import { API } from "@/api";
 import AnsiUp from "ansi_up";
-import { onMounted, onUnmounted, ref, watch } from "vue";
-import { WebUIWebSocket } from "@/utils/ws";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { WebsocketWrapper } from "@/utils/ws";
 import { notice } from "@/utils/notification";
 import { ProcessLog } from "@/api/models";
 
@@ -13,7 +13,7 @@ const api = new API();
 const viewProject = ref("");
 const viewArea = ref<HTMLElement>();
 const writeStdinInput = ref<HTMLInputElement>();
-const ws = ref<WebUIWebSocket>();
+const websocket = ref<WebsocketWrapper>();
 
 const writeToArea = (content: string, classList?: string[]) => {
   if (viewArea.value) {
@@ -56,65 +56,6 @@ const getHistoryLog = async (logID: string, logCount: number) => {
     });
 };
 
-const handleWebSocket = async () => {
-  clearArea();
-  await getHistoryLog(viewProject.value, 50);
-
-  const newWebSocket = () => {
-    ws.value = new WebUIWebSocket(`/api/log/logs/${viewProject.value}`);
-  };
-
-  if (!ws.value) {
-    newWebSocket();
-  } else {
-    if (
-      ws.value.isConnected() &&
-      viewProject.value !== appStore().choiceProject.project_id
-    ) {
-      ws.value.client?.close();
-    }
-    newWebSocket();
-  }
-
-  const maxRetries = 3;
-  let retries = 0;
-  let connected = false;
-
-  while (!connected && retries < maxRetries) {
-    try {
-      ws.value!.connect();
-      connected = true;
-    } catch (error: any) {
-      notice.error(`连接至日志 WebSocket 失败...(${retries + 1}/${maxRetries})`);
-      retries++;
-    }
-  }
-
-  if (!connected) {
-    notice.error("连接至日志 WebSocket 失败");
-    return;
-  }
-
-  ws.value!.client!.onmessage = (event: MessageEvent) => {
-    const data: ProcessLog = JSON.parse(event.data.toString());
-    writeToArea(ansiUp.ansi_to_html(data.message));
-
-    if (data.message === "Process finished.") {
-      appStore().projectIsStop();
-    }
-  };
-
-  ws.value!.client!.onopen = () => {
-    writeToArea(" ");
-    writeToArea("日志 WebSocket 已连接", ["text-green-500", "font-bold"]);
-  };
-
-  ws.value!.client!.onclose = () => {
-    writeToArea(" ");
-    writeToArea("日志 WebSocket 已断开", ["text-red-500", "font-bold"]);
-  };
-};
-
 const handleKeydown = async (event: KeyboardEvent) => {
   if (event.key !== "Enter") {
     return;
@@ -131,40 +72,73 @@ const handleKeydown = async (event: KeyboardEvent) => {
   }
 };
 
-onMounted(async () => {
-  if (appStore().choiceProject.project_id && appStore().choiceProject.is_running) {
+const handleWebSocket = () => {
+  if (websocket.value?.state.connected) {
+    websocket.value.close();
+  }
+
+  websocket.value = new WebsocketWrapper(`/api/log/logs/${viewProject.value}`);
+
+  const maxRetries = 3;
+  let retries = 0;
+  let connected = false;
+
+  while (!connected && retries < maxRetries) {
+    try {
+      websocket.value.connect();
+      connected = true;
+    } catch (error: any) {
+      notice.error(`连接至日志 WebSocket 失败...(${retries + 1}/${maxRetries})`);
+      retries++;
+    }
+  }
+
+  if (!connected) {
+    notice.error("连接至日志 WebSocket 失败");
+    return;
+  }
+
+  websocket.value.client.onmessage = (event: MessageEvent) => {
+    const data: ProcessLog = JSON.parse(event.data.toString());
+    writeToArea(ansiUp.ansi_to_html(data.message));
+
+    if (data.message === "Process finished.") {
+      appStore().projectIsStop();
+    }
+  };
+
+  websocket.value.client.onopen = () => {
+    writeToArea(" ");
+    writeToArea("日志 WebSocket 已连接", ["text-green-500", "font-bold"]);
+  };
+
+  websocket.value.client.onclose = () => {
+    writeToArea(" ");
+    writeToArea("日志 WebSocket 已断开", ["text-red-500", "font-bold"]);
+  };
+};
+
+onMounted(() => {
+  if (appStore().choiceProject.is_running) {
     viewProject.value = appStore().choiceProject.project_id;
-    await handleWebSocket();
   }
 });
 
-onUnmounted(() => {
-  if (ws.value?.isConnected()) {
-    ws.value.client?.close();
-  }
+onBeforeUnmount(() => {
+  websocket.value?.close();
+  clearArea();
 });
 
 watch(
   () => appStore().choiceProject,
   async (newValue) => {
-    // 检测不同实例间切换
-    if (viewProject.value !== newValue.project_id) {
-      viewProject.value = newValue.project_id;
+    viewProject.value = newValue.project_id;
+    if (websocket.value?.state.connected) {
+      websocket.value.close();
     }
-    await handleWebSocket();
-  },
-);
-
-watch(
-  () => appStore().choiceProject.is_running,
-  async () => {
-    if (
-      viewProject.value === appStore().choiceProject.project_id &&
-      appStore().choiceProject.is_running &&
-      !ws.value?.isConnected()
-    ) {
-      await handleWebSocket();
-    }
+    clearArea();
+    await getHistoryLog(viewProject.value, 50);
+    handleWebSocket();
   },
 );
 </script>
@@ -191,7 +165,7 @@ watch(
           role="button"
           :class="{
             'btn btn-xs md:btn-sm h-auto md:!h-10 rounded': true,
-            'btn-disabled': !ws?.client?.CLOSED,
+            'btn-disabled': websocket?.state.connected,
           }"
           @click="handleWebSocket()"
         >
