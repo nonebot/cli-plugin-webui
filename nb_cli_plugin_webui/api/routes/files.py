@@ -23,27 +23,28 @@ async def get_file_list(path: str) -> FilesInResponse:
 async def create_file(
     file_data: FileMeta = Body(embed=True),
 ) -> FilesInResponse:
-    path = BASE_DIR / file_data.name
+    working_dir = BASE_DIR / Path(file_data.path)
+    path = working_dir / file_data.name
     if file_data.is_dir:
         path.mkdir(exist_ok=True)
     else:
         with open(path, "w", encoding="utf-8") as w:
             w.write(str())
-    data = get_files(Path(file_data.path), BASE_DIR)
+    data = get_files(working_dir, BASE_DIR)
     return FilesInResponse(files=data)
 
 
 @router.delete("/delete", response_model=FilesInResponse)
-async def delete_file(file_data: FileMeta) -> FilesInResponse:
-    path = BASE_DIR / Path(file_data.path)
-    if file_data.is_dir:
-        try:
-            shutil.rmtree(path)
-        except OSError as err:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=f"删除文件失败 {err=}"
-            )
-    else:
-        path.unlink()
-    data = get_files(Path(file_data.path).parent, BASE_DIR)
+async def delete_file(path: str) -> FilesInResponse:
+    working_dir = BASE_DIR / Path(path)
+    if not working_dir.exists():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="文件不存在")
+
+    try:
+        shutil.rmtree(working_dir)
+    except OSError as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"删除文件失败 {err=}"
+        )
+    data = get_files(working_dir.parent, BASE_DIR)
     return FilesInResponse(files=data)

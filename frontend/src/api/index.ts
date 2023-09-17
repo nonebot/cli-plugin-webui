@@ -102,17 +102,9 @@ export class API {
     return await this.basePostRequest<FileListResponse>("/file/create", requestData);
   }
 
-  async deleteFile(
-    fileName: string,
-    isFolder: boolean,
-    path: string,
-  ): Promise<FileListResponse> {
+  async deleteFile(path: string): Promise<FileListResponse> {
     const requestData = {
-      file_data: {
-        name: fileName,
-        is_dir: isFolder ? 1 : 0,
-        path: path,
-      },
+      path: path,
     };
     return await this.baseDeleteRequest<FileListResponse>("/file/delete", requestData);
   }

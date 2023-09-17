@@ -25,7 +25,7 @@ defineExpose({
 const nowPath = ref("");
 const nowPathStack = ref<string[]>([]);
 const files = ref<FileInfo[]>([]);
-const selectedFolder = ref("Unknown");
+const selectedFolder = ref("(实例名称)");
 const newFolderName = ref("");
 
 const emit = defineEmits(["onSelectedFolder"]);
@@ -69,12 +69,13 @@ const createFile = async (fileName: string, path: string) => {
     });
 };
 
-const deleteFile = async (fileName: string, isFolder: boolean, path: string) => {
+const deleteFile = async (path: string) => {
   await api
-    .deleteFile(fileName, isFolder, path)
+    .deleteFile(path)
     .then((resp) => {
       files.value = resp.files;
       nowPathStack.value = nowPath.value.split("/");
+      selectedFolder.value = "";
     })
     .catch((error: AxiosError) => {
       let reason: string;
@@ -228,7 +229,7 @@ watch(showModal, () => {
                       viewBox="0 0 24 24"
                       width="20"
                       height="20"
-                      @click="deleteFile(i.name, i.is_dir ? true : false, i.path)"
+                      @click="deleteFile(i.path)"
                     >
                       <title>确认</title>
                       <path
@@ -262,7 +263,15 @@ watch(showModal, () => {
 
         <button
           class="btn btn-primary rounded-lg h-10 min-h-0 text-white"
-          @click="emit('onSelectedFolder', selectedFolder), closeModal()"
+          @click="
+            () => {
+              if (!selectedFolder) {
+                notice.warning('请选择文件夹');
+                return;
+              }
+              emit('onSelectedFolder', selectedFolder), closeModal();
+            }
+          "
         >
           选择
         </button>
