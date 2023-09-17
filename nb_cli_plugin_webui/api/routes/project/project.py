@@ -82,12 +82,9 @@ async def create_nonebot_project(
             log_model = CustomLog(level=LogLevel.ERROR, message=str(err))
             await log.add_log(log_model)
 
-            try:
-                shutil.rmtree(project_dir)
-            except OSError:
-                return
-
-            log_model = CustomLog(message="All files about project have been cleared.")
+            log_model = CustomLog(
+                message="File maybe broken, please clear it by yourself"
+            )
             await log.add_log(log_model)
 
             log_model = CustomLog(message="❗ Failed...")
