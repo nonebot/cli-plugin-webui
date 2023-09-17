@@ -5,7 +5,7 @@
     <div class="relative">
       <input
         type="text"
-        placeholder="键入以搜索"
+        placeholder="键入以搜索（未完成）"
         class="input input-sm rounded w-full"
       />
     </div>
