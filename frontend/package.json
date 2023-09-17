@@ -1,9 +1,6 @@
 {
-  "name": "nb-cli-plugin-webui-frontend",
-  "description": "WebUI for nb-cli.",
-  "author": "Kyomotoi <kyomotoiowo@gmail.com>",
+  "name": "frontend",
   "private": true,
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
