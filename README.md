@@ -37,18 +37,30 @@ _✨ NoneBot2 命令行工具 前端可视化页面（WebUI） 插件 ✨_
   </a>
 </p>
 
-## 安装插件
+## 功能
 
-```bash
+- 可视化的 nb cli 操作
+  - 创建新的 NoneBot 实例
+  - 添加已有的 NoneBot 实例
+  - 拓展（插件、适配器、驱动器）管理（安装、卸载）
+- 可同时管理多个 NoneBot 实例
+- 为启动的 NoneBot 实例提供状态展示、性能查询
+- 可视化的 NoneBot 实例配置
+
+## 使用
+
+### 安装
+
+```shell
 nb self install nb-cli-plugin-webui
 ```
 
-## 使用插件
+### 命令行使用
 
-```bash
+```shell
 nb ui
 ```
 
-## 说明
+## 开发
 
-初次启动需自行输入/生成访问密钥。
+待补充......
