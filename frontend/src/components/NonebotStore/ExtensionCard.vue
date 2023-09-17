@@ -14,6 +14,7 @@ import { API } from "@/api";
 import { appStore } from "@/store/global";
 import { ToastWrapper } from "@/utils/notification";
 import { limitContent } from "@/utils";
+import { AxiosError } from "axios";
 
 const props = defineProps<{ itemData: T }>();
 
@@ -42,8 +43,14 @@ const doInstall = async (pass?: boolean) => {
       .then((resp) => {
         logKey.value = resp.log_key;
       })
-      .catch((error) => {
-        notice.error(`安装拓展失败：${error}`);
+      .catch((error: AxiosError) => {
+        let reason: string;
+        if (error.response) {
+          reason = (error.response.data as { detail: string })?.detail;
+        } else {
+          reason = error.message;
+        }
+        notice.error(`安装拓展失败：${reason}`);
       });
   } else {
     showInstallTipsModal.value = true;

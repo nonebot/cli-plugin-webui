@@ -5,9 +5,11 @@ import { appStore as store } from "@/store/global";
 import { webuiConfig } from "@/config";
 import { settingStore } from "@/store/setting";
 import { appStore } from "@/store/global";
-import { notice } from "@/utils/notification";
+import { ToastWrapper } from "@/utils/notification";
+import { AxiosError } from "axios";
 
 const api = new API();
+export const notice = new ToastWrapper("NoneBot Setting");
 
 class ProjectMetaConfig extends BaseConfig {
   constructor() {
@@ -15,45 +17,58 @@ class ProjectMetaConfig extends BaseConfig {
   }
 
   async genConfig(projectID: string): Promise<Config> {
-    let resp;
+    let resp: any;
 
-    try {
-      resp = await api.getProjectMetaConfig(projectID);
-    } catch (error: any) {
-      notice.error(`获取 project meta 失败：${error.detail}`);
-      throw error;
-    }
+    await api
+      .getProjectMetaConfig(projectID)
+      .then((response) => {
+        resp = response.detail;
+        return Promise.resolve();
+      })
+      .catch((error: AxiosError) => {
+        throw error;
+      });
 
     const setAction = async (k: string, v: any, keyType: string) => {
-      try {
-        await api.configSet(
+      await api
+        .configSet(
           store().choiceProject.project_id,
           this.name,
           store().enabledEnv,
           keyType,
           k,
           v,
-        );
-      } catch (error: any) {
-        notice.error(`更新 meta 设置失败：${error.detail}`);
-        return;
-      }
+        )
+        .then(() => {
+          return Promise.resolve();
+        })
+        .catch((error: AxiosError) => {
+          let reason: string;
+          if (error.response) {
+            reason = (error.response.data as { detail: string })?.detail;
+          } else {
+            reason = error.message;
+          }
+          notice.error(`更新实例 meta 设置失败：${reason}`);
+        });
 
-      try {
-        appStore().choiceProject = await api.getProjectDetail(
-          appStore().choiceProject.project_id,
-        );
-      } catch (error: any) {
-        notice.error(`更新 meta 设置失败：${error.detail}`);
-        return;
-      }
+      await api
+        .getProjectDetail(appStore().choiceProject.project_id)
+        .then((resp) => {
+          appStore().choiceProject = resp;
+          return Promise.resolve();
+        })
+        .catch((error: AxiosError) => {
+          let reason: string;
+          if (error.response) {
+            reason = (error.response.data as { detail: string })?.detail;
+          } else {
+            reason = error.message;
+          }
+          notice.error(`获取实例 meta 信息失败：${reason}`);
+        });
 
-      try {
-        await getProjectMetaConfig();
-      } catch (error: any) {
-        notice.error(`获取 meta 设置失败：${error.detail}`);
-        return;
-      }
+      await getProjectMetaConfig();
     };
 
     const getAction = () => {};
@@ -64,7 +79,7 @@ class ProjectMetaConfig extends BaseConfig {
       name: this.name,
       setAction: setAction,
       getAction: getAction,
-      properties: resp.detail,
+      properties: resp,
     };
     return result;
   }
@@ -76,36 +91,42 @@ class NonebotConfig extends BaseConfig {
   }
 
   async genConfig(projectID: string): Promise<Config> {
-    let resp;
+    let resp: any;
 
-    try {
-      resp = await api.getNonebotConfig(projectID);
-    } catch (error: any) {
-      notice.error(`获取 NoneBot 设置失败：${error.detail}`);
-      throw error;
-    }
+    await api
+      .getNonebotConfig(projectID)
+      .then((response) => {
+        resp = response.detail;
+        return Promise.resolve();
+      })
+      .catch((error: AxiosError) => {
+        throw error;
+      });
 
     const setAction = async (k: string, v: any, keyType: string) => {
-      try {
-        await api.configSet(
+      await api
+        .configSet(
           store().choiceProject.project_id,
           this.name,
           store().enabledEnv,
           keyType,
           k,
           v,
-        );
-      } catch (error: any) {
-        notice.error(`更新 NoneBot 设置失败：${error.detail}`);
-        return;
-      }
+        )
+        .then(() => {
+          return Promise.resolve();
+        })
+        .catch((error: AxiosError) => {
+          let reason: string;
+          if (error.response) {
+            reason = (error.response.data as { detail: string })?.detail;
+          } else {
+            reason = error.message;
+          }
+          notice.error(`更新 NoneBot 设置失败：${reason}`);
+        });
 
-      try {
-        await getNonebotConfig();
-      } catch (error: any) {
-        notice.error(`获取 NoneBot 设置失败：${error.detail}`);
-        return;
-      }
+      await getNonebotConfig();
     };
 
     const getAction = () => {};
@@ -116,7 +137,7 @@ class NonebotConfig extends BaseConfig {
       name: this.name,
       setAction: setAction,
       getAction: getAction,
-      properties: resp.detail,
+      properties: resp,
     };
     return result;
   }
@@ -128,36 +149,42 @@ class PluginConfig extends BaseConfig {
   }
 
   async genConfig(projectID: string): Promise<Config> {
-    let resp;
+    let resp: any;
 
-    try {
-      resp = await api.getProjectPluginConfigList(projectID);
-    } catch (error: any) {
-      notice.error(`获取 NoneBot 插件设置失败：${error}`);
-      throw error;
-    }
+    await api
+      .getProjectPluginConfigList(projectID)
+      .then((response) => {
+        resp = response.detail;
+        return Promise.resolve();
+      })
+      .catch((error: AxiosError) => {
+        throw error;
+      });
 
     const setAction = async (k: string, v: any, keyType: string) => {
-      try {
-        await api.configSet(
+      await api
+        .configSet(
           store().choiceProject.project_id,
           this.name,
           store().enabledEnv,
           keyType,
           k,
           v,
-        );
-      } catch (error: any) {
-        notice.error(`更新 NoneBot 插件设置失败：${error.detail}`);
-        return;
-      }
+        )
+        .then(() => {
+          return Promise.resolve();
+        })
+        .catch((error: AxiosError) => {
+          let reason: string;
+          if (error.response) {
+            reason = (error.response.data as { detail: string })?.detail;
+          } else {
+            reason = error.message;
+          }
+          notice.error(`更新 NoneBot 插件设置失败：${reason}`);
+        });
 
-      try {
-        await getNonebotPluginConfig();
-      } catch (error: any) {
-        notice.error(`获取 NoneBot 插件设置失败：${error.detail}`);
-        return;
-      }
+      await getNonebotPluginConfig();
     };
 
     const getAction = () => {};
@@ -168,7 +195,7 @@ class PluginConfig extends BaseConfig {
       name: this.name,
       setAction: setAction,
       getAction: getAction,
-      properties: resp.detail,
+      properties: resp,
     };
     return result;
   }
@@ -182,7 +209,7 @@ export const getWebUIConfig = () => {
   try {
     settingStore().webuiConfigList = webuiConfig.genConfig();
   } catch (error: any) {
-    notice.error(`获取 WebUI 设置失败：${error.detail}`);
+    notice.error(`获取 WebUI 设置失败：${error}`);
   }
 };
 
@@ -191,7 +218,15 @@ export const getProjectMetaConfig = async () => {
     settingStore().projectMetaConfigList = await projectMetaConfig.genConfig(
       appStore().choiceProject.project_id,
     );
-  } catch (error: any) {}
+  } catch (error: any) {
+    let reason: string;
+    if (error.response) {
+      reason = (error.response.data as { detail: string })?.detail;
+    } else {
+      reason = error.message;
+    }
+    notice.error(`获取实例 meta 设置失败：${reason}`);
+  }
 };
 
 export const getNonebotConfig = async () => {
@@ -199,7 +234,15 @@ export const getNonebotConfig = async () => {
     settingStore().nonebotConfigList = await nonebotConfig.genConfig(
       appStore().choiceProject.project_id,
     );
-  } catch (error: any) {}
+  } catch (error: any) {
+    let reason: string;
+    if (error.response) {
+      reason = (error.response.data as { detail: string })?.detail;
+    } else {
+      reason = error.message;
+    }
+    notice.error(`获取 NoneBot 设置失败：${reason}`);
+  }
 };
 
 export const getNonebotPluginConfig = async () => {
@@ -207,7 +250,15 @@ export const getNonebotPluginConfig = async () => {
     settingStore().pluginConfigList = await pluginConfig.genConfig(
       appStore().choiceProject.project_id,
     );
-  } catch (error: any) {}
+  } catch (error: any) {
+    let reason: string;
+    if (error.response) {
+      reason = (error.response.data as { detail: string })?.detail;
+    } else {
+      reason = error.message;
+    }
+    notice.error(`获取 NoneBot 插件设置失败：${reason}`);
+  }
 };
 
 export const getConfig = async () => {

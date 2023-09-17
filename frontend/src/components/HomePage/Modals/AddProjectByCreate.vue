@@ -2,11 +2,11 @@
 import LogShow from "@/components/CustomModal/LogShow.vue";
 import FolderSelect from "@/components/HomePage/Modals/FolderSelect.vue";
 
-import { API } from "@/api";
 import { notice } from "@/utils/notification";
 import { Driver, Adapter } from "@/api/models";
 import { onMounted, ref, watch } from "vue";
-import { mirrorList, getProjectList } from "../client";
+import { api, mirrorList, getProjectList } from "../client";
+import { AxiosError } from "axios";
 
 const logShowModal = ref<InstanceType<typeof LogShow> | null>();
 const folderSelectModal = ref<InstanceType<typeof FolderSelect> | null>();
@@ -24,8 +24,6 @@ defineExpose({
   openModal,
   closeModal,
 });
-
-const api = new API();
 
 const driverList = ref<Driver[]>([]);
 const adapterList = ref<Adapter[]>([]);
@@ -46,23 +44,37 @@ const selectedDriverList = ref<Driver[]>([]);
 const selectedAdapterList = ref<Adapter[]>([]);
 
 const getDrivers = async () => {
-  try {
-    const resp = await api.getDrivers(0, false, "", true);
-    driverList.value = resp.data;
-  } catch (error: any) {
-    notice.error(`获取驱动器列表失败：${error.detail}`);
-    return;
-  }
+  await api
+    .getDrivers(0, false, "", true)
+    .then((resp) => {
+      driverList.value = resp.data;
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`获取驱动器列表失败：${reason}`);
+    });
 };
 
 const getAdapters = async () => {
-  try {
-    const resp = await api.getAdapters(0, false, "", true);
-    adapterList.value = resp.data;
-  } catch (error: any) {
-    notice.error(`获取适配器列表失败：${error.detail}`);
-    return;
-  }
+  await api
+    .getAdapters(0, false, "", true)
+    .then((resp) => {
+      adapterList.value = resp.data;
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`获取适配器列表失败：${reason}`);
+    });
 };
 
 const selectedFolder = (data: string) => {
@@ -115,8 +127,8 @@ const doCheck = () => {
 };
 
 const doCreate = async () => {
-  try {
-    const resp = await api.createProject({
+  await api
+    .createProject({
       is_bootstrap: projectIsBootstrap.value,
       project_name: projectName.value,
       project_dir: projectFolder.value.replace("(实例名称)", ""),
@@ -124,12 +136,19 @@ const doCreate = async () => {
       drivers: projectDriver.value,
       adapters: projectAdapter.value,
       use_src: projectUseSrc.value,
+    })
+    .then((resp) => {
+      logKey.value = resp.log_key;
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`创建项目失败：${reason}`);
     });
-    logKey.value = resp.log_key;
-  } catch (error: any) {
-    notice.error(`初始化项目失败：${error.detail}`);
-    return;
-  }
 };
 
 const selectDriver = (driver: Driver) => {

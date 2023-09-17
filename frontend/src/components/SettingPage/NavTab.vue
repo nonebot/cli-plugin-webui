@@ -5,7 +5,8 @@ import { ref } from "vue";
 import { API } from "@/api";
 import { appStore as store } from "@/store/global";
 import { limitContent } from "@/utils";
-import { getNonebotConfig } from "./client";
+import { notice, getNonebotConfig } from "./client";
+import { AxiosError } from "axios";
 
 const api = new API();
 
@@ -14,10 +15,20 @@ const addEnvInput = ref("");
 const showModal = ref(false);
 
 const getDotenv = async () => {
-  try {
-    const resp = await api.getDotenvList(store().choiceProject.project_id);
-    tabs.value = resp.detail;
-  } catch (error: any) {}
+  await api
+    .getDotenvList(store().choiceProject.project_id)
+    .then((resp) => {
+      tabs.value = resp.detail;
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`获取环境列表失败：${reason}`);
+    });
 };
 
 getDotenv();
@@ -28,20 +39,43 @@ const addEnv = async () => {
   }
 
   const env = `.env.${addEnvInput.value}`;
-
-  try {
-    await api.createDotenvFile(store().choiceProject.project_id, env);
-    tabs.value.push(env);
-  } catch (error: any) {}
+  await api
+    .createDotenvFile(store().choiceProject.project_id, env)
+    .then(() => {
+      tabs.value.push(env);
+      addEnvInput.value = "";
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`创建环境失败：${reason}`);
+    });
 };
 
 const assignEnv = async (env: string) => {
-  try {
-    await api.activeDotenvFile(store().choiceProject.project_id, env);
-    store().enabledEnv = env;
-    tabs.value = [env, ...tabs.value.filter((i) => i !== env)];
-    await getNonebotConfig();
-  } catch (error: any) {}
+  await api
+    .activeDotenvFile(store().choiceProject.project_id, env)
+    .then(() => {
+      store().enabledEnv = env;
+      tabs.value = [env, ...tabs.value.filter((i) => i !== env)];
+      notice.success(`已切换至 ${env}`);
+      return Promise.resolve();
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`切换环境失败：${reason}`);
+    });
+
+  await getNonebotConfig();
 };
 </script>
 
@@ -89,9 +123,7 @@ const assignEnv = async (env: string) => {
                       viewBox="0 0 24 24"
                     >
                       <title>删除</title>
-                      <path
-                        d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
-                      />
+                      <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
                     </svg>
                     <svg
                       class="swap-off fill-current h-5 w-5"

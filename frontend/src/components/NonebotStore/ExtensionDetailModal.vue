@@ -10,6 +10,7 @@ import { API } from "@/api";
 import { appStore } from "@/store/global";
 import { notice } from "@/utils/notification";
 import { nonebotExtensionStore } from "@/store/extensionStore";
+import { AxiosError } from "axios";
 
 const showModal = ref(false);
 
@@ -34,22 +35,27 @@ const itemData = computed(() => {
 });
 
 const uninstallModule = async () => {
-  try {
-    await api.uninstallModule(
+  await api
+    .uninstallModule(
       appStore().choiceProject.project_id,
       appStore().enabledEnv,
       props.itemData,
-    );
-    closeModal();
-  } catch (error: any) {
-    notice.error(`卸载模块时失败：${error.detail}`);
-  }
+    )
+    .then(() => {
+      closeModal();
+      return Promise.resolve();
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`卸载模块时失败：${reason}`);
+    });
 
-  try {
-    await nonebotExtensionStore().updateData(appStore().choiceProject.project_id);
-  } catch (error: any) {
-    notice.error(`更新 NoneBot 拓展列表时失败：${error.detail}`);
-  }
+  await nonebotExtensionStore().updateData(appStore().choiceProject.project_id);
 };
 </script>
 

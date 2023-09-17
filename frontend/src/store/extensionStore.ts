@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { API } from "@/api";
 import { ToastWrapper } from "@/utils/notification";
 import { Adapter, Driver, Plugin } from "@/api/models";
+import { AxiosError } from "axios";
 
 const api = new API();
 const notice = new ToastWrapper("Nonebot Store");
@@ -49,9 +50,15 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
             this.totalItem = resp.total_item;
             this.storeData = resp.data;
           })
-          .catch((error) => {
+          .catch((error: AxiosError) => {
             this.requesting = false;
-            notice.error(`获取插件列表失败：${error.detail}`);
+            let reason: string;
+            if (error.response) {
+              reason = (error.response.data as { detail: string })?.detail;
+            } else {
+              reason = error.message;
+            }
+            notice.error(`获取插件列表失败：${reason}`);
           });
       }
 
@@ -64,9 +71,15 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
             this.totalPage = resp.total_page;
             this.totalItem = resp.total_item;
           })
-          .catch((error) => {
+          .catch((error: AxiosError) => {
             this.requesting = false;
-            notice.error(`获取适配器列表失败：${error.detail}`);
+            let reason: string;
+            if (error.response) {
+              reason = (error.response.data as { detail: string })?.detail;
+            } else {
+              reason = error.message;
+            }
+            notice.error(`获取适配器列表失败：${reason}`);
           });
       }
 
@@ -79,9 +92,15 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
             this.totalPage = resp.total_page;
             this.totalItem = resp.total_item;
           })
-          .catch((error) => {
+          .catch((error: AxiosError) => {
             this.requesting = false;
-            notice.error(`获取驱动器列表失败：${error.detail}`);
+            let reason: string;
+            if (error.response) {
+              reason = (error.response.data as { detail: string })?.detail;
+            } else {
+              reason = error.message;
+            }
+            notice.error(`获取驱动器列表失败：${reason}`);
           });
       }
     },
@@ -96,9 +115,15 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
           this.totalPage = resp.total_page;
           this.totalItem = resp.total_item;
         })
-        .catch((error) => {
+        .catch((error: AxiosError) => {
           this.requesting = false;
-          notice.error(`搜索 NoneBot 拓展商店失败：${error.detail}`);
+          let reason: string;
+          if (error.response) {
+            reason = (error.response.data as { detail: string })?.detail;
+          } else {
+            reason = error.message;
+          }
+          notice.error(`搜索 NoneBot 拓展商店失败：${reason}`);
         });
     },
 
@@ -109,9 +134,15 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
         .then(() => {
           this.requesting = false;
         })
-        .catch((error) => {
+        .catch((error: AxiosError) => {
           this.requesting = false;
-          notice.error(`NoneBot 拓展商店刷新失败：${error.detail}`);
+          let reason: string;
+          if (error.response) {
+            reason = (error.response.data as { detail: string })?.detail;
+          } else {
+            reason = error.message;
+          }
+          notice.error(`NoneBot 拓展商店刷新失败：${reason}`);
         });
     },
 

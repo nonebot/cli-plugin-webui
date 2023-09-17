@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { API } from "@/api";
 import { notice } from "@/utils/notification";
 import { FileInfo } from "@/api/models";
 import { limitContent } from "@/utils";
+import { api } from "../client";
+import { AxiosError } from "axios";
 
 const showModal = ref(false);
 const showCreateFolderModal = ref(false);
@@ -29,42 +30,61 @@ const newFolderName = ref("");
 
 const emit = defineEmits(["onSelectedFolder"]);
 
-const api = new API();
-
 const getFiles = async (path: string) => {
-  try {
-    const resp = await api.getFileList(path);
-    files.value = resp.files;
-    nowPathStack.value = nowPath.value.split("\\");
-  } catch (error: any) {
-    notice.error(`获取文件列表失败：${error.detail}`);
-    return;
-  }
+  await api
+    .getFileList(path)
+    .then((resp) => {
+      files.value = resp.files;
+      nowPathStack.value = nowPath.value.split("/");
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`获取文件列表失败：${reason}`);
+    });
 };
 
 const createFile = async (fileName: string, path: string) => {
-  try {
-    const resp = await api.createFile(fileName, true, path);
-    files.value = resp.files;
-    nowPathStack.value = nowPath.value.split("\\");
-  } catch (error: any) {
-    notice.error(`创建文件夹失败：${error.detail}`);
-    return;
-  }
-  newFolderName.value = "";
-  showCreateFolderModal.value = false;
-  openModal();
+  await api
+    .createFile(fileName, true, path)
+    .then((resp) => {
+      files.value = resp.files;
+      nowPathStack.value = nowPath.value.split("/");
+      newFolderName.value = "";
+      showCreateFolderModal.value = false;
+      openModal();
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`创建文件夹失败：${reason}`);
+    });
 };
 
 const deleteFile = async (fileName: string, isFolder: boolean, path: string) => {
-  try {
-    const resp = await api.deleteFile(fileName, isFolder, path);
-    files.value = resp.files;
-    nowPathStack.value = nowPath.value.split("\\");
-  } catch (error: any) {
-    notice.error(`删除文件失败：${error.detail}`);
-    return;
-  }
+  await api
+    .deleteFile(fileName, isFolder, path)
+    .then((resp) => {
+      files.value = resp.files;
+      nowPathStack.value = nowPath.value.split("/");
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`删除文件失败：${reason}`);
+    });
 };
 
 const nextDir = (path: string, is_dir: number) => {

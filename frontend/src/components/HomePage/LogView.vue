@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { appStore } from "@/store/global";
-import { API } from "@/api";
+import { api } from "./client";
 import AnsiUp from "ansi_up";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { WebsocketWrapper } from "@/utils/ws";
 import { notice } from "@/utils/notification";
 import { ProcessLog } from "@/api/models";
+import { AxiosError } from "axios";
 
 const ansiUp = new AnsiUp();
-const api = new API();
 
 const viewProject = ref("");
 const viewArea = ref<HTMLElement>();
@@ -35,7 +35,6 @@ const writeStdin = async (content: string) => {
   const projectID = appStore().choiceProject.project_id;
   await api.writeStdin(projectID, content).catch(() => {
     writeToArea(`Input failed!`, ["text-red-500", "font-bold"]);
-    return;
   });
 };
 
@@ -51,8 +50,14 @@ const getHistoryLog = async (logID: string, logCount: number) => {
         writeToArea("加载历史日志完成");
       }
     })
-    .catch((error) => {
-      notice.error(`获取历史日志失败：${error.detail}`);
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`获取历史日志失败：${reason}`);
     });
 };
 
