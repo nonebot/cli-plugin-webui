@@ -141,6 +141,17 @@ watch(
     handleWebSocket();
   },
 );
+
+watch(
+  () => appStore().choiceProject.is_running,
+  async (newValue) => {
+    if (newValue) {
+      clearArea();
+      await getHistoryLog(viewProject.value, 50);
+      handleWebSocket();
+    }
+  },
+);
 </script>
 
 <template>

@@ -94,6 +94,16 @@ watch(
     }
   },
 );
+
+watch(
+  () => appStore().choiceProject.is_running,
+  (newValue) => {
+    if (newValue) {
+      clearList();
+      handleProjectMonitorWebSocket();
+    }
+  },
+);
 </script>
 
 <template>
