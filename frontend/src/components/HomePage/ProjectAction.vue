@@ -5,12 +5,11 @@ import RefreshIcon from "@/components/Icons/RefreshIcon.vue";
 import DeleteIcon from "@/components/Icons/DeleteIcon.vue";
 import CheckIcon from "@/components/Icons/CheckIcon.vue";
 
-import { API } from "@/api";
 import { appStore as store } from "@/store/global";
 import { notice } from "@/utils/notification";
 import { ref } from "vue";
-
-const api = new API();
+import { api, getProjectList } from "./client";
+import { AxiosError } from "axios";
 
 const oprateLock = ref(false);
 
@@ -26,14 +25,20 @@ const runProject = async () => {
   oLock();
   await api
     .runProject(store().choiceProject.project_id)
-    .then(() => {
+    .then(async () => {
       store().projectIsRunning();
+      await getProjectList();
       oUnlock();
     })
-    .catch((error: any) => {
-      notice.error(`运行实例失败：${error.detail}`);
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`运行实例失败：${reason}`);
       oUnlock();
-      return;
     });
 };
 
@@ -41,14 +46,20 @@ const stopProject = async () => {
   oLock();
   await api
     .stopProject(store().choiceProject.project_id)
-    .then(() => {
+    .then(async () => {
       store().projectIsStop();
+      await getProjectList();
       oUnlock();
     })
-    .catch((error: any) => {
-      notice.error(`停止实例失败：${error.detail}`);
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`停止实例失败：${reason}`);
       oUnlock();
-      return;
     });
 };
 
@@ -87,14 +98,23 @@ const restartProject = async () => {
 const deleteProject = async () => {
   oLock();
   const project = store().choiceProject;
-  try {
-    await api.deleteProject(project.project_id);
-  } catch (error: any) {
-    notice.error(`删除操作失败：${error.detail}`);
-    return;
-  }
-  store().choiceProject = Object();
-  oUnlock();
+  await api
+    .deleteProject(project.project_id)
+    .then(async () => {
+      await getProjectList();
+      store().choiceProject = Object();
+      oUnlock();
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`删除操作失败：${reason}`);
+      oUnlock();
+    });
 };
 </script>
 

@@ -5,11 +5,10 @@ import ErrorCircleIcon from "@/components/Icons/ErrorCircleIcon.vue";
 import CloseIcon from "@/components/Icons/CloseIcon.vue";
 
 import { ref } from "vue";
-import { API } from "@/api";
 import { AxiosError } from "axios";
 import { notice } from "@/utils/notification";
 import { CheckProjectTomlDetail } from "@/api/models";
-import { mirrorList } from "../client";
+import { api, mirrorList } from "../client";
 
 const showModal = ref(false);
 
@@ -35,8 +34,6 @@ const openNextModal = () => {
 const closeNextModal = () => {
   showNextModal.value = false;
 };
-
-const api = new API();
 
 const logShowModal = ref<InstanceType<typeof LogShow> | null>();
 
@@ -69,7 +66,13 @@ const doCheck = async () => {
       }
     })
     .catch((error: AxiosError) => {
-      notice.error(error.message);
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`扫描失败：${reason}`);
     });
 };
 
@@ -93,7 +96,13 @@ const doAddProject = async () => {
       logKey.value = resp.log_key;
     })
     .catch((error: AxiosError) => {
-      notice.error(`添加失败：${error.message}`);
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`添加失败：${reason}`);
     });
 };
 

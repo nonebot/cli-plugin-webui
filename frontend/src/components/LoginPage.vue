@@ -51,11 +51,13 @@ async function doLogin() {
       router.push("/");
     })
     .catch((error: AxiosError) => {
+      let reason: string;
       if (error.response) {
-        notice.error(`验证失败：${(error.response.data as { detail: string })?.detail}`);
+        reason = (error.response.data as { detail: string })?.detail;
       } else {
-        notice.error(`验证失败：${error.message}`);
+        reason = error.message;
       }
+      notice.error(`验证失败：${reason}`);
     });
 }
 </script>

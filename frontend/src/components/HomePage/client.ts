@@ -6,8 +6,7 @@ import { API } from "@/api";
 import { appStore } from "@/store/global";
 import { AxiosError } from "axios";
 
-const api = new API();
-
+export const api = new API();
 export const mirrorList = [
   { name: "PyPI", url: "https://pypi.org/simple" },
   {
@@ -90,12 +89,12 @@ export async function getProjectList() {
       appStore().projectList = resp.projects;
     })
     .catch((error: AxiosError) => {
+      let reason: string;
       if (error.response) {
-        notice.error(
-          `获取实例列表失败：${(error.response.data as { detail: string })?.detail}`,
-        );
+        reason = (error.response.data as { detail: string })?.detail;
       } else {
-        notice.error(`获取实例列表失败：${error.message}`);
+        reason = error.message;
       }
+      notice.error(`获取实例列表失败：${reason}`);
     });
 }
