@@ -13,7 +13,8 @@ from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexit
 
 
 async def get_user_config():
-    click.secho(_("\n[Token Setting]"), fg="green")
+    click.secho("")
+    click.secho(_("[Token Setting]"), fg="green")
     click.secho(_("Token is your key to access WebUI."))
     if await ConfirmPrompt(_("Do you want it generated?")).prompt_async(
         style=CLI_DEFAULT_STYLE
@@ -38,7 +39,8 @@ async def get_user_config():
     click.secho(f"\n{token}\n", fg="green")
     click.secho(_("ATTENTION, TOKEN ONLY SHOW ONCE."), fg="red", bold=True)
 
-    click.secho(_("\n[Server Setting]"), fg="green")
+    click.secho("")
+    click.secho(_("[Server Setting]"), fg="green")
     host = "localhost"
     port = "12345"
     if await ConfirmPrompt(
@@ -56,12 +58,14 @@ async def get_user_config():
     else:
         click.secho(_("Your webui url will decide by nb-cli."))
 
-    click.secho(_("\n[General Setting]"), fg="green")
+    click.secho("")
+    click.secho(_("[General Setting]"), fg="green")
     click.secho(_("BASE DIR REQUIRE"), fg="red")
-    click.secho(_("- Absolute path. like:"))
-    click.secho(_("  * Linux: /home/(user)/"))
-    click.secho(_("  * Windows: C:/Users/Public/Pictures"))
-    click.secho(_("- Nonebot instance will be stored here."))
+    click.secho(_("- Absolute path. Example:"))
+    click.secho(("  * Linux: /home/(user)/"))
+    click.secho(("  * MacOS: /Users/(user)/"))
+    click.secho(("  * Windows: C:/Users/Public/Pictures"))
+    click.secho(_("- NoneBot instance will be stored here."))
     click.secho(
         _("- The base directory for WebUI file system display will start here."),
         fg="red",
@@ -72,14 +76,15 @@ async def get_user_config():
     )
     while True:
         if not Path(base_dir).exists():
-            click.secho(_("This directory does not exist"))
+            click.secho(_("This directory does not exist."))
             base_dir = await InputPrompt(_("Please enter again:")).prompt_async(
                 style=CLI_DEFAULT_STYLE
             )
         else:
             break
 
-    click.secho(_("\n[Setting Overview]"), fg="green")
+    click.secho("")
+    click.secho(_("[Setting Overview]"), fg="green")
     click.secho(_(f"Token: {token}"))
     click.secho(_(f"WebUI URL: http://{host}:{port}/"))
     click.secho(_(f"Base DIR: {base_dir}"))
