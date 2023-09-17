@@ -91,16 +91,15 @@ const allDone = async (data: boolean) => {
   if (data) {
     await getProjectList();
     notice.success("添加成功");
-
-    projectIsBootstrap.value = true;
-    projectName.value = "";
-    projectFolder.value = "";
-    projectMirror.value = "";
-    projectDriver.value = [];
-    projectAdapter.value = [];
-    projectUseSrc.value = false;
-    logKey.value = "";
   }
+  projectIsBootstrap.value = true;
+  projectName.value = "";
+  projectFolder.value = "";
+  projectMirror.value = "";
+  projectDriver.value = [];
+  projectAdapter.value = [];
+  projectUseSrc.value = false;
+  logKey.value = "";
 };
 
 const doCheck = () => {
@@ -373,7 +372,7 @@ watch(showModal, async () => {
       </div>
 
       <div class="modal-action">
-        <button class="btn rounded-lg h-10 min-h-0" @click="allDone(true), closeModal()">
+        <button class="btn rounded-lg h-10 min-h-0" @click="allDone(false), closeModal()">
           取消
         </button>
 
