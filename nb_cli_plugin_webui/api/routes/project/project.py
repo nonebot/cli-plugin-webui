@@ -337,7 +337,7 @@ async def delete_nonebot_project(project_id: str) -> DeleteProjectResponse:
         shutil.rmtree(data.project_dir)
     except OSError as err:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"删除实例失败 {err=}"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"删除实例失败 {err}"
         )
 
     manager.remove()
@@ -360,6 +360,11 @@ async def get_nonebot_projects() -> ProjectListResponse:
     new_data: Dict[str, NonebotProjectMeta] = dict()
     for project_id in projects:
         project = projects[project_id]
+
+        if not Path(project.project_dir).exists():
+            npm = NonebotProjectManager(project_id)
+            npm.remove()
+            continue
 
         for process_id in processes:
             process = processes[process_id]
