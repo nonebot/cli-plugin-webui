@@ -3,7 +3,7 @@ import NonebotIcon from "@/components/Icons/NonebotIcon.vue";
 import ExtensionIcon from "@/components/Icons/ExtensionIcon.vue";
 import AccountLightOutlineIcon from "@/components/Icons/AccountLightOutlineIcon.vue";
 import SettingIcon from "@/components/Icons/SettingIcon.vue";
-import FileIcon from "@/components/Icons/FileIcon.vue";
+// import FileIcon from "@/components/Icons/FileIcon.vue";
 
 import { ref, watch } from "vue";
 import MenuIcon from "@/components/Icons/MenuIcon.vue";
@@ -19,7 +19,7 @@ interface navItem {
 const topNavList: navItem[] = [
   { tip: "主页", icon: NonebotIcon, to: "/" },
   { tip: "拓展商店", icon: ExtensionIcon, to: "/store" },
-  { tip: "文件管理", icon: FileIcon, to: "/file" },
+  // { tip: "文件管理", icon: FileIcon, to: "/file" },
 ];
 
 const buttonNavList: navItem[] = [
