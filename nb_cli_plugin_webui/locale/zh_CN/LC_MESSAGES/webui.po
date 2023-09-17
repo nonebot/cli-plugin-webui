@@ -7,88 +7,198 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-17 02:27+0800\n"
-"PO-Revision-Date: 2023-05-17 02:31+0800\n"
-"Last-Translator: Kyomotoi <0w0@imki.moe>\n"
+"POT-Creation-Date: 2023-09-17 17:37+0800\n"
+"PO-Revision-Date: 2023-09-17 17:56+0800\n"
+"Last-Translator: Kyomotoi <kyomotoiowo@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3\n"
+"X-Generator: Poedit 3.3.2\n"
 
-#: ../nb_cli_plugin_webui/api/routes/performance.py:21
-msgid "Malformed data from websocket."
-msgstr "无效的 WebSocket 返回."
+#: nb_cli_plugin_webui/core/configs/setup.py:17
+msgid "[Token Setting]"
+msgstr "[访问密钥设置]"
 
-#: ../nb_cli_plugin_webui/cli.py:18
-msgid "Start NB CLI WebUI."
-msgstr "管理 NB CLI WebUI."
+#: nb_cli_plugin_webui/core/configs/setup.py:18
+msgid "Token is your key to access WebUI."
+msgstr "密钥是你访问 WebUI 的凭证。"
 
-#: ../nb_cli_plugin_webui/cli.py:25
-msgid "The host required to access NB CLI WebUI."
-msgstr "NB CLI WebUI 所需的 Host."
+#: nb_cli_plugin_webui/core/configs/setup.py:19 nb_cli_plugin_webui/cli.py:100
+msgid "Do you want it generated?"
+msgstr "你需要生成一个吗?"
 
-#: ../nb_cli_plugin_webui/cli.py:33
-msgid "The port required to access NB CLI WebUI."
-msgstr "NB CLI WebUI 所需的端口."
-
-#: ../nb_cli_plugin_webui/cli.py:68
-msgid "Run NB CLI WebUI"
-msgstr "运行 NB CLI WebUI."
-
-#: ../nb_cli_plugin_webui/cli.py:74
-msgid "Set access Token."
-msgstr "设置访问密钥."
-
-#: ../nb_cli_plugin_webui/cli.py:77
-msgid "Do you want it generated? [Y/N]"
-msgstr "你需要生成一个吗？[Y/N]"
-
-#: ../nb_cli_plugin_webui/cli.py:83
+#: nb_cli_plugin_webui/core/configs/setup.py:24 nb_cli_plugin_webui/cli.py:105
 msgid "Please enter token:"
-msgstr "请键入密钥:"
+msgstr "请键入密钥："
 
-#: ../nb_cli_plugin_webui/cli.py:93
+#: nb_cli_plugin_webui/core/configs/setup.py:34
+#: nb_cli_plugin_webui/core/configs/setup.py:80 nb_cli_plugin_webui/cli.py:115
 msgid "Please enter again:"
-msgstr "请再次键入:"
+msgstr "请再次键入："
 
-#: ../nb_cli_plugin_webui/cli.py:97
+#: nb_cli_plugin_webui/core/configs/setup.py:38 nb_cli_plugin_webui/cli.py:119
 msgid "Your token is:"
-msgstr "你的密钥是:"
+msgstr "你的密钥是："
 
-#: ../nb_cli_plugin_webui/cli.py:99
+#: nb_cli_plugin_webui/core/configs/setup.py:40 nb_cli_plugin_webui/cli.py:121
 msgid "ATTENTION, TOKEN ONLY SHOW ONCE."
-msgstr "注意, 该密钥仅显示这一次, 请妥善保存."
+msgstr "请注意，该密钥仅展示这一次。"
 
-#: ../nb_cli_plugin_webui/utils/security/jwt.py:41
-msgid "Session(cookie) has expired."
-msgstr "会话已过期."
+#: nb_cli_plugin_webui/core/configs/setup.py:43
+msgid "[Server Setting]"
+msgstr "[WebUI 后端设置]"
 
-#: ../nb_cli_plugin_webui/utils/security/jwt.py:43
-msgid "Invalid JWT."
-msgstr ""
+#: nb_cli_plugin_webui/core/configs/setup.py:47
+msgid "Do you want to decide (host) and (port) by yourself?"
+msgstr "你想亲自决定访问 WebUI 的 host 和端口吗？"
 
-#: ../nb_cli_plugin_webui/utils/security/jwt.py:45
-msgid "Malformed payload in cookie."
-msgstr ""
+#: nb_cli_plugin_webui/core/configs/setup.py:49
+msgid "Please enter host:"
+msgstr "请键入 host："
 
-#: ../nb_cli_plugin_webui/utils/__init__.py:27
+#: nb_cli_plugin_webui/core/configs/setup.py:52
+msgid "Please enter port:"
+msgstr "请键入端口："
+
+#: nb_cli_plugin_webui/core/configs/setup.py:56
+msgid "Your webui url is:"
+msgstr "你的 WebUI 访问地址是："
+
+#: nb_cli_plugin_webui/core/configs/setup.py:59
+msgid "Your webui url will decide by nb-cli."
+msgstr "你的 WebUI 访问地址将由 nb-cli 决定。"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:62
+msgid "[General Setting]"
+msgstr "[通用设置]"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:63
+msgid "BASE DIR REQUIRE"
+msgstr "基础目录是必填的"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:64
+msgid "- Absolute path. Example:"
+msgstr "- 请提供绝对路径。例如："
+
+#: nb_cli_plugin_webui/core/configs/setup.py:68
+msgid "- NoneBot instance will be stored here."
+msgstr "- 之后的 NoneBot 实例将存储于此。"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:70
+msgid "- The base directory for WebUI file system display will start here."
+msgstr "- 之后的文件通过 WebUI 文件系统的展示将以这个路径为基点。"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:73
+msgid "- The path entered will be validated to ensure it exists"
+msgstr "- 输入的路径将被验证以确保其存在"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:74
+msgid "Please enter base dir:"
+msgstr "请键入基础目录："
+
+#: nb_cli_plugin_webui/core/configs/setup.py:79
+msgid "This directory does not exist."
+msgstr "该文件夹不存在。"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:87
+msgid "[Setting Overview]"
+msgstr "[设置概览]"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:88
+#, python-brace-format
+msgid "Token: {token}"
+msgstr "密钥: {token}"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:89
+#, python-brace-format
+msgid "WebUI URL: http://{host}:{port}/"
+msgstr "WebUI 访问网址：http://{host}:{port}/"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:90
+#, python-brace-format
+msgid "Base DIR: {base_dir}"
+msgstr "基础目录: {base_dir}"
+
+#: nb_cli_plugin_webui/core/configs/setup.py:91
+msgid "Are you confirm?"
+msgstr "你确定吗？"
+
+#: nb_cli_plugin_webui/utils/security/jwt.py:36
+msgid "Session(token) has expired."
+msgstr "会话(密钥)已失效。"
+
+#: nb_cli_plugin_webui/utils/security/jwt.py:38
+msgid "Invalid token."
+msgstr "错误的密钥。"
+
+#: nb_cli_plugin_webui/utils/security/jwt.py:40
+msgid "Malformed payload in token."
+msgstr "密钥格式有误。"
+
+#: nb_cli_plugin_webui/utils/__init__.py:22
+msgid "No available ports in this range."
+msgstr "该范围内没有可用的端口。"
+
+#: nb_cli_plugin_webui/utils/__init__.py:27
 msgid "Token should be at least 12 characters long."
-msgstr ""
+msgstr "至少需要12个字符。"
 
-#: ../nb_cli_plugin_webui/utils/__init__.py:32
+#: nb_cli_plugin_webui/utils/__init__.py:30
 msgid "Token should contain at least one digit."
-msgstr ""
+msgstr "密钥需要包含数字。"
 
-#: ../nb_cli_plugin_webui/utils/__init__.py:36
+#: nb_cli_plugin_webui/utils/__init__.py:33
 msgid "Token should contain at least one lowercase letter."
-msgstr ""
+msgstr "密钥需要包含小写字母。"
 
-#: ../nb_cli_plugin_webui/utils/__init__.py:40
+#: nb_cli_plugin_webui/utils/__init__.py:37
 msgid "Token should contain at least one uppercase letter."
-msgstr ""
+msgstr "密钥需要包含大写字母。"
 
-#: ../nb_cli_plugin_webui/utils/__init__.py:44
+#: nb_cli_plugin_webui/utils/__init__.py:41
 msgid "Token should contain at least one special character."
-msgstr ""
+msgstr "密钥需要包含符号。"
+
+#: nb_cli_plugin_webui/cli.py:17
+msgid "Start up NB CLI UI."
+msgstr "激活 NB CLI UI。"
+
+#: nb_cli_plugin_webui/cli.py:54
+msgid "Run NB CLI UI"
+msgstr "启动 NB CLI UI"
+
+#: nb_cli_plugin_webui/cli.py:60
+msgid "The host required to access NB CLI UI."
+msgstr "NB CLI UI 所需的 host。"
+
+#: nb_cli_plugin_webui/cli.py:68
+msgid "The port required to access NB CLI UI."
+msgstr "NB CLI UI 所需的端口。"
+
+#: nb_cli_plugin_webui/cli.py:74 nb_cli_plugin_webui/cli.py:94
+msgid "Cannot find config file of webui."
+msgstr "无法找到 WebUI 的设置文件。"
+
+#: nb_cli_plugin_webui/cli.py:76 nb_cli_plugin_webui/cli.py:96
+msgid "Please run: nb ui init (If you are running this for the first time)"
+msgstr "请运行：nb ui init (如果你是第一次)"
+
+#: nb_cli_plugin_webui/cli.py:90
+msgid "Reset or create access Token."
+msgstr "重新设置 WebUI 访问密钥。"
+
+#: nb_cli_plugin_webui/api/dependencies/store/load.py:45
+#, python-brace-format
+msgid "Invalid module type: {module_type}"
+msgstr "无效的类型: {module_type}"
+
+#: nb_cli_plugin_webui/api/dependencies/store/load.py:78
+#, python-brace-format
+msgid "Failed to get {module_type} list."
+msgstr "获取 {module_type} 列表失败"
+
+#: nb_cli_plugin_webui/api/__init__.py:18
+msgid "WebUI dist directory not found."
+msgstr "未找到 WebUI 前端文件。"
