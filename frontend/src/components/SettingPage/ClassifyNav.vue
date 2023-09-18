@@ -5,7 +5,7 @@ import { settingStore } from "@/store/setting";
 </script>
 
 <template>
-  <div class="m-2 mt-6 overflow-hidden flex flex-col flex-nowarp">
+  <div class="m-2 mt-6 overflow-hidden flex flex-col flex-nowrap">
     <div class="tabs pl-2">
       <a class="tab tab-sm tab-lifted tab-active">Global</a>
     </div>
@@ -36,7 +36,7 @@ import { settingStore } from "@/store/setting";
     <Transition>
       <div
         v-if="settingStore().nonebotConfigList.title"
-        class="mt-6 overflow-hidden flex flex-col flex-nowarp"
+        class="mt-6 overflow-hidden flex flex-col flex-nowrap"
       >
         <NavTab />
         <div class="custom-y-scrollbar overflow-y-auto grow">
@@ -45,9 +45,7 @@ import { settingStore } from "@/store/setting";
               <details>
                 <summary class="rounded">Project</summary>
                 <ul>
-                  <li
-                    v-for="i in settingStore().projectMetaConfigList.properties"
-                  >
+                  <li v-for="i in settingStore().projectMetaConfigList.properties">
                     <details>
                       <summary class="rounded">
                         {{ i.title }}
@@ -68,10 +66,7 @@ import { settingStore } from "@/store/setting";
               <details>
                 <summary class="rounded">Nonebot</summary>
                 <ul>
-                  <li
-                    v-for="config in settingStore().nonebotConfigList
-                      .properties"
-                  >
+                  <li v-for="config in settingStore().nonebotConfigList.properties">
                     <details>
                       <summary class="rounded">
                         {{ config.title }}
@@ -92,18 +87,14 @@ import { settingStore } from "@/store/setting";
               <details>
                 <summary class="rounded">插件</summary>
                 <ul>
-                  <li
-                    v-for="plugin in settingStore().pluginConfigList.properties"
-                  >
+                  <li v-for="plugin in settingStore().pluginConfigList.properties">
                     <details>
                       <summary class="rounded">
                         {{ plugin.title.replace("nonebot_plugin_", "") }}
                       </summary>
                       <ul>
                         <li v-for="detail in plugin.properties">
-                          <a
-                            :href="`#nonebot_plugin:${plugin.name}:${detail.name}`"
-                          >
+                          <a :href="`#nonebot_plugin:${plugin.name}:${detail.name}`">
                             {{ detail.title }}
                           </a>
                         </li>

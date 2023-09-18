@@ -98,7 +98,7 @@ watch(
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col flex-nowarp">
+  <div class="h-full w-full flex flex-col flex-nowrap">
     <div
       ref="bar"
       :class="{

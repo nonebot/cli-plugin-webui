@@ -231,7 +231,7 @@ watch(showModal, async () => {
 
 <template>
   <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
-    <form method="dialog" class="modal-box rounded-lg flex flex-col flex-nowarp">
+    <form method="dialog" class="modal-box rounded-lg flex flex-col flex-nowrap">
       <h3 class="font-bold text-lg">创建 NoneBot 实例</h3>
 
       <div
