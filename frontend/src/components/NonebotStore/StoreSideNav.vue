@@ -11,7 +11,7 @@ import { nonebotExtensionStore } from "@/store/extensionStore";
 <template>
   <div
     :class="{
-      'shrink-0 h-full w-72 bg-base-300 flex flex-col flex-nowarp p-2 pb-6 pt-12 md:pt-0': true,
+      'shrink-0 h-full w-72 bg-base-300 flex flex-col flex-nowrap p-2 pb-6 pt-12 md:pt-0': true,
       'transition-all ease-in-out translate-x-0 md:!translate-x-0': true,
       '!translate-x-[-18rem]': !nonebotExtensionStore().sideNavShow,
     }"
