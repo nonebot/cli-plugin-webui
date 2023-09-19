@@ -16,7 +16,7 @@ importers:
         specifier: ^1.4.0
         version: 1.5.0
       daisyui:
-        specifier: ^3.5.1
+        specifier: ^3.7.5
         version: 3.7.5
       echarts:
         specifier: ^5.4.2
