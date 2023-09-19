@@ -136,7 +136,7 @@ async function doLogin() {
 
         <div class="w-full tracking-tight font-light">
           <div class="mt-2 mb-2 text-6xl lg:text-8xl sm:text-6xl">
-            <span class="main-word">N</span>one<span class="main-word">B</span>ot
+            <span class="text-primary">N</span>one<span class="text-primary">B</span>ot
           </div>
           <p class="text-lg">跨平台 PYTHON 异步机器人框架</p>
         </div>

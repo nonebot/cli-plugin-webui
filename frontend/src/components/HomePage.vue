@@ -44,9 +44,3 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-
-<style>
-.main-word {
-  color: hsl(var(--p));
-}
-</style>

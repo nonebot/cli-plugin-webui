@@ -3,7 +3,7 @@
     <div class="w-full">
       <div class="w-full tracking-tight font-light">
         <div class="mt-2 mb-2 lg:text-8xl sm:text-6xl text-6xl">
-          <span class="main-word">N</span>one<span class="main-word">B</span>ot
+          <span class="text-primary">N</span>one<span class="text-primary">B</span>ot
         </div>
         <p class="text-lg">跨平台 PYTHON 异步机器人框架</p>
       </div>
@@ -12,9 +12,7 @@
     <div class="mt-8">
       链接
       <div class="flex flex-col font-light w-fit">
-        <a
-          class="link link-hover text-sm leading-8"
-          href="https://v2.nonebot.dev"
+        <a class="link link-hover text-sm leading-8" href="https://v2.nonebot.dev"
           >NoneBot2 官网</a
         >
         <a
