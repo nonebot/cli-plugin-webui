@@ -58,7 +58,7 @@ const showChoiceProject = () => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .choice-project-item .tooltip:before,
 .choice-project-item .tooltip-top:before {
   transform: translateX(-15%);
