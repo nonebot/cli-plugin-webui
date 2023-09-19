@@ -224,5 +224,3 @@ watch(
     </Transition>
   </div>
 </template>
-
-<style></style>
