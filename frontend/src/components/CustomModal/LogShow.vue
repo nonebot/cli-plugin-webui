@@ -76,10 +76,12 @@ const handleWebSocket = () => {
 
   websocket.value.client!.onmessage = (event: MessageEvent) => {
     const data: ProcessLog = JSON.parse(event.data.toString());
-    writeToArea(data.message, data.time, data.level);
-    const logRows = logShowArea.value!.getElementsByTagName("tr");
-    const lastLogRow = logRows[logRows.length - 1];
-    lastLogRow.scrollIntoView({ behavior: "smooth", block: "end" });
+    if (logShowArea.value) {
+      writeToArea(data.message, data.time, data.level);
+      const logRows = logShowArea.value.getElementsByTagName("tr");
+      const lastLogRow = logRows[logRows.length - 1];
+      lastLogRow.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
 
     if (data.message === "✨ Done!") {
       websocket.value?.close();
@@ -112,7 +114,7 @@ watch(props, () => {
 
 <template>
   <dialog ref="logShowModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg log-view-card">
+    <div method="dialog" class="modal-box rounded-lg log-view-card">
       <div class="h-full flex flex-col">
         <h3 class="font-bold text-lg">正在安装依赖</h3>
 
@@ -121,7 +123,12 @@ watch(props, () => {
           style="font-family: monospace"
         >
           <table class="table table-xs">
-            <tbody ref="logShowArea"></tbody>
+            <tbody ref="logShowArea">
+              <tr v-for="item in logItems" class="flex">
+                <td>{{ item.time }}</td>
+                <td>{{ item.level }} {{ item.message }}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
 
@@ -152,7 +159,7 @@ watch(props, () => {
           </button>
         </div>
       </div>
-    </form>
+    </div>
   </dialog>
 </template>
 
