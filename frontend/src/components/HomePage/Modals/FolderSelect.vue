@@ -307,7 +307,7 @@ watch(folderSelectModal, (newValue) => {
   </dialog>
 </template>
 
-<style>
+<style scoped>
 .file-name:hover {
   cursor: pointer;
   text-decoration: underline;

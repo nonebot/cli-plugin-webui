@@ -58,7 +58,7 @@ const showChoiceProject = () => {
   </div>
 </template>
 
-<style>
+<style scoped>
 @media screen and (max-width: 1280px) {
   .notice-card.dropdown-end .dropdown-content {
     right: -10px;

@@ -61,7 +61,7 @@ const createProjectByPathModal = ref<InstanceType<typeof AddProjectByPath> | nul
   </dialog>
 </template>
 
-<style>
+<style scoped>
 .custom-flex {
   display: flex;
   justify-content: space-around;

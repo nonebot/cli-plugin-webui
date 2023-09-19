@@ -125,7 +125,7 @@ const dismissNotice = (id: number | string) => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .notice-item .tooltip:before,
 .notice-item .tooltip-top:before {
   left: -50%;

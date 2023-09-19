@@ -93,7 +93,7 @@ onMounted(async () => {
   </Transition>
 </template>
 
-<style>
+<style scoped>
 #project-list th,
 #project-list td {
   white-space: nowrap;

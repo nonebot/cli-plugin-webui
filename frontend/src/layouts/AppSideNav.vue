@@ -140,7 +140,7 @@ watch(
   </dialog>
 </template>
 
-<style>
+<style scoped>
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.2s ease;

@@ -178,7 +178,7 @@ const isRetry = async (data: boolean) => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .extension-card .install-btn {
   opacity: 0;
 }
