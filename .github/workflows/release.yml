@@ -6,10 +6,12 @@ on:
       - v*
 
 jobs:
-  build-frontend:
-    name: Build Frontend
+  release:
+    name: Release
     runs-on: ubuntu-latest
-
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - name: 🛎️ Checkout
         uses: actions/checkout@v3
@@ -37,16 +39,6 @@ jobs:
         with:
           name: dist
           path: nb_cli_plugin_webui/dist
-
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-    steps:
-      - name: 🛎️ Checkout
-        uses: actions/checkout@v3
 
       - name: 🚀 Setup Python environment
         uses: ./.github/actions/setup-python
