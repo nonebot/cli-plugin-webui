@@ -10,7 +10,7 @@
   "dependencies": {
     "ansi_up": "^5.2.1",
     "axios": "^1.4.0",
-    "daisyui": "^3.5.1",
+    "daisyui": "^3.7.5",
     "echarts": "^5.4.2",
     "marked": "^7.0.2",
     "pinia": "^2.1.3",
