@@ -53,7 +53,12 @@ const dismissNotice = (id: number | string) => {
     >
       <button class="status-bar-button" @click="changeNoticeCardState()">
         <div class="indicator">
-          <span :class="{ 'indicator-item badge badge-secondary': haveNotice }"></span>
+          <span
+            :class="{
+              'badge h-1.5 pl-0.5 pr-0.5 badge-primary': true,
+              'indicator-item': haveNotice,
+            }"
+          ></span>
           <BellIcon class="h-4 w-4" />
         </div>
       </button>
@@ -126,8 +131,34 @@ const dismissNotice = (id: number | string) => {
 </template>
 
 <style scoped>
+@media screen and (max-width: 1280px) {
+  .notice-card.dropdown-end .dropdown-content {
+    right: -10px;
+  }
+}
+
+.indicator :where(.indicator-item) {
+  right: 4px;
+  top: 2px;
+}
 .notice-item .tooltip:before,
 .notice-item .tooltip-top:before {
   left: -50%;
+}
+
+.alert-card {
+  margin-top: 5px;
+  background: hsl(var(--b1));
+}
+
+.many-notice-tip {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+
+  opacity: 0.5;
+
+  margin-top: 5px;
+
+  text-align: center;
 }
 </style>
