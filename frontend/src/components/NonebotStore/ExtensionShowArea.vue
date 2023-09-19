@@ -194,7 +194,7 @@ watch(
   </div>
 </template>
 
-<style>
+<style scoped>
 .extension-card-move,
 .extension-card-enter-active,
 .extension-card-leave-active {

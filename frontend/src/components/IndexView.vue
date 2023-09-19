@@ -11,7 +11,7 @@ import AppStatusBar from "@/layouts/AppStatusBar.vue";
   <AppStatusBar />
 </template>
 
-<style>
+<style scoped>
 .view {
   position: fixed;
   top: 0;

@@ -156,7 +156,7 @@ watch(props, () => {
   </dialog>
 </template>
 
-<style>
+<style scoped>
 .log-view-card {
   height: 75%;
   max-width: 100% !important;

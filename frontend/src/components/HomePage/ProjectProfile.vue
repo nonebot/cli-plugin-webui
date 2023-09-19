@@ -134,7 +134,7 @@ const genPluginList = () => {
   </div>
 </template>
 
-<style>
+<style scoped>
 #project-profile th,
 #project-profile td {
   white-space: nowrap;
