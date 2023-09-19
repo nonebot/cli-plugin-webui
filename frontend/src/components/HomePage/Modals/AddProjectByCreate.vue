@@ -76,6 +76,7 @@ const getAdapters = async () => {
 
 const selectedFolder = (data: string) => {
   projectFolder.value = data;
+  addProjectByCreateModal.value?.showModal();
 };
 
 const isRetry = async (data: boolean) => {
@@ -228,7 +229,7 @@ watch(addProjectByCreateModal, async (newValue) => {
 
 <template>
   <dialog ref="addProjectByCreateModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg flex flex-col flex-nowrap">
+    <div method="dialog" class="modal-box rounded-lg flex flex-col flex-nowrap">
       <h3 class="font-bold text-lg">创建 NoneBot 实例</h3>
 
       <div
@@ -369,7 +370,10 @@ watch(addProjectByCreateModal, async (newValue) => {
       </div>
 
       <div class="modal-action">
-        <button class="btn rounded-lg h-10 min-h-0" @click="allDone(false), closeModal()">
+        <button
+          class="btn rounded-lg h-10 min-h-0"
+          @click="allDone(false), addProjectByCreateModal?.close()"
+        >
           取消
         </button>
 
@@ -380,7 +384,7 @@ watch(addProjectByCreateModal, async (newValue) => {
           创建
         </button>
       </div>
-    </form>
+    </div>
   </dialog>
 
   <FolderSelect ref="folderSelectModal" @onSelectedFolder="selectedFolder" />
