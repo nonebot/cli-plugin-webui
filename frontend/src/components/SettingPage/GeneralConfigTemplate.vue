@@ -215,12 +215,4 @@ const config = computed(() => {
 .setting-board-child:hover .more-action {
   opacity: 1;
 }
-
-.setting-board-child-content .form-control .label {
-  justify-content: start;
-}
-
-.setting-board-child-content .form-control .label .checkbox {
-  margin-right: 0.5rem;
-}
 </style>
