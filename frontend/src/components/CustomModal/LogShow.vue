@@ -4,8 +4,6 @@ import { WebsocketWrapper } from "@/utils/ws";
 import { ToastWrapper } from "@/utils/notification";
 import { ref, watch } from "vue";
 
-const notice = new ToastWrapper("Log Show");
-const websocket = ref<WebsocketWrapper>();
 const logShowModal = ref<HTMLDialogElement>();
 
 defineExpose({
@@ -23,9 +21,32 @@ const props = defineProps({
   logKey: String,
 });
 
+const notice = new ToastWrapper("Log Show");
+const websocket = ref<WebsocketWrapper>();
+
 const isFailed = ref(false);
 const isDone = ref(false);
 const logShowArea = ref<HTMLElement>();
+
+interface LogItem {
+  message: string;
+  time?: string;
+  level?: string;
+}
+
+const logItems = ref<LogItem[]>([]);
+
+const writeToArea = (message: string, time?: string, level?: string) => {
+  logItems.value.push({
+    message: message,
+    time: time,
+    level: level,
+  });
+};
+
+const clearArea = () => {
+  logItems.value = [];
+};
 
 const handleWebSocket = () => {
   if (websocket.value?.state.connected) {
@@ -55,17 +76,10 @@ const handleWebSocket = () => {
 
   websocket.value.client!.onmessage = (event: MessageEvent) => {
     const data: ProcessLog = JSON.parse(event.data.toString());
-    if (logShowArea.value) {
-      logShowArea.value.innerHTML += `
-      <tr class="flex">
-        <td>${data.time}</td>
-        <td>${data.level} ${data.message}</td>
-      </tr>
-      `;
-      const logRows = logShowArea.value.getElementsByTagName("tr");
-      const lastLogRow = logRows[logRows.length - 1];
-      lastLogRow.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
+    writeToArea(data.message, data.time, data.level);
+    const logRows = logShowArea.value!.getElementsByTagName("tr");
+    const lastLogRow = logRows[logRows.length - 1];
+    lastLogRow.scrollIntoView({ behavior: "smooth", block: "end" });
 
     if (data.message === "✨ Done!") {
       websocket.value?.close();
@@ -78,22 +92,13 @@ const handleWebSocket = () => {
 };
 
 const retry = () => {
-  if (logShowArea.value) {
-    logShowArea.value.innerHTML = `
-      <tr class="flex">
-        <td>Retrying...</td>
-        <td></td>
-      </tr>
-    `;
-  }
+  writeToArea("Retrying...");
   isDone.value = false;
   isFailed.value = false;
 };
 
 const clearState = () => {
-  if (logShowArea.value) {
-    logShowArea.value.innerHTML = "";
-  }
+  clearArea();
 
   isDone.value = false;
   isFailed.value = false;

@@ -11,24 +11,25 @@ import { AxiosError } from "axios";
 const ansiUp = new AnsiUp();
 
 const viewProject = ref("");
-const viewArea = ref<HTMLElement>();
 const writeStdinInput = ref<HTMLInputElement>();
 const websocket = ref<WebsocketWrapper>();
 
+interface LogItem {
+  content: string;
+  classList: string[];
+}
+
+const logItems = ref<LogItem[]>([]);
+
 const writeToArea = (content: string, classList?: string[]) => {
-  if (viewArea.value) {
-    viewArea.value.innerHTML += `
-      <tr class="flex border-0">
-        <td class="p-0 ${classList?.join(" ")}">${content}</td>
-      </tr>
-    `;
-  }
+  logItems.value.push({
+    content: content,
+    classList: classList ?? [],
+  });
 };
 
 const clearArea = () => {
-  if (viewArea.value) {
-    viewArea.value.innerHTML = "";
-  }
+  logItems.value = [];
 };
 
 const writeStdin = async (content: string) => {
@@ -194,7 +195,11 @@ watch(
       class="custom-y-scrollbar overflow-y-auto h-96 p-2 md:p-4 mt-2 bg-base-300 text-xs"
     >
       <table class="table">
-        <tbody ref="viewArea"></tbody>
+        <tbody>
+          <tr v-for="item in logItems" :class="item.classList">
+            <td class="p-0" v-html="item.content"></td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
@@ -213,8 +218,9 @@ watch(
   </div>
 </template>
 
-<style>
-.table .log-view-area :where(thead, tbody) :where(tr:not(:last-child)) {
+<style scoped>
+.table :where(thead, tbody) :where(tr:not(:last-child)),
+.table :where(thead, tbody) :where(tr:first-child:last-child) {
   border-bottom-width: 0;
 }
 </style>
