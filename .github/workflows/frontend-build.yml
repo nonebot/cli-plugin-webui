@@ -10,10 +10,6 @@ jobs:
     name: Build Frontend
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: frontend
-
     steps:
       - name: 🛎️ Checkout
         uses: actions/checkout@v3
@@ -28,7 +24,7 @@ jobs:
         with:
           node-version: 18
           cache: "pnpm"
-          cache-dependency-path: "frontend/pnpm-lock.yaml"
+          cache-dependency-path: "pnpm-lock.yaml"
 
       - name: 🔧 Install dependencies
         run: pnpm install
