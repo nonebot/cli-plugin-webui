@@ -121,7 +121,7 @@ watch(folderSelectModal, (newValue) => {
 
 <template>
   <dialog ref="folderSelectModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg">
+    <div method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">NoneBot 实例安装位置</h3>
       <div class="text-sm breadcrumbs">
         <ul>
@@ -265,22 +265,23 @@ watch(folderSelectModal, (newValue) => {
           class="btn btn-primary rounded-lg h-10 min-h-0 text-white"
           @click="
             () => {
-              if (!selectedFolder) {
+              if (selectedFolder === '(实例名称)') {
                 notice.warning('请选择文件夹');
                 return;
               }
-              emit('onSelectedFolder', selectedFolder), closeModal();
+              folderSelectModal?.close();
+              emit('onSelectedFolder', selectedFolder);
             }
           "
         >
           选择
         </button>
       </div>
-    </form>
+    </div>
   </dialog>
 
   <dialog ref="showCreateFolderModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg">
+    <div method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">新建文件夹</h3>
       <input
         v-model="newFolderName"
@@ -303,7 +304,7 @@ watch(folderSelectModal, (newValue) => {
           新建文件夹
         </button>
       </div>
-    </form>
+    </div>
   </dialog>
 </template>
 
