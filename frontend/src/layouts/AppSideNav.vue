@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NonebotIcon from "@/components/Icons/NonebotIcon.vue";
 import ExtensionIcon from "@/components/Icons/ExtensionIcon.vue";
-import AccountLightOutlineIcon from "@/components/Icons/AccountLightOutlineIcon.vue";
+import LogoutIcon from "@/components/Icons/LogoutIcon.vue";
 import SettingIcon from "@/components/Icons/SettingIcon.vue";
 // import FileIcon from "@/components/Icons/FileIcon.vue";
 
@@ -9,23 +9,29 @@ import { ref, watch } from "vue";
 import MenuIcon from "@/components/Icons/MenuIcon.vue";
 import { routerTo } from "@/router/client";
 import { appStore } from "@/store/global";
+import { router } from "@/router";
 
 interface navItem {
   tip: string;
   icon: any;
   to: string;
+  clickedFunc?: () => void;
 }
 
 const topNavList: navItem[] = [
-  { tip: "主页", icon: NonebotIcon, to: "/" },
+  {
+    tip: "主页",
+    icon: NonebotIcon,
+    to: "/",
+    clickedFunc: () => {
+      routerTo("/");
+    },
+  },
   { tip: "拓展商店", icon: ExtensionIcon, to: "/store" },
   // { tip: "文件管理", icon: FileIcon, to: "/file" },
 ];
 
-const buttonNavList: navItem[] = [
-  { tip: "登录设置", icon: AccountLightOutlineIcon, to: "/account" },
-  { tip: "设置", icon: SettingIcon, to: "/setting" },
-];
+const buttonNavList: navItem[] = [{ tip: "设置", icon: SettingIcon, to: "/setting" }];
 
 const activeNav = ref<string>();
 const showMenuModal = ref<HTMLDialogElement>();
@@ -37,6 +43,12 @@ const _activeNav: navItem | undefined = topNavList.find(
 if (_activeNav) {
   activeNav.value = _activeNav.to;
 }
+
+const logout = () => {
+  localStorage.removeItem("jwtToken");
+  router.push("/login");
+  appStore().isAuth = false;
+};
 
 watch(
   () => appStore().nowPath,
@@ -103,6 +115,14 @@ watch(
             :data-tip="nav.tip"
           >
             <component :is="nav.icon" class="h-9 w-9" />
+          </a>
+        </li>
+        <li @click="logout()">
+          <a
+            class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
+            data-tip="登出"
+          >
+            <LogoutIcon class="h-9 w-9" />
           </a>
         </li>
       </ul>
