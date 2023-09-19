@@ -19,3 +19,13 @@ defineProps<{
     </label>
   </div>
 </template>
+
+<style scoped>
+.form-control .label {
+  justify-content: start;
+}
+
+.form-control .label .checkbox {
+  margin-right: 0.5rem;
+}
+</style>
