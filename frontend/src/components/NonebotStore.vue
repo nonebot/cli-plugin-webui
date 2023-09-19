@@ -14,7 +14,7 @@ if (appStore().choiceProject.project_id) {
     <div
       :class="{
         'z-10 h-full w-full top-0 left-0 shrink-0 flex md:w-72 visible md:!visible absolute md:relative': true,
-        'transition-all ease-in-out': true,
+        'transition-all duration-100 ease-in-out': true,
         '!bg-inherit !invisible': !nonebotExtensionStore().sideNavShow,
       }"
       style="background-color: hsl(var(--n) / 0.3)"
