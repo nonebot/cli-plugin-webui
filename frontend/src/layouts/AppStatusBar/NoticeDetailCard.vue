@@ -55,8 +55,7 @@ const dismissNotice = (id: number | string) => {
         <div class="indicator">
           <span
             :class="{
-              'badge h-1.5 pl-0.5 pr-0.5 badge-primary': true,
-              'indicator-item': haveNotice,
+              'badge h-1.5 pl-0.5 pr-0.5 badge-primary indicator-item': haveNotice,
             }"
           ></span>
           <BellIcon class="h-4 w-4" />
@@ -132,7 +131,7 @@ const dismissNotice = (id: number | string) => {
 
 <style scoped>
 @media screen and (max-width: 1280px) {
-  .notice-card.dropdown-end .dropdown-content {
+  .notice-card .dropdown-end .dropdown-content {
     right: -10px;
   }
 }
@@ -141,6 +140,7 @@ const dismissNotice = (id: number | string) => {
   right: 4px;
   top: 2px;
 }
+
 .notice-item .tooltip:before,
 .notice-item .tooltip-top:before {
   left: -50%;
