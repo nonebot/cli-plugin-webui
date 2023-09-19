@@ -28,7 +28,7 @@ const buttonNavList: navItem[] = [
 ];
 
 const activeNav = ref<string>();
-const showMenuModal = ref(false);
+const showMenuModal = ref<HTMLDialogElement>();
 
 const nowRoute = window.location.pathname;
 const _activeNav: navItem | undefined = topNavList.find(
@@ -53,7 +53,11 @@ watch(
     <div
       class="fixed h-12 w-full visible md:invisible flex items-center pl-4 pr-4 border-b border-[hsl(var(--b3))] bg-base-100"
     >
-      <MenuIcon role="button" class="h-full w-9 mr-4" @click="showMenuModal = true" />
+      <MenuIcon
+        role="button"
+        class="h-full w-9 mr-4"
+        @click="showMenuModal?.showModal()"
+      />
 
       <div class="pointer-events-none">{{ activeNav }}</div>
     </div>
@@ -105,11 +109,11 @@ watch(
     </div>
   </div>
 
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showMenuModal }">
+  <dialog ref="showMenuModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">导航</h3>
       <ul class="menu">
-        <li v-for="nav in topNavList" @click="routerTo(nav.to), (showMenuModal = false)">
+        <li v-for="nav in topNavList" @click="routerTo(nav.to), showMenuModal?.close()">
           <a>
             <component :is="nav.icon" class="h-7 w-7" />
             <span>{{ nav.tip }}</span>
@@ -119,7 +123,7 @@ watch(
         </li>
         <li
           v-for="nav in buttonNavList"
-          @click="routerTo(nav.to), (showMenuModal = false)"
+          @click="routerTo(nav.to), showMenuModal?.close()"
         >
           <a>
             <component :is="nav.icon" class="h-7 w-7" />
@@ -131,7 +135,7 @@ watch(
       </ul>
     </form>
     <form method="dialog" class="modal-backdrop">
-      <button @click="showMenuModal = false">close</button>
+      <button @click="showMenuModal?.close()">close</button>
     </form>
   </dialog>
 </template>

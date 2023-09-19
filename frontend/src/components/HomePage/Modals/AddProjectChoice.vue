@@ -4,32 +4,32 @@ import AddProjectByPath from "@/components/HomePage/Modals/AddProjectByPath.vue"
 
 import { ref } from "vue";
 
-const createProjectModal = ref<InstanceType<typeof AddProjectByCreate> | null>();
-const createProjectByPathModal = ref<InstanceType<typeof AddProjectByPath> | null>();
-const showModal = ref(false);
-
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-};
+const addProjectChoiceModal = ref<HTMLDialogElement>();
 
 defineExpose({
-  openModal,
-  closeModal,
+  openModal() {
+    addProjectChoiceModal.value?.showModal();
+  },
+  closeModal() {
+    addProjectChoiceModal.value?.close();
+  },
 });
+
+const createProjectModal = ref<InstanceType<typeof AddProjectByCreate> | null>();
+const createProjectByPathModal = ref<InstanceType<typeof AddProjectByPath> | null>();
 </script>
 
 <template>
   <AddProjectByCreate ref="createProjectModal" />
   <AddProjectByPath ref="createProjectByPathModal" />
 
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
+  <dialog ref="addProjectChoiceModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">创建/添加 NoneBot 实例</h3>
-      <button class="btn btn-sm btn-circle absolute right-2 top-2" @click="closeModal()">
+      <button
+        class="btn btn-sm btn-circle absolute right-2 top-2"
+        @click="addProjectChoiceModal?.close()"
+      >
         ✕
       </button>
 
@@ -38,7 +38,7 @@ defineExpose({
           <div>没有 NoneBot 实例？</div>
           <button
             class="mt-2 btn btn-primary rounded-lg h-10 min-h-0 text-white"
-            @click="createProjectModal?.openModal(), closeModal()"
+            @click="createProjectModal?.openModal(), addProjectChoiceModal?.close()"
           >
             创建一个！
           </button>
@@ -48,7 +48,7 @@ defineExpose({
           <div>已有 NoneBot 实例？</div>
           <button
             class="mt-2 btn btn-primary rounded-lg h-10 min-h-0 text-white"
-            @click="createProjectByPathModal?.openModal(), closeModal()"
+            @click="createProjectByPathModal?.openModal(), addProjectChoiceModal?.close()"
           >
             即刻添加！
           </button>
@@ -56,7 +56,7 @@ defineExpose({
       </div>
     </form>
     <form method="dialog" class="modal-backdrop">
-      <button @click="closeModal()">close</button>
+      <button @click="addProjectChoiceModal?.close()">close</button>
     </form>
   </dialog>
 </template>

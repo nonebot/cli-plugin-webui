@@ -10,29 +10,25 @@ import { notice } from "@/utils/notification";
 import { CheckProjectTomlDetail } from "@/api/models";
 import { api, mirrorList } from "../client";
 
-const showModal = ref(false);
-
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-};
+const addProjectByPathModal = ref<HTMLDialogElement>();
 
 defineExpose({
-  openModal,
-  closeModal,
+  openModal: () => {
+    addProjectByPathModal.value?.showModal();
+  },
+  closeModal: () => {
+    addProjectByPathModal.value?.close();
+  },
 });
 
-const showNextModal = ref(false);
+const addProjectByPathNextModal = ref<HTMLDialogElement>();
 
 const openNextModal = () => {
-  showNextModal.value = true;
+  addProjectByPathNextModal.value?.showModal();
 };
 
 const closeNextModal = () => {
-  showNextModal.value = false;
+  addProjectByPathNextModal.value?.close();
 };
 
 const logShowModal = ref<InstanceType<typeof LogShow> | null>();
@@ -120,7 +116,7 @@ const finishAddProject = () => {
 </script>
 
 <template>
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
+  <dialog ref="addProjectByPathModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">添加 NoneBot 实例（1/2）</h3>
 
@@ -252,7 +248,7 @@ const finishAddProject = () => {
     </form>
   </dialog>
 
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showNextModal }">
+  <dialog ref="addProjectByPathNextModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">添加 NoneBot 实例（2/2）</h3>
 

@@ -6,21 +6,18 @@ import { limitContent } from "@/utils";
 import { api } from "../client";
 import { AxiosError } from "axios";
 
-const showModal = ref(false);
-const showCreateFolderModal = ref(false);
-
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-};
+const folderSelectModal = ref<HTMLDialogElement>();
 
 defineExpose({
-  openModal,
-  closeModal,
+  openModal() {
+    folderSelectModal.value?.showModal();
+  },
+  closeModal() {
+    folderSelectModal.value?.close();
+  },
 });
+
+const showCreateFolderModal = ref<HTMLDialogElement>();
 
 const nowPath = ref("");
 const nowPathStack = ref<string[]>([]);
@@ -55,8 +52,8 @@ const createFile = async (fileName: string, path: string) => {
       files.value = resp.files;
       nowPathStack.value = nowPath.value.split("/");
       newFolderName.value = "";
-      showCreateFolderModal.value = false;
-      openModal();
+      showCreateFolderModal.value?.close();
+      folderSelectModal.value?.showModal();
     })
     .catch((error: AxiosError) => {
       let reason: string;
@@ -115,15 +112,15 @@ const convertTime = (time: string) => {
   return `${year}/${mouth}/${day} ${hours}:${minutes}`;
 };
 
-watch(showModal, () => {
-  if (showModal.value) {
+watch(folderSelectModal, (newValue) => {
+  if (newValue) {
     getFiles(nowPath.value);
   }
 });
 </script>
 
 <template>
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
+  <dialog ref="folderSelectModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">NoneBot 实例安装位置</h3>
       <div class="text-sm breadcrumbs">
@@ -251,7 +248,10 @@ watch(showModal, () => {
       <p class="overflow-x-auto text-sm">(Base Dir)/{{ selectedFolder }}</p>
 
       <div class="modal-action">
-        <button class="btn rounded-lg h-10 min-h-0" @click="showCreateFolderModal = true">
+        <button
+          class="btn rounded-lg h-10 min-h-0"
+          @click="showCreateFolderModal?.showModal()"
+        >
           新建文件夹
         </button>
 
@@ -279,12 +279,7 @@ watch(showModal, () => {
     </form>
   </dialog>
 
-  <dialog
-    :class="{
-      'modal pl-0 md:pl-14': true,
-      'modal-open': showCreateFolderModal,
-    }"
-  >
+  <dialog ref="showCreateFolderModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">新建文件夹</h3>
       <input
@@ -296,7 +291,7 @@ watch(showModal, () => {
       <div class="modal-action">
         <button
           class="btn rounded-lg h-10 min-h-0"
-          @click="showCreateFolderModal = false"
+          @click="showCreateFolderModal?.close()"
         >
           取消
         </button>

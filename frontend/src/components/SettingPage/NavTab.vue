@@ -12,7 +12,7 @@ const api = new API();
 
 const tabs = ref<string[]>([]);
 const addEnvInput = ref("");
-const showModal = ref(false);
+const envEditModal = ref<HTMLDialogElement>();
 
 const getDotenv = async () => {
   await api
@@ -80,11 +80,34 @@ const assignEnv = async (env: string) => {
 </script>
 
 <template>
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
-    <form
-      method="dialog"
-      class="modal-box rounded-lg overflow-hidden flex flex-col flex-nowarp"
-    >
+  <div v-if="tabs.length" class="pl-2 pr-2 flex justify-between">
+    <div class="tabs">
+      <a
+        v-for="tab in tabs.slice(0, 2)"
+        title="点击切换环境"
+        :class="{
+          'tab tab-sm tab-lifted': true,
+          'tab-active': store().enabledEnv === tab,
+        }"
+        @click="assignEnv(tab)"
+        >{{ limitContent(tab, 10) }}</a
+      >
+      <div class="tab tab-sm tab-lifted" @click="envEditModal?.showModal()">...</div>
+    </div>
+
+    <div class="tabs">
+      <button
+        class="tab tab-sm tab-lifted tab-active"
+        title="更多选项"
+        @click="envEditModal?.showModal()"
+      >
+        +
+      </button>
+    </div>
+  </div>
+
+  <dialog ref="envEditModal" class="modal">
+    <div class="modal-box rounded-lg overflow-hidden flex flex-col flex-nowrap">
       <h3 class="font-bold text-lg">更多选项</h3>
       <p class="text-xs">
         说明：运行环境配置。大小写不敏感。<br />
@@ -93,7 +116,7 @@ const assignEnv = async (env: string) => {
         的优先级读取环境信息。
       </p>
       <p class="pt-4">已知可使用的环境配置文件：</p>
-      <div class="overflow-hidden flex flex-col flex-nowarp">
+      <div class="overflow-hidden flex flex-col flex-nowrap">
         <div class="custom-y-scrollbar overflow-y-auto grow">
           <table class="table table-xs">
             <thead>
@@ -152,39 +175,13 @@ const assignEnv = async (env: string) => {
         </div>
       </div>
       <div class="modal-action">
-        <button class="btn rounded-lg h-10 min-h-0" @click="showModal = false">
+        <button class="btn rounded-lg h-10 min-h-0" @click="envEditModal?.close()">
           关闭
         </button>
       </div>
-    </form>
+    </div>
     <form method="dialog" class="modal-backdrop">
-      <button @click="showModal = false">close</button>
+      <button>close</button>
     </form>
   </dialog>
-
-  <div v-if="tabs.length" class="pl-2 pr-2 flex justify-between">
-    <div class="tabs">
-      <a
-        v-for="tab in tabs.slice(0, 2)"
-        title="点击切换环境"
-        :class="{
-          'tab tab-sm tab-lifted': true,
-          'tab-active': store().enabledEnv === tab,
-        }"
-        @click="assignEnv(tab)"
-        >{{ limitContent(tab, 10) }}</a
-      >
-      <div class="tab tab-sm tab-lifted" @click="showModal = true">...</div>
-    </div>
-
-    <div class="tabs">
-      <a
-        class="tab tab-sm tab-lifted tab-active"
-        title="更多选项"
-        @click="showModal = true"
-      >
-        +
-      </a>
-    </div>
-  </div>
 </template>
