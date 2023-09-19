@@ -59,12 +59,6 @@ const showChoiceProject = () => {
 </template>
 
 <style scoped>
-@media screen and (max-width: 1280px) {
-  .notice-card.dropdown-end .dropdown-content {
-    right: -10px;
-  }
-}
-
 .choice-project-item .tooltip:before,
 .choice-project-item .tooltip-top:before {
   transform: translateX(-15%);
@@ -73,22 +67,6 @@ const showChoiceProject = () => {
 .enabled-env-show .tooltip:before,
 .enabled-env-show .tooltip-top:before {
   transform: translateX(-20%);
-}
-
-.notice-item .tooltip:before,
-.notice-item .tooltip-top:before {
-  left: -50%;
-}
-
-.status-bar-button .indicator :where(.indicator-item) {
-  right: 4px;
-  top: 2px;
-}
-
-.status-bar-button .badge {
-  height: 6px;
-  padding-left: 2px;
-  padding-right: 2px;
 }
 
 .status-bar {
@@ -133,21 +111,5 @@ const showChoiceProject = () => {
 
 .status-bar-button:hover {
   background: hsl(var(--b2));
-}
-
-.alert-card {
-  margin-top: 5px;
-  background: hsl(var(--b1));
-}
-
-.many-notice-tip {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-
-  opacity: 0.5;
-
-  margin-top: 5px;
-
-  text-align: center;
 }
 </style>
