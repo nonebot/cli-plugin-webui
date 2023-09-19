@@ -6,7 +6,40 @@ on:
       - v*
 
 jobs:
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v3
+
+      - name: 🚀 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 🚀 Setup node
+        uses: actions/setup-node@v3.7.0
+        with:
+          node-version: 18
+          cache: "pnpm"
+          cache-dependency-path: "pnpm-lock.yaml"
+
+      - name: 🔧 Install dependencies
+        run: pnpm install
+
+      - name: 🚧 Build dist files
+        run: pnpm build
+
+      - name: 📦️ Upload dist
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: nb_cli_plugin_webui/dist
+
   release:
+    name: Release
     runs-on: ubuntu-latest
     permissions:
       id-token: write
