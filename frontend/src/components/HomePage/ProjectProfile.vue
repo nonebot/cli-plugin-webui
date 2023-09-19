@@ -3,7 +3,7 @@ import { parseStringArray, parseSimpleInfo } from "@/utils";
 import { appStore as store } from "@/store/global";
 import { ref } from "vue";
 
-const checkPlugins = ref(false);
+const checkPluginModal = ref<HTMLDialogElement>();
 const pluginList = ref<string[]>();
 
 const parseString = (data: string) => {
@@ -11,31 +11,26 @@ const parseString = (data: string) => {
 };
 
 const genPluginList = () => {
-  checkPlugins.value = true;
-  pluginList.value = store().choiceProject.plugins.map(
-    (obj) => obj.module_name,
-  );
+  checkPluginModal.value?.showModal();
+  pluginList.value = store().choiceProject.plugins.map((obj) => obj.module_name);
 };
 </script>
 
 <template>
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': checkPlugins }">
+  <dialog ref="checkPluginModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">已安装的插件</h3>
       <p class="py-4">
         {{ pluginList?.join("、") }}
       </p>
       <div class="modal-action">
-        <button
-          class="btn rounded-lg h-10 min-h-0"
-          @click="checkPlugins = false"
-        >
+        <button class="btn rounded-lg h-10 min-h-0" @click="checkPluginModal?.close()">
           关闭
         </button>
       </div>
     </form>
     <form method="dialog" class="modal-backdrop">
-      <button @click="checkPlugins = false">close</button>
+      <button @click="checkPluginModal?.close()">close</button>
     </form>
   </dialog>
 
@@ -107,9 +102,7 @@ const genPluginList = () => {
                 <div v-else>
                   {{
                     parseStringArray(
-                      store().choiceProject.plugins.map(
-                        (obj) => obj.module_name,
-                      ),
+                      store().choiceProject.plugins.map((obj) => obj.module_name),
                     )
                   }}
                 </div>

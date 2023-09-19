@@ -22,7 +22,7 @@ const api = new API();
 const notice = new ToastWrapper("Nonebot Store");
 
 const logKey = ref("");
-const showInstallTipsModal = ref(false);
+const showInstallTipsModal = ref<HTMLDialogElement>();
 const logShowModal = ref<InstanceType<typeof LogShow> | null>();
 const extensionDetailModal = ref<InstanceType<typeof ExtensionDetailModal> | null>();
 
@@ -31,7 +31,7 @@ const itemData = computed(() => {
 });
 
 const doInstall = async (pass?: boolean) => {
-  showInstallTipsModal.value = false;
+  showInstallTipsModal.value?.close();
 
   // 仅针对插件的 valid 属性
   if (pass || pass === undefined) {
@@ -53,7 +53,7 @@ const doInstall = async (pass?: boolean) => {
         notice.error(`安装拓展失败：${reason}`);
       });
   } else {
-    showInstallTipsModal.value = true;
+    showInstallTipsModal.value?.showModal();
   }
 };
 
@@ -67,12 +67,7 @@ const isRetry = async (data: boolean) => {
 <template>
   <div class="extension-card card card-compact w-full bg-base-200 rounded-lg">
     <div class="card-body bg-base-200 rounded-lg transition-all hover:shadow-lg">
-      <dialog
-        :class="{
-          'modal pl-0 md:pl-14': true,
-          'modal-open': showInstallTipsModal,
-        }"
-      >
+      <dialog ref="showInstallTipsModal" class="modal">
         <form method="dialog" class="modal-box rounded-lg">
           <h3 class="font-bold text-lg">注意</h3>
           <p class="py-4">
@@ -83,7 +78,7 @@ const isRetry = async (data: boolean) => {
           <div class="modal-action">
             <button
               class="btn rounded-lg h-10 min-h-0"
-              @click="showInstallTipsModal = false"
+              @click="showInstallTipsModal?.close()"
             >
               取消
             </button>

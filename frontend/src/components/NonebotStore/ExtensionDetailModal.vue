@@ -12,19 +12,15 @@ import { notice } from "@/utils/notification";
 import { nonebotExtensionStore } from "@/store/extensionStore";
 import { AxiosError } from "axios";
 
-const showModal = ref(false);
-
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-};
+const extensionDetailModal = ref<HTMLDialogElement>();
 
 defineExpose({
-  openModal,
-  closeModal,
+  openModal() {
+    extensionDetailModal.value?.showModal();
+  },
+  closeModal() {
+    extensionDetailModal.value?.close();
+  },
 });
 
 const api = new API();
@@ -42,7 +38,7 @@ const uninstallModule = async () => {
       props.itemData,
     )
     .then(() => {
-      closeModal();
+      extensionDetailModal.value?.close();
       return Promise.resolve();
     })
     .catch((error: AxiosError) => {
@@ -60,7 +56,7 @@ const uninstallModule = async () => {
 </script>
 
 <template>
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
+  <dialog ref="extensionDetailModal" class="modal">
     <form method="dialog" class="modal-box w-11/12 max-w-5xl sm:max-w-4xl rounded-lg">
       <div class="flex items-center">
         <h2 class="font-bold text-xl mr-2">{{ itemData.name }}</h2>

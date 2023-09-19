@@ -8,22 +8,19 @@ import { onMounted, ref, watch } from "vue";
 import { api, mirrorList, getProjectList } from "../client";
 import { AxiosError } from "axios";
 
-const logShowModal = ref<InstanceType<typeof LogShow> | null>();
-const folderSelectModal = ref<InstanceType<typeof FolderSelect> | null>();
-const showModal = ref(false);
-
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-};
+const addProjectByCreateModal = ref<HTMLDialogElement>();
 
 defineExpose({
-  openModal,
-  closeModal,
+  openModal: () => {
+    addProjectByCreateModal.value?.showModal();
+  },
+  closeModal: () => {
+    addProjectByCreateModal.value?.close();
+  },
 });
+
+const logShowModal = ref<InstanceType<typeof LogShow> | null>();
+const folderSelectModal = ref<InstanceType<typeof FolderSelect> | null>();
 
 const driverList = ref<Driver[]>([]);
 const adapterList = ref<Adapter[]>([]);
@@ -216,13 +213,13 @@ onMounted(() => {
     }
     doCreate();
 
-    closeModal();
+    addProjectByCreateModal.value?.close();
     logShowModal.value?.openModal();
   });
 });
 
-watch(showModal, async () => {
-  if (showModal.value) {
+watch(addProjectByCreateModal, async (newValue) => {
+  if (newValue) {
     await getDrivers();
     await getAdapters();
   }
@@ -230,7 +227,7 @@ watch(showModal, async () => {
 </script>
 
 <template>
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
+  <dialog ref="addProjectByCreateModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg flex flex-col flex-nowrap">
       <h3 class="font-bold text-lg">创建 NoneBot 实例</h3>
 

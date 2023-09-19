@@ -66,17 +66,3 @@ body {
 .show-area-scrollbar::-webkit-scrollbar-button {
   display: none;
 }
-
-.modal:not(dialog:not(.modal-open)),
-.modal::backdrop {
-  background-color: rgba(0, 0, 0, 0.3);
-  animation: modal-pop 0.2s ease-out;
-}
-
-@media screen and (min-width: 768px) {
-  .modal:not(dialog:not(.modal-open)),
-  .modal::backdrop {
-    background-color: initial;
-    animation: none;
-  }
-}

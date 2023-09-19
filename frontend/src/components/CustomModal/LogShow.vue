@@ -6,26 +6,21 @@ import { ref, watch } from "vue";
 
 const notice = new ToastWrapper("Log Show");
 const websocket = ref<WebsocketWrapper>();
+const logShowModal = ref<HTMLDialogElement>();
+
+defineExpose({
+  openModal: () => {
+    logShowModal.value?.showModal();
+  },
+  closeModal: () => {
+    logShowModal.value?.close();
+  },
+});
 
 const emit = defineEmits(["isRetry", "isOK"]);
 
 const props = defineProps({
   logKey: String,
-});
-
-const showModal = ref(false);
-
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-};
-
-defineExpose({
-  openModal,
-  closeModal,
 });
 
 const isFailed = ref(false);
@@ -111,7 +106,7 @@ watch(props, () => {
 </script>
 
 <template>
-  <dialog :class="{ 'modal pl-0 md:pl-14': true, 'modal-open': showModal }">
+  <dialog ref="logShowModal" class="modal">
     <form method="dialog" class="modal-box rounded-lg log-view-card">
       <div class="h-full flex flex-col">
         <h3 class="font-bold text-lg">正在安装依赖</h3>
@@ -126,7 +121,9 @@ watch(props, () => {
         </div>
 
         <div class="modal-action">
-          <button class="btn rounded-lg h-10 min-h-0" @click="closeModal()">取消</button>
+          <button class="btn rounded-lg h-10 min-h-0" @click="logShowModal?.close()">
+            取消
+          </button>
 
           <button
             :class="{
@@ -144,7 +141,7 @@ watch(props, () => {
               'btn-primary text-white': isDone,
               'btn-disabled': !isDone,
             }"
-            @click="emit('isOK', true), clearState(), closeModal()"
+            @click="emit('isOK', true), clearState(), logShowModal?.close()"
           >
             完成
           </button>
