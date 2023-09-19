@@ -24,8 +24,15 @@ const checkInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
   inputValue.value = target.value;
 
+  const parsedValue = Number(target.value);
+  if (isNaN(parsedValue)) {
+    isValueError.value = true;
+    isPass.value = false;
+    return;
+  }
+
   const inputIsEmpty = !target.value;
-  const inputIsConfigured = target.value === props.configured;
+  const inputIsConfigured = parsedValue === props.configured;
 
   if (inputIsEmpty || inputIsConfigured) {
     isPass.value = false;
@@ -34,13 +41,6 @@ const checkInput = (event: Event) => {
     isMinimum.value = false;
     isExclusiveMaximum.value = false;
     isMaximum.value = false;
-    return;
-  }
-
-  const parsedValue = Number(target.value);
-  if (isNaN(parsedValue)) {
-    isValueError.value = true;
-    isPass.value = false;
     return;
   }
 
