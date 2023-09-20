@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+import asyncio
+
+from fastapi import APIRouter, WebSocket
 from fastapi.websockets import WebSocketState, WebSocketDisconnect
 
-from nb_cli_plugin_webui.patch import WebSocket
+from nb_cli_plugin_webui.utils.security import jwt
+from nb_cli_plugin_webui.core.configs.config import config
 from nb_cli_plugin_webui.models.domain.process import ProcessLog
 from nb_cli_plugin_webui.models.schemas.log import LogHistoryResponse
 from nb_cli_plugin_webui.api.dependencies.process.log import LoggerStorageFather
@@ -22,6 +25,19 @@ async def get_logs_history(log_key: str, log_count: int = 0) -> LogHistoryRespon
 @router.websocket("/logs/{log_key}")
 async def get_logs_realtime(websocket: WebSocket, log_key: str):
     await websocket.accept()
+
+    try:
+        recv = await asyncio.wait_for(websocket.receive(), 5)
+    except asyncio.TimeoutError:
+        await websocket.close()
+        return
+
+    token = recv.get("text", "unknown")
+    try:
+        jwt.verify_and_read_jwt(token, config.read().secret_key.get_secret_value())
+    except Exception:
+        await websocket.close()
+        return
 
     log = LoggerStorageFather[ProcessLog].get_storage(log_key)
     if log is None:
