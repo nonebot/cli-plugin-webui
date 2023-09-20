@@ -24,7 +24,9 @@ class Plugin(SimpleInfo):
     type: Optional[str]
     supported_adapters: Optional[List[str]]
     valid: bool
+    version: str
     time: str
+    skip_test: bool
 
     class Config:
         module_name = "plugins"
