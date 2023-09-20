@@ -22,7 +22,7 @@ const showCreateFolderModal = ref<HTMLDialogElement>();
 const nowPath = ref("");
 const nowPathStack = ref<string[]>([]);
 const files = ref<FileInfo[]>([]);
-const selectedFolder = ref("(实例名称)");
+const selectedFolder = ref("");
 const newFolderName = ref("");
 
 const emit = defineEmits(["onSelectedFolder"]);
@@ -98,7 +98,7 @@ const choiceDir = (path: string, is_dir: number) => {
     notice.warning("请选择文件夹");
     return;
   }
-  selectedFolder.value = path + "/(实例名称)";
+  selectedFolder.value = path;
 };
 
 const convertTime = (time: string) => {
@@ -245,7 +245,10 @@ watch(folderSelectModal, (newValue) => {
       </div>
 
       <p class="pt-4">当前选择：</p>
-      <p class="overflow-x-auto text-sm">(Base Dir)/{{ selectedFolder }}</p>
+      <p class="overflow-x-auto text-sm">
+        (Base Dir)/{{ selectedFolder
+        }}{{ selectedFolder === "" ? selectedFolder : "/" }}(实例名称)
+      </p>
 
       <div class="modal-action">
         <button
@@ -257,6 +260,10 @@ watch(folderSelectModal, (newValue) => {
 
         <button class="btn rounded-lg h-10 min-h-0" @click="getFiles(nowPath)">
           刷新
+        </button>
+
+        <button class="btn rounded-lg h-10 min-h-0" @click="choiceDir(nowPath, 1)">
+          选中当前目录
         </button>
 
         <div class="w-full"></div>

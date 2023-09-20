@@ -105,9 +105,6 @@ const doCheck = () => {
     if (!projectName.value) {
       throw new Error("缺少实例名称");
     }
-    if (!projectFolder.value || projectFolder.value === "Unknown") {
-      throw new Error("缺少实例路径");
-    }
     if (!projectMirror.value) {
       throw new Error("缺少镜像源");
     }
@@ -128,7 +125,7 @@ const doCreate = async () => {
     .createProject({
       is_bootstrap: projectIsBootstrap.value,
       project_name: projectName.value,
-      project_dir: projectFolder.value.replace("(实例名称)", ""),
+      project_dir: projectFolder.value,
       mirror_url: projectMirror.value,
       drivers: projectDriver.value,
       adapters: projectAdapter.value,
@@ -283,7 +280,8 @@ watch(addProjectByCreateModal, async (newValue) => {
           </button>
           <label class="label">
             <span class="label-text overflow-x-auto text-xs">
-              (Base Dir)/{{ projectFolder.replace("(实例名称)", projectName) }}
+              (Base Dir)/{{ projectFolder }}{{ projectFolder === "" ? projectFolder : "/"
+              }}{{ projectName }}
             </span>
           </label>
         </div>
