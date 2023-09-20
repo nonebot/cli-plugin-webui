@@ -157,7 +157,6 @@ class NonebotProjectManager:
             config_detail = await get_plugin_config_detail(
                 plugin, self.config_manager.python_path
             )
-
             raw_plugin_info = plugin_detail.dict()
             raw_plugin_info["config_detail"] = config_detail
             new_plugin_info = Plugin.parse_obj(raw_plugin_info)
@@ -166,7 +165,13 @@ class NonebotProjectManager:
             installed_plugin = [i.module_name for i in data.plugins]
             if plugin_detail.module_name not in installed_plugin:
                 data.plugins.append(new_plugin_info)
-                self.store(data)
+            else:
+                for i in data.plugins:
+                    if i.module_name == plugin_detail.module_name:
+                        data.plugins.remove(i)
+                        data.plugins.append(new_plugin_info)
+                        break
+            self.store(data)
 
     async def add_plugin(self, plugin: Plugin) -> None:
         self.config_manager.add_plugin(plugin.module_name)

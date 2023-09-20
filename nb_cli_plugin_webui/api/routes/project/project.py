@@ -308,9 +308,12 @@ async def add_nonebot_project(
             project_dir=project_dir,
             mirror_url=project_data.mirror_url,
             adapters=installed_adapter_data,
-            plugins=installed_plugin_data,
             plugin_dirs=project_data.plugin_dirs,
         )
+
+        manager.read()
+        for plugin in installed_plugin_data:
+            await manager.add_plugin(plugin)
 
         manager.write_to_env(".env", "ENVIRONMENT", "prod")
 
