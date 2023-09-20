@@ -16,24 +16,20 @@ class SecretStrJSONEncoder(json.JSONEncoder):
 class ServerConfig(BaseModel):
     host: str
     port: str
-
     debug: bool = False
-    title: str = "NB CLI UI APIs"
 
     @property
     def fastapi_kwargs(self) -> Dict[str, Any]:
         return {
             "debug": self.debug,
-            "title": self.title,
         }
 
 
-class WebUIConfig(BaseModel):
+class WebUIConfig(ServerConfig):
     hashed_token: str = str()
     salt: SecretStr = SecretStr(str())
     secret_key: SecretStr
     base_dir: str = str()
-    server: ServerConfig = ServerConfig(host="localhost", port="12345")
 
     def to_json(self) -> str:
         return json.dumps(self.dict(), cls=SecretStrJSONEncoder)

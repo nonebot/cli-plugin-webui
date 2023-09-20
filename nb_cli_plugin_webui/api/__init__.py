@@ -23,7 +23,7 @@ def init_application() -> FastAPI:
         raise ConfigIsNotExist
 
     conf = config.read()
-    app = FastAPI(**conf.server.fastapi_kwargs)
+    app = FastAPI(**conf.fastapi_kwargs)
     app.add_middleware(
         CustomAuthMiddleware, pass_paths=["/api/auth/login", "/login", "/", "/assets/*"]
     )

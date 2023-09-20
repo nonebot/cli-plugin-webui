@@ -8,7 +8,7 @@ from noneprompt import InputPrompt, ConfirmPrompt
 from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui.core.configs.config import config
 from nb_cli_plugin_webui.exceptions import TokenComplexityError
-from nb_cli_plugin_webui.models.domain.config import WebUIConfig, ServerConfig
+from nb_cli_plugin_webui.models.domain.config import WebUIConfig
 from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexity_string
 
 
@@ -104,13 +104,13 @@ async def get_user_config():
         return
 
     user_config = WebUIConfig(
+        host=host,
+        port=port,
         secret_key=SecretStr(
             generate_complexity_string(32, use_digits=True, use_punctuation=True)
         ),
         base_dir=base_dir,
     )
-    if host:
-        user_config.server = ServerConfig(host=host, port=port)
     user_config.reset_token(token)
 
     config.store(user_config)
