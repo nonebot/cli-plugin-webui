@@ -229,7 +229,7 @@ watch(addProjectByCreateModal, async (newValue) => {
 
 <template>
   <dialog ref="addProjectByCreateModal" class="modal">
-    <div method="dialog" class="modal-box rounded-lg flex flex-col flex-nowrap">
+    <div class="modal-box rounded-lg flex flex-col flex-nowrap">
       <h3 class="font-bold text-lg">创建 NoneBot 实例</h3>
 
       <div

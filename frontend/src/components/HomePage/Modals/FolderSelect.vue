@@ -121,7 +121,7 @@ watch(folderSelectModal, (newValue) => {
 
 <template>
   <dialog ref="folderSelectModal" class="modal">
-    <div method="dialog" class="modal-box rounded-lg">
+    <div class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">NoneBot 实例安装位置</h3>
       <div class="text-sm breadcrumbs">
         <ul>
@@ -281,7 +281,7 @@ watch(folderSelectModal, (newValue) => {
   </dialog>
 
   <dialog ref="showCreateFolderModal" class="modal">
-    <div method="dialog" class="modal-box rounded-lg">
+    <div class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">新建文件夹</h3>
       <input
         v-model="newFolderName"

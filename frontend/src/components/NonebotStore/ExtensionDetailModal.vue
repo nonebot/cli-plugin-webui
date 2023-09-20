@@ -57,7 +57,7 @@ const uninstallModule = async () => {
 
 <template>
   <dialog ref="extensionDetailModal" class="modal">
-    <form method="dialog" class="modal-box w-11/12 max-w-5xl sm:max-w-4xl rounded-lg">
+    <div class="modal-box w-11/12 max-w-5xl sm:max-w-4xl rounded-lg">
       <div class="flex items-center">
         <h2 class="font-bold text-xl mr-2">{{ itemData.name }}</h2>
         <OfficialCheckIcon
@@ -99,9 +99,9 @@ const uninstallModule = async () => {
           于 Registry 中查看
         </a>
       </div>
-    </form>
+    </div>
     <form method="dialog" class="modal-backdrop">
-      <button @click="closeModal()">close</button>
+      <button>close</button>
     </form>
   </dialog>
 </template>

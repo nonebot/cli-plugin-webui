@@ -68,7 +68,7 @@ const isRetry = async (data: boolean) => {
   <div class="extension-card card card-compact w-full bg-base-200 rounded-lg">
     <div class="card-body bg-base-200 rounded-lg transition-all hover:shadow-lg">
       <dialog ref="showInstallTipsModal" class="modal">
-        <form method="dialog" class="modal-box rounded-lg">
+        <div class="modal-box rounded-lg">
           <h3 class="font-bold text-lg">注意</h3>
           <p class="py-4">
             {{ nonebotExtensionStore().choiceItem.name }}
@@ -87,7 +87,7 @@ const isRetry = async (data: boolean) => {
               无视风险，继续安装！
             </button>
           </div>
-        </form>
+        </div>
       </dialog>
 
       <LogShow

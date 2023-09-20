@@ -18,7 +18,7 @@ const genPluginList = () => {
 
 <template>
   <dialog ref="checkPluginModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg">
+    <div class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">已安装的插件</h3>
       <p class="py-4">
         {{ pluginList?.join("、") }}
@@ -28,9 +28,9 @@ const genPluginList = () => {
           关闭
         </button>
       </div>
-    </form>
+    </div>
     <form method="dialog" class="modal-backdrop">
-      <button @click="checkPluginModal?.close()">close</button>
+      <button>close</button>
     </form>
   </dialog>
 

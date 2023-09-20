@@ -117,7 +117,7 @@ const finishAddProject = () => {
 
 <template>
   <dialog ref="addProjectByPathModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg">
+    <div class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">添加 NoneBot 实例（1/2）</h3>
 
       <div class="mt-4 w-full flex flex-col items-center gap-4">
@@ -233,23 +233,28 @@ const finishAddProject = () => {
       </div>
 
       <div class="modal-action">
-        <button class="btn rounded-lg h-10 min-h-0" @click="closeModal()">取消</button>
+        <button
+          class="btn rounded-lg h-10 min-h-0"
+          @click="addProjectByPathModal?.close()"
+        >
+          取消
+        </button>
 
         <button
           :class="{
             'btn btn-primary rounded-lg h-10 min-h-0 text-white': true,
             'btn-disabled': !checkIsPass,
           }"
-          @click="closeModal(), openNextModal()"
+          @click="addProjectByPathModal?.close(), openNextModal()"
         >
           下一步
         </button>
       </div>
-    </form>
+    </div>
   </dialog>
 
   <dialog ref="addProjectByPathNextModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg">
+    <div class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">添加 NoneBot 实例（2/2）</h3>
 
       <div class="mt-4 w-full flex flex-col items-center gap4">
@@ -286,7 +291,7 @@ const finishAddProject = () => {
       <div class="modal-action">
         <button
           class="btn rounded-lg h-10 min-h-0"
-          @click="closeNextModal(), openModal()"
+          @click="closeNextModal(), addProjectByPathModal?.showModal()"
         >
           上一步
         </button>
@@ -298,7 +303,7 @@ const finishAddProject = () => {
           添加
         </button>
       </div>
-    </form>
+    </div>
   </dialog>
 
   <LogShow

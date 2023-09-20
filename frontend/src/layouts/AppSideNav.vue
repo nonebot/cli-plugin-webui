@@ -130,7 +130,7 @@ watch(
   </div>
 
   <dialog ref="showMenuModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg">
+    <div class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">导航</h3>
       <ul class="menu">
         <li v-for="nav in topNavList" @click="routerTo(nav.to), showMenuModal?.close()">
@@ -153,7 +153,7 @@ watch(
           </a>
         </li>
       </ul>
-    </form>
+    </div>
     <form method="dialog" class="modal-backdrop">
       <button @click="showMenuModal?.close()">close</button>
     </form>

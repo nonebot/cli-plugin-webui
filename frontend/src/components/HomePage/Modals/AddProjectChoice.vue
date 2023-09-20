@@ -24,7 +24,7 @@ const createProjectByPathModal = ref<InstanceType<typeof AddProjectByPath> | nul
   <AddProjectByPath ref="createProjectByPathModal" />
 
   <dialog ref="addProjectChoiceModal" class="modal">
-    <form method="dialog" class="modal-box rounded-lg">
+    <div class="modal-box rounded-lg">
       <h3 class="font-bold text-lg">创建/添加 NoneBot 实例</h3>
       <button
         class="btn btn-sm btn-circle absolute right-2 top-2"
@@ -54,9 +54,9 @@ const createProjectByPathModal = ref<InstanceType<typeof AddProjectByPath> | nul
           </button>
         </div>
       </div>
-    </form>
+    </div>
     <form method="dialog" class="modal-backdrop">
-      <button @click="addProjectChoiceModal?.close()">close</button>
+      <button>close</button>
     </form>
   </dialog>
 </template>

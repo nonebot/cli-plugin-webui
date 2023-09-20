@@ -114,7 +114,7 @@ watch(props, () => {
 
 <template>
   <dialog ref="logShowModal" class="modal">
-    <div method="dialog" class="modal-box rounded-lg log-view-card">
+    <div class="modal-box rounded-lg log-view-card">
       <div class="h-full flex flex-col">
         <h3 class="font-bold text-lg">正在安装依赖</h3>
 
