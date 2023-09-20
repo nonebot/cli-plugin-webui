@@ -70,6 +70,11 @@ async def webui(ctx: click.Context):
 )
 @run_async
 async def run(host: str, port: int):
+    if port:
+        if port < 0 or port > 65535:
+            click.secho(_("Port must be between 0 and 65535."))
+            return
+
     if not config.exist:
         click.secho(_("Cannot find config file of webui."))
         click.secho(

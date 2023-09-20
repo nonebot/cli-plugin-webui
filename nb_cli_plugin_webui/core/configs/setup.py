@@ -52,6 +52,16 @@ async def get_user_config():
         port = await InputPrompt(_("Please enter port:")).prompt_async(
             style=CLI_DEFAULT_STYLE
         )
+        while True:
+            try:
+                if int(port) < 0 or int(port) > 65535:
+                    raise ValueError
+                break
+            except ValueError:
+                click.secho(_("Port must be between 0 and 65535."))
+                port = await InputPrompt(_("Please enter port:")).prompt_async(
+                    style=CLI_DEFAULT_STYLE
+                )
 
         click.secho(_("Your webui url is:"))
         click.secho(f"\nhttp://{host}:{port}/\n", fg="green")
