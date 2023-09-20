@@ -90,6 +90,8 @@ const doAddProject = async () => {
     })
     .then((resp) => {
       logKey.value = resp.log_key;
+      closeNextModal();
+      logShowModal.value?.openModal();
     })
     .catch((error: AxiosError) => {
       let reason: string;
@@ -298,7 +300,7 @@ const finishAddProject = () => {
 
         <button
           class="btn btn-primary rounded-lg h-10 min-h-0 text-white"
-          @click="closeNextModal(), doAddProject(), logShowModal?.openModal()"
+          @click="doAddProject()"
         >
           添加
         </button>
