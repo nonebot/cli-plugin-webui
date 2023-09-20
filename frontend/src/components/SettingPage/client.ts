@@ -127,6 +127,7 @@ class NonebotConfig extends BaseConfig {
         });
 
       await getNonebotConfig();
+      notice.success("更新 NoneBot 设置成功，重启实例后生效");
     };
 
     const getAction = () => {};
@@ -185,6 +186,7 @@ class PluginConfig extends BaseConfig {
         });
 
       await getNonebotPluginConfig();
+      notice.success("更新 NoneBot 插件设置成功，重启实例后生效");
     };
 
     const getAction = () => {};
