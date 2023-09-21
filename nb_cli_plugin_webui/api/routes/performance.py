@@ -18,14 +18,12 @@ async def _(websocket: WebSocket):
     try:
         recv = await asyncio.wait_for(websocket.receive(), 5)
     except asyncio.TimeoutError:
-        await websocket.close()
         return
 
     token = recv.get("text", "unknown")
     try:
         jwt.verify_and_read_jwt(token, config.read().secret_key.get_secret_value())
     except Exception:
-        await websocket.close()
         return
 
     try:
@@ -34,5 +32,5 @@ async def _(websocket: WebSocket):
             await websocket.send_json(SystemStatsResponse(system_stats=data).dict())
             await asyncio.sleep(1)
     except Exception:
-        await websocket.close()
+        pass
     return

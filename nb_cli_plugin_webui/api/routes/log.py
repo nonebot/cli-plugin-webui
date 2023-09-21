@@ -29,19 +29,16 @@ async def get_logs_realtime(websocket: WebSocket, log_key: str):
     try:
         recv = await asyncio.wait_for(websocket.receive(), 5)
     except asyncio.TimeoutError:
-        await websocket.close()
         return
 
     token = recv.get("text", "unknown")
     try:
         jwt.verify_and_read_jwt(token, config.read().secret_key.get_secret_value())
     except Exception:
-        await websocket.close()
         return
 
     log = LoggerStorageFather[ProcessLog].get_storage(log_key)
     if log is None:
-        await websocket.close()
         return
 
     async def log_listener(log: ProcessLog):

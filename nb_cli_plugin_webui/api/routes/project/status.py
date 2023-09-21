@@ -29,14 +29,12 @@ async def get_nonebot_project_process_status_realtime(
     try:
         recv = await asyncio.wait_for(websocket.receive(), 5)
     except asyncio.TimeoutError:
-        await websocket.close()
         return
 
     token = recv.get("text", "unknown")
     try:
         jwt.verify_and_read_jwt(token, config.read().secret_key.get_secret_value())
     except Exception:
-        await websocket.close()
         return
 
     process = ProcessManager.get_process(project_id)
@@ -49,5 +47,5 @@ async def get_nonebot_project_process_status_realtime(
             await websocket.send_json(data.dict())
             await asyncio.sleep(1)
     except Exception:
-        await websocket.close()
+        pass
     return
