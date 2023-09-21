@@ -28,17 +28,21 @@ async def get_nonebot_project_process_status_realtime(
 
     try:
         recv = await asyncio.wait_for(websocket.receive(), 5)
-    except asyncio.TimeoutError:
-        return
-
-    token = recv.get("text", "unknown")
-    try:
+        token = recv.get("text", "unknown")
         jwt.verify_and_read_jwt(token, config.read().secret_key.get_secret_value())
     except Exception:
+        try:
+            await websocket.close()
+        except Exception:
+            pass
         return
 
     process = ProcessManager.get_process(project_id)
     if process is None:
+        try:
+            await websocket.close()
+        except Exception:
+            pass
         return
 
     try:

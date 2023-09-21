@@ -17,13 +17,13 @@ async def _(websocket: WebSocket):
 
     try:
         recv = await asyncio.wait_for(websocket.receive(), 5)
-    except asyncio.TimeoutError:
-        return
-
-    token = recv.get("text", "unknown")
-    try:
+        token = recv.get("text", "unknown")
         jwt.verify_and_read_jwt(token, config.read().secret_key.get_secret_value())
     except Exception:
+        try:
+            await websocket.close()
+        except Exception:
+            pass
         return
 
     try:
