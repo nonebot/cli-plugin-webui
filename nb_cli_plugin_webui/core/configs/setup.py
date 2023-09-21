@@ -13,6 +13,7 @@ from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexit
 
 
 async def get_user_config():
+    click.secho(_("Welcome to use NB CLI WebUI."), fg="green")
     click.secho("")
     click.secho(_("[Token Setting]"), fg="green")
     click.secho(_("Token is your key to access WebUI."))
