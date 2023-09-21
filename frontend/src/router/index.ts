@@ -7,7 +7,6 @@ import NonebotStore from "@/components/NonebotStore.vue";
 import FileExplorer from "@/components/FileExplorer.vue";
 import SettingPage from "@/components/SettingPage.vue";
 
-import { checkTokenValidity } from "./client";
 import { notice } from "@/utils/notification";
 import { appStore as store } from "@/store/global";
 
@@ -52,11 +51,6 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  const login = await checkTokenValidity();
-  if (!login && to.name !== "Login") {
-    notice.warning("登陆凭证失效");
-    router.push("/login");
-  }
   if (!store().choiceProject.project_id && to.path !== "/" && to.path !== "/login") {
     router.push("/");
     notice.warning("请先选择一项实例");
