@@ -167,7 +167,7 @@ class NonebotProjectManager:
                 data.plugins.append(new_plugin_info)
             else:
                 for i in data.plugins:
-                    if i.module_name == plugin_detail.module_name:
+                    if i.project_link == plugin_detail.project_link:
                         data.plugins.remove(i)
                         data.plugins.append(new_plugin_info)
                         break
