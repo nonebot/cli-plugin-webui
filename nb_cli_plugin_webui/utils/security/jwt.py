@@ -38,3 +38,5 @@ def verify_and_read_jwt(token: str, secret_key: str) -> str:
         raise ValueError(_("Invalid token.")) from err
     except ValidationError as err:
         raise ValueError(_("Malformed payload in token.")) from err
+    except Exception as err:
+        raise ValueError(f"Unknown error: {err}") from err
