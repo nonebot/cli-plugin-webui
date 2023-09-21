@@ -1,6 +1,6 @@
 # flake8:noqa: F401
-from fastapi import Body, APIRouter
 from nb_cli.handlers import list_builtin_plugins
+from fastapi import Body, APIRouter, HTTPException, status
 
 from nb_cli_plugin_webui.exceptions import NonebotProjectIsNotExist
 from nb_cli_plugin_webui.api.dependencies.project import NonebotProjectManager
@@ -25,7 +25,7 @@ async def get_nonebot_store_plugins(
     try:
         project_info = project.read()
     except NonebotProjectIsNotExist:
-        raise NonebotProjectIsNotExist
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="实例不存在")
 
     if show_all:
         data = PLUGIN_MANAGER.get_item(is_search=bool(is_search))
