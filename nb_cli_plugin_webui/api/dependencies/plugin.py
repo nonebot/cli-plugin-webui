@@ -1,3 +1,4 @@
+import sys
 import json
 import asyncio
 from typing import Optional
@@ -13,10 +14,14 @@ async def get_plugin_list(python_path: Optional[str] = None) -> list:
         python_path = await get_default_python()
 
     t = templates.get_template("scripts/script/list_assign_prefix_pkg.py.jinja")
+    if sys.version_info >= (3, 10):
+        temp = await t.render_async(pkg_prefix="nonebot_plugin")
+    else:
+        temp = await t.render_async(pkg_prefix="nonebot-plugin")
     proc = await create_process(
         python_path,
         "-c",
-        await t.render_async(pkg_prefix="nonebot_plugin"),
+        temp,
         stdout=asyncio.subprocess.PIPE,
     )
     stdout, _ = await proc.communicate()
