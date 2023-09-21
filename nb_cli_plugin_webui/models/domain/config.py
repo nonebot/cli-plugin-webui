@@ -14,8 +14,8 @@ class SecretStrJSONEncoder(json.JSONEncoder):
 
 
 class ServerConfig(BaseModel):
-    host: str
-    port: str
+    host: str = "localhost"
+    port: str = "12345"
     debug: bool = False
 
     @property
@@ -29,7 +29,7 @@ class WebUIConfig(ServerConfig):
     hashed_token: str = str()
     salt: SecretStr = SecretStr(str())
     secret_key: SecretStr
-    base_dir: str = str()
+    base_dir: str
 
     def to_json(self) -> str:
         return json.dumps(self.dict(), cls=SecretStrJSONEncoder)

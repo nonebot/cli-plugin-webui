@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Union
 
+import click
 from pydantic import ValidationError
 
 from nb_cli_plugin_webui.utils.store import get_config_file
@@ -23,8 +24,13 @@ class Config:
         if not CONFIG_CACHE or refresh:
             try:
                 CONFIG_CACHE = WebUIConfig.parse_file(self.config_file)
-            except ValidationError:
-                raise ValidationError("Config file is invalid.", WebUIConfig)
+            except ValidationError as err:
+                click.secho(f"Config file is invalid: {err}", fg="red")
+                click.secho(
+                    "Enter this try to fix: nb ui clear",
+                    fg="yellow",
+                )
+                exit(-1)
         return CONFIG_CACHE
 
     def store(self, data: WebUIConfig) -> None:

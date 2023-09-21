@@ -8,10 +8,9 @@ from nb_cli.cli import CLI_DEFAULT_STYLE, ClickAliasedGroup, run_sync, run_async
 from noneprompt import Choice, ListPrompt, InputPrompt, ConfirmPrompt, CancelledError
 
 from nb_cli_plugin_webui.i18n import _
-from nb_cli_plugin_webui.core import server
+from nb_cli_plugin_webui.utils.store import get_data_file
 from nb_cli_plugin_webui.core.configs.config import config
 from nb_cli_plugin_webui.core.configs.setup import get_user_config
-from nb_cli_plugin_webui.api.dependencies.project import NonebotProjectManager
 from nb_cli_plugin_webui.utils import check_token_complexity, generate_complexity_string
 
 
@@ -72,23 +71,20 @@ async def webui(ctx: click.Context):
 )
 @run_async
 async def run(host: str, port: int):
-    if port:
+    if not config.exist:
+        await get_user_config()
+
+    from nb_cli_plugin_webui.core import server
+
+    conf = config.read()
+    if not host:
+        host = conf.host
+    if not port:
+        port = int(conf.port)
+    else:
         if port < 0 or port > 65535:
             click.secho(_("Port must be between 0 and 65535."))
             return
-
-    if not config.exist:
-        click.secho(_("Cannot find config file of webui."))
-        click.secho(
-            _("Please run: nb ui init (If you are running this for the first time)")
-        )
-        return
-    else:
-        conf = config.read()
-        if not host:
-            host = conf.host
-        if not port:
-            port = int(conf.port)
 
     webbrowser.open(f"http://{host}:{port}/")
     await server.run_server(host, port)
@@ -98,11 +94,7 @@ async def run(host: str, port: int):
 @run_async
 async def setting_token():
     if not config.exist:
-        click.secho(_("Cannot find config file of webui."))
-        click.secho(
-            _("Please run: nb ui init (If you are running this for the first time)")
-        )
-        return
+        await get_user_config()
 
     if await ConfirmPrompt(_("Do you want it generated?")).prompt_async(
         style=CLI_DEFAULT_STYLE
@@ -216,6 +208,6 @@ async def clear():
         os.remove(config_path)
         click.secho(_("Clear config file success."))
 
-        project_info_path = NonebotProjectManager.project_file_path
+        project_info_path = get_data_file("webui-nonebot-projects.json")
         os.remove(project_info_path)
         click.secho(_("Clear project info file success."))
