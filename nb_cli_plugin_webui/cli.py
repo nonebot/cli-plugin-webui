@@ -208,6 +208,9 @@ async def clear():
         os.remove(config_path)
         click.secho(_("Clear config file success."))
 
-        project_info_path = get_data_file("webui-nonebot-projects.json")
+        try:
+            project_info_path = get_data_file("webui-nonebot-projects.json")
+        except FileNotFoundError:
+            return
         os.remove(project_info_path)
         click.secho(_("Clear project info file success."))
