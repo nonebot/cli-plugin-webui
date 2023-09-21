@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nb-cli-plugin-webui"
-version = "0.2.0"
+version = "0.2.1"
 description = "web ui support for nb-cli"
 authors = ["Kyomotoi <kyomotoiowo@gmail.com>"]
 license = "MIT"
