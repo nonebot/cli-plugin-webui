@@ -56,8 +56,9 @@ class StoreManager(Generic[_T]):
         is_search: bool = False,
     ) -> List[_T]:
         self.page = page
-        if self.page > self.get_max_page(is_search=is_search):
-            self.page = self.get_max_page(is_search=is_search)
+        max_page = self.get_max_page(is_search=is_search)
+        if self.page > max_page:
+            self.page = max_page
         elif self.page < 0:
             self.page = 0
 
@@ -71,23 +72,14 @@ class StoreManager(Generic[_T]):
 
         cache_list = page_items[:]
         for i in cache_list:
-            if isinstance(i, Plugin):
-                for plugin in project_info.plugins:
-                    i.is_download = i.module_name == plugin.module_name
-                    if i.is_download:
-                        break
-            elif isinstance(i, Adapter):
-                for adapter in project_info.adapters:
-                    i.is_download = i.module_name == adapter.module_name
-                    if i.is_download:
-                        break
-            elif isinstance(i, Driver):
-                for driver in project_info.drivers:
-                    i.is_download = i.module_name == driver.module_name
-                    if i.is_download:
+            i.is_download = False
+            if isinstance(i, (Plugin, Adapter, Driver)):
+                for item in getattr(project_info, i.__class__.__name__.lower() + "s"):
+                    if i.project_link == item.project_link:
+                        i.is_download = True
                         break
 
-        return page_items
+        return cache_list
 
     def search_item(self, project_info: NonebotProjectMeta, content: str) -> None:
         filters_pattern = r"(is:[^ ]+(?:\s+is:[^ ]+)*)"
@@ -148,8 +140,7 @@ class StoreManager(Generic[_T]):
                             if isinstance(i, Plugin):
                                 if not i.valid:
                                     remove_item(i)
-                        if f == "recently":
-                            # Here is a bug, Wait for fix
+                        if f == "new":
                             if isinstance(i, Plugin):
                                 latest_time = (
                                     datetime.now(timezone(timedelta(hours=8)))
