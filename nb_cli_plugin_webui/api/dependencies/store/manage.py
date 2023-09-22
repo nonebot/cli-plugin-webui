@@ -75,7 +75,7 @@ class StoreManager(Generic[_T]):
             i.is_download = False
             if isinstance(i, (Plugin, Adapter, Driver)):
                 for item in getattr(project_info, i.__class__.__name__.lower() + "s"):
-                    if i.project_link == item.project_link:
+                    if i.module_name == item.module_name:
                         i.is_download = True
                         break
 
