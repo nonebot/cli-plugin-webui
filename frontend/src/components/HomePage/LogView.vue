@@ -19,6 +19,7 @@ interface LogItem {
   classList: string[];
 }
 
+const logShowArea = ref<HTMLElement>();
 const logItems = ref<LogItem[]>([]);
 
 const writeToArea = (content: string, classList?: string[]) => {
@@ -107,6 +108,11 @@ const handleWebSocket = () => {
   websocket.value.client.onmessage = (event: MessageEvent) => {
     const data: ProcessLog = JSON.parse(event.data.toString());
     writeToArea(ansiUp.ansi_to_html(data.message));
+    if (logShowArea.value) {
+      const logRows = logShowArea.value.getElementsByTagName("tr");
+      const lastLogRow = logRows[logRows.length - 1];
+      lastLogRow.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
 
     if (data.message === "Process finished.") {
       appStore().projectIsStop();
@@ -195,7 +201,7 @@ watch(
       class="custom-y-scrollbar overflow-y-auto h-96 p-2 md:p-4 mt-2 bg-base-300 text-xs"
     >
       <table class="table">
-        <tbody>
+        <tbody ref="logShowArea">
           <tr v-for="item in logItems" :class="item.classList">
             <td class="p-0" v-html="item.content"></td>
           </tr>
