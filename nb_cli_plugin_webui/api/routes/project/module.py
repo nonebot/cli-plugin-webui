@@ -139,11 +139,11 @@ async def uninstall_nonebot_project_module(
     if package.startswith("nonebot2[") and package.endswith("]"):
         package = package[9:-1]
 
-    ob_adapter_prefix = "nonebot.adapter.onebot"
-    if ob_adapter_prefix in module.module_name:
+    ob_adapter_prefix = "nonebot.adapters.onebot"
+    if module.module_name.startswith(ob_adapter_prefix):
         ob_count = int()
         for adapter in project_detail.adapters:
-            if ob_adapter_prefix in adapter.module_name:
+            if adapter.module_name.startswith(ob_adapter_prefix):
                 ob_count += 1
 
         if ob_count == 1:
