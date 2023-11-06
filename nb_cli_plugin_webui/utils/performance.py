@@ -14,8 +14,8 @@ from nb_cli_plugin_webui.models.schemas.performance import (
 )
 
 if pf == "win32":
-    import wmi  # type: ignore
     import pythoncom
+    import wmi  # type: ignore
     from win32com import client
 
 

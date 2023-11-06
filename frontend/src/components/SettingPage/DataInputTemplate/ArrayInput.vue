@@ -81,7 +81,7 @@ const deleteAction = (item: any) => {
         class="select select-xs rounded bg-base-300 w-full max-w-xs"
         @change="
           (event: any) => {
-            inputValue = event.target.value
+            inputValue = event.target.value;
           }
         "
       >

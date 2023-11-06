@@ -12,7 +12,7 @@ defineProps<{
     class="select select-sm bg-base-300 rounded w-full max-w-xs"
     @change="
       (event: any) => {
-        setAction(inputID, event.target.value, 'select')
+        setAction(inputID, event.target.value, 'select');
       }
     "
   >

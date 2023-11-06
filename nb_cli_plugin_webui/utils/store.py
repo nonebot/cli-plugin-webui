@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Callable
 from typing_extensions import ParamSpec
 
-from nb_cli.handlers.data import CONFIG_DIR, DATA_DIR, CACHE_DIR
+from nb_cli.handlers.data import DATA_DIR, CACHE_DIR, CONFIG_DIR
 
 P = ParamSpec("P")
 

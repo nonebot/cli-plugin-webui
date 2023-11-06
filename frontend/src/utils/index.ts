@@ -14,10 +14,7 @@ export function isEqual(obj1: any, obj2: any): boolean {
     return true;
   }
 
-  if (
-    typeof obj1 !== typeof obj2 ||
-    Array.isArray(obj1) !== Array.isArray(obj2)
-  ) {
+  if (typeof obj1 !== typeof obj2 || Array.isArray(obj1) !== Array.isArray(obj2)) {
     return false;
   }
 
