@@ -1,5 +1,5 @@
-import { WebsocketWrapper } from "@/utils/ws";
-import { SystemStatsData } from "@/components/HomePage/models";
+import { getURL } from "@/utils";
+import { PlatformInfo } from "@/components/HomePage/schemas";
 import { systemStatStore } from "@/store/status";
 import { notice } from "@/utils/notification";
 import { API } from "@/api";
@@ -23,38 +23,22 @@ export const mirrorList = [
   { name: "豆瓣", url: "https://pypi.douban.com/simple" },
 ];
 
-export let websocketForPlatformMonitor: WebsocketWrapper;
+export let websocketForPlatformMonitor: WebSocket;
 
 export function handlePlatformMonitorWebsocket() {
   const store = systemStatStore();
 
-  if (websocketForPlatformMonitor?.state.connected) {
-    websocketForPlatformMonitor.close();
-  }
+  websocketForPlatformMonitor?.close();
 
-  websocketForPlatformMonitor = new WebsocketWrapper("/api/performance/ws");
+  websocketForPlatformMonitor = new WebSocket(getURL("/api/status/platform/ws", true));
 
-  const maxRetries = 3;
-  let retries = 0;
-  let connected = false;
+  websocketForPlatformMonitor.onopen = () => {
+    const token = localStorage.getItem("jwtToken") ?? "";
+    websocketForPlatformMonitor.send(token);
+  };
 
-  while (!connected && retries < maxRetries) {
-    try {
-      websocketForPlatformMonitor?.connect();
-      connected = true;
-    } catch (error: any) {
-      notice.error(`连接至平台性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`);
-      retries++;
-    }
-  }
-
-  if (!connected) {
-    notice.error("连接至平台性能检测 WebSocket 失败");
-    return;
-  }
-
-  websocketForPlatformMonitor.client.onmessage = (event: MessageEvent) => {
-    const wsData: SystemStatsData = JSON.parse(event.data);
+  websocketForPlatformMonitor.onmessage = (event: MessageEvent) => {
+    const wsData: PlatformInfo = JSON.parse(event.data);
     const date = new Date();
 
     if (store.timeList.length >= 100) {
@@ -65,8 +49,8 @@ export function handlePlatformMonitorWebsocket() {
     const convertToMB = (value: number) => value / 1024 / 1024;
     const convertToKbps = (value: number) => value / 1024 / 8;
 
-    const diskSpeeds = wsData.system_stats.disk.speed;
-    const netSpeeds = wsData.system_stats.net.speed;
+    const diskSpeeds = wsData.disk.speed;
+    const netSpeeds = wsData.net.speed;
 
     const updateList = (list: number[], speed: number) => {
       if (list.length >= 100) {
@@ -86,7 +70,7 @@ export async function getProjectList() {
   await api
     .getProjectList()
     .then((resp) => {
-      appStore().projectList = resp.projects;
+      appStore().projectList = resp.detail;
     })
     .catch((error: AxiosError) => {
       let reason: string;

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ProcessLog } from "@/api/models";
-import { WebsocketWrapper } from "@/utils/ws";
-import { ToastWrapper } from "@/utils/notification";
+import { ProcessLog } from "@/api/schemas";
+import { getURL } from "@/utils";
 import { ref, watch } from "vue";
 
 const logShowModal = ref<HTMLDialogElement>();
@@ -21,8 +20,7 @@ const props = defineProps({
   logKey: String,
 });
 
-const notice = new ToastWrapper("Log Show");
-const websocket = ref<WebsocketWrapper>();
+const websocket = ref<WebSocket>();
 
 const isFailed = ref(false);
 const isDone = ref(false);
@@ -49,32 +47,18 @@ const clearArea = () => {
 };
 
 const handleWebSocket = () => {
-  if (websocket.value?.state.connected) {
-    websocket.value.close();
-  }
+  if (!props.logKey) return;
 
-  websocket.value = new WebsocketWrapper(`/api/log/logs/${props.logKey}`);
+  websocket.value?.close();
 
-  const maxRetries = 3;
-  let retries = 0;
-  let connected = false;
+  websocket.value = new WebSocket(getURL(`/api/process/log/${props.logKey}/ws`, true));
 
-  while (!connected && retries < maxRetries) {
-    try {
-      websocket.value.connect();
-      connected = true;
-    } catch (error: any) {
-      notice.error(`连接至日志 WebSocket 失败...(${retries + 1}/${maxRetries})`);
-      retries++;
-    }
-  }
+  websocket.value.onopen = () => {
+    const token = localStorage.getItem("jwtToken") ?? "";
+    websocket.value?.send(token);
+  };
 
-  if (!connected) {
-    notice.error("连接至日志 WebSocket 失败");
-    return;
-  }
-
-  websocket.value.client!.onmessage = (event: MessageEvent) => {
+  websocket.value.onmessage = (event: MessageEvent) => {
     const data: ProcessLog = JSON.parse(event.data.toString());
     if (logShowArea.value) {
       writeToArea(data.message, data.time, data.level);
@@ -86,7 +70,7 @@ const handleWebSocket = () => {
     if (data.message === "✨ Done!") {
       websocket.value?.close();
       isDone.value = true;
-    } else if (data.message === "❗ Failed...") {
+    } else if (data.message === "❌ Failed!") {
       websocket.value?.close();
       isFailed.value = true;
     }

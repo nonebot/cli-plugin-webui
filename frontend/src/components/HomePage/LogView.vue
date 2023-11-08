@@ -2,17 +2,17 @@
 import { appStore } from "@/store/global";
 import { api } from "./client";
 import AnsiUp from "ansi_up";
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { WebsocketWrapper } from "@/utils/ws";
+import { onBeforeUnmount, ref, watch } from "vue";
+import { getURL } from "@/utils";
 import { notice } from "@/utils/notification";
-import { ProcessLog } from "@/api/models";
+import { ProcessLog } from "@/api/schemas";
 import { AxiosError } from "axios";
 
 const ansiUp = new AnsiUp();
 
 const viewProject = ref("");
 const writeStdinInput = ref<HTMLInputElement>();
-const websocket = ref<WebsocketWrapper>();
+const websocket = ref<WebSocket>();
 
 interface LogItem {
   content: string;
@@ -35,7 +35,7 @@ const clearArea = () => {
 
 const writeStdin = async (content: string) => {
   const projectID = appStore().choiceProject.project_id;
-  await api.writeStdin(projectID, content).catch(() => {
+  await api.writeToProjectProcessStdin(content, projectID).catch(() => {
     writeToArea(`Input failed!`, ["text-red-500", "font-bold"]);
   });
 };
@@ -80,86 +80,65 @@ const handleKeydown = async (event: KeyboardEvent) => {
 };
 
 const handleWebSocket = () => {
-  if (websocket.value?.state.connected) {
-    websocket.value.close();
-  }
+  if (!viewProject.value) return;
 
-  websocket.value = new WebsocketWrapper(`/api/log/logs/${viewProject.value}`);
+  websocket.value?.close();
 
-  const maxRetries = 3;
-  let retries = 0;
-  let connected = false;
+  websocket.value = new WebSocket(
+    getURL(`/api/process/log/${viewProject.value}/ws`, true),
+  );
 
-  while (!connected && retries < maxRetries) {
-    try {
-      websocket.value.connect();
-      connected = true;
-    } catch (error: any) {
-      notice.error(`连接至日志 WebSocket 失败...(${retries + 1}/${maxRetries})`);
-      retries++;
+  websocket.value.onopen = () => {
+    const token = localStorage.getItem("jwtToken") ?? "";
+    websocket.value?.send(token);
+    if (websocket.value?.readyState === WebSocket.OPEN) {
+      writeToArea("日志 WebSocket 已连接", ["text-green-500", "font-bold"]);
     }
-  }
+  };
 
-  if (!connected) {
-    notice.error("连接至日志 WebSocket 失败");
-    return;
-  }
-
-  websocket.value.client.onmessage = (event: MessageEvent) => {
+  websocket.value.onmessage = (event: MessageEvent) => {
     const data: ProcessLog = JSON.parse(event.data.toString());
     writeToArea(ansiUp.ansi_to_html(data.message));
-    if (logShowArea.value) {
-      const logRows = logShowArea.value.getElementsByTagName("tr");
-      const lastLogRow = logRows[logRows.length - 1];
-      lastLogRow.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
 
     if (data.message === "Process finished.") {
       appStore().projectIsStop();
     }
   };
 
-  websocket.value.client.onopen = () => {
-    writeToArea(" ");
-    writeToArea("日志 WebSocket 已连接", ["text-green-500", "font-bold"]);
-  };
-
-  websocket.value.client.onclose = () => {
-    writeToArea(" ");
+  websocket.value.onclose = () => {
     writeToArea("日志 WebSocket 已断开", ["text-red-500", "font-bold"]);
+    websocket.value = undefined;
   };
 };
-
-onMounted(() => {
-  if (appStore().choiceProject.is_running) {
-    viewProject.value = appStore().choiceProject.project_id;
-  }
-});
 
 onBeforeUnmount(() => {
   websocket.value?.close();
   clearArea();
 });
 
+// 切换查看实例的情况
 watch(
   () => appStore().choiceProject,
   async (newValue) => {
-    viewProject.value = newValue.project_id;
-    if (websocket.value?.state.connected) {
-      websocket.value.close();
+    // 相同实例无需额外处理
+    if (newValue.project_id === viewProject.value) {
+      // 未连接就重新连接
+      handleWebSocket();
+      return;
     }
+
+    viewProject.value = newValue.project_id;
     clearArea();
-    await getHistoryLog(viewProject.value, 50);
+    if (viewProject.value) await getHistoryLog(viewProject.value, 50);
     handleWebSocket();
   },
 );
 
+// 查看当前实例运行状态的情况
 watch(
   () => appStore().choiceProject.is_running,
-  async (newValue) => {
+  (newValue) => {
     if (newValue) {
-      clearArea();
-      await getHistoryLog(viewProject.value, 50);
       handleWebSocket();
     }
   },
@@ -175,25 +154,12 @@ watch(
   >
     <div class="flex justify-between items-center">
       <h3 class="text-base md:text-xl">运行日志</h3>
-      <div class="grid grid-cols-2 sm:gap-2 md:gap-4">
-        <div
-          role="button"
-          class="mr-2 btn btn-xs md:btn-sm h-auto md:!h-10 rounded"
-          @click="clearArea()"
-        >
-          清空日志
-        </div>
-
-        <div
-          role="button"
-          :class="{
-            'btn btn-xs md:btn-sm h-auto md:!h-10 rounded': true,
-            'btn-disabled': websocket?.state.connected,
-          }"
-          @click="handleWebSocket()"
-        >
-          重新连接
-        </div>
+      <div
+        role="button"
+        class="btn btn-xs md:btn-sm h-auto md:!h-10 rounded"
+        @click="clearArea()"
+      >
+        清空日志
       </div>
     </div>
 

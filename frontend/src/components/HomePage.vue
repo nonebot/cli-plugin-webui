@@ -9,7 +9,7 @@ import ProjectAction from "@/components/HomePage/ProjectAction.vue";
 import {
   handlePlatformMonitorWebsocket,
   websocketForPlatformMonitor,
-} from "./HomePage/client";
+} from "@/components/HomePage/client";
 import { onMounted, onUnmounted } from "vue";
 
 onMounted(() => {
@@ -17,9 +17,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  if (websocketForPlatformMonitor?.state.connected) {
-    websocketForPlatformMonitor.close();
-  }
+  websocketForPlatformMonitor?.close();
 });
 </script>
 

@@ -1,44 +1,29 @@
 <script setup lang="ts">
 import StatDashboardChart from "@/components/HomePage/StatDashboardChart.vue";
-import { WebsocketWrapper } from "@/utils/ws";
+import { getURL } from "@/utils";
 import { systemStatStore, projectStatStore } from "@/store/status";
 import { appStore } from "@/store/global";
-import { ProcessInfo } from "@/api/models";
-import { notice } from "@/utils/notification";
+import { ProcessInfo } from "@/api/schemas";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 const viewProject = ref("");
-const websocket = ref<WebsocketWrapper>();
+const websocket = ref<WebSocket>();
 
 const handleProjectMonitorWebSocket = () => {
-  if (websocket.value?.state.connected) {
-    websocket.value.close();
-  }
+  websocket.value?.close();
 
-  websocket.value = new WebsocketWrapper(`/api/project/status/${viewProject.value}`);
-
-  const maxRetries = 3;
-  let retries = 0;
-  let connected = false;
-
-  while (!connected && retries < maxRetries) {
-    try {
-      websocket.value.connect();
-      connected = true;
-    } catch (error: any) {
-      notice.error(`连接至实例性能检测 WebSocket 失败...(${retries + 1}/${maxRetries})`);
-      retries++;
-    }
-  }
-
-  if (!connected) {
-    notice.error("连接至性能检测 WebSocket 失败");
-    return;
-  }
+  websocket.value = new WebSocket(
+    getURL(`/api/process/status/${viewProject.value}/ws`, true),
+  );
 
   projectStatStore().clearList();
 
-  websocket.value.client.onmessage = (event: MessageEvent) => {
+  websocket.value.onopen = () => {
+    const token = localStorage.getItem("jwtToken") ?? "";
+    websocket.value?.send(token);
+  };
+
+  websocket.value.onmessage = (event: MessageEvent) => {
     const wsData: ProcessInfo = JSON.parse(event.data);
 
     if (!wsData.performance) {
