@@ -1,16 +1,4 @@
-export interface SystemStatsData {
-  system_stats: SystemStats;
-}
-
-export interface SystemStats {
-  platform: Platform;
-  cpu: Cpu;
-  mem: Mem;
-  disk: Disk;
-  net: Net;
-}
-
-export interface Platform {
+interface PlatformProfile {
   name: string;
   struct: string;
   platform_type: string;
@@ -46,4 +34,12 @@ export interface Net {
   package_sent: number;
   package_recv: number;
   speed: number[];
+}
+
+export interface PlatformInfo {
+  platform: PlatformProfile;
+  cpu: Cpu;
+  mem: Mem;
+  disk: Disk;
+  net: Net;
 }
