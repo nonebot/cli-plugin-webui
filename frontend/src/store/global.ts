@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
-import { NonebotProjectMeta } from "@/api/models";
+import { NoneBotProjectMeta } from "@/api/schemas";
 import { NoticeDetail } from "@/utils/notification";
 
 export const appStore = defineStore("appStore", {
   state: () => {
     return {
       isAuth: false,
-      projectList: {} as { [key: string]: NonebotProjectMeta },
-      choiceProject: Object() as NonebotProjectMeta,
+      projectList: {} as { [key: string]: NoneBotProjectMeta },
+      choiceProject: Object() as NoneBotProjectMeta,
       enabledEnv: ".env",
       nowPath: "/",
     };

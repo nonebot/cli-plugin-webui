@@ -2,16 +2,16 @@
 import AddProjectChoice from "@/components/HomePage/Modals/AddProjectChoice.vue";
 
 import { onMounted, ref } from "vue";
-import { NonebotProjectMeta } from "@/api/models";
+import { NoneBotProjectMeta } from "@/api/schemas";
 import { appStore as store } from "@/store/global";
 import { parseSimpleInfo } from "@/utils";
 import { getProjectList } from "@/components/HomePage/client";
 
 const addProjectChoiceModal = ref<InstanceType<typeof AddProjectChoice> | null>();
 
-const choiceProjectInfo = ref<NonebotProjectMeta>();
+const choiceProjectInfo = ref<NoneBotProjectMeta>();
 
-const choiceProject = (data: NonebotProjectMeta) => {
+const choiceProject = (data: NoneBotProjectMeta) => {
   store().choiceProject = data;
   choiceProjectInfo.value = data;
 };
