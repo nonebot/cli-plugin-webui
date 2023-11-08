@@ -7,7 +7,7 @@ import AccountIcon from "@/components/Icons/AccountIcon.vue";
 import LogShow from "@/components/CustomModal/LogShow.vue";
 import ExtensionDetailModal from "@/components/NonebotStore/ExtensionDetailModal.vue";
 
-import { Adapter, Driver, Plugin } from "@/api/models";
+import { Adapter, Driver, Plugin } from "@/api/schemas";
 import { computed, ref } from "vue";
 import { nonebotExtensionStore } from "@/store/extensionStore";
 import { API } from "@/api";
@@ -33,15 +33,15 @@ const itemData = computed(() => {
 const doInstall = async (pass?: boolean) => {
   showInstallTipsModal.value?.close();
 
-  // 仅针对插件的 valid 属性
+  // undefined 判断仅针对拓展的 valid 属性
   if (pass || pass === undefined) {
     logShowModal.value?.openModal();
     const projectID = appStore().choiceProject.project_id;
     const module = nonebotExtensionStore().choiceItem;
     await api
-      .installModule(projectID, appStore().enabledEnv, module)
+      .installModule(appStore().enabledEnv, module, projectID)
       .then((resp) => {
-        logKey.value = resp.log_key;
+        logKey.value = resp.detail;
       })
       .catch((error: AxiosError) => {
         let reason: string;

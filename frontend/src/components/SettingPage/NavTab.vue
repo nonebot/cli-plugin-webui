@@ -16,7 +16,7 @@ const envEditModal = ref<HTMLDialogElement>();
 
 const getDotenv = async () => {
   await api
-    .getDotenvList(store().choiceProject.project_id)
+    .getEnvs(store().choiceProject.project_id)
     .then((resp) => {
       tabs.value = resp.detail;
     })
@@ -40,7 +40,7 @@ const addEnv = async () => {
 
   const env = `.env.${addEnvInput.value}`;
   await api
-    .createDotenvFile(store().choiceProject.project_id, env)
+    .createEnv(env, store().choiceProject.project_id)
     .then(() => {
       tabs.value.push(env);
       addEnvInput.value = "";
@@ -58,7 +58,7 @@ const addEnv = async () => {
 
 const assignEnv = async (env: string) => {
   await api
-    .activeDotenvFile(store().choiceProject.project_id, env)
+    .useEnv(env, store().choiceProject.project_id)
     .then(() => {
       store().enabledEnv = env;
       tabs.value = [env, ...tabs.value.filter((i) => i !== env)];

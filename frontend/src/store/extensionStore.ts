@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { API } from "@/api";
 import { ToastWrapper } from "@/utils/notification";
-import { Adapter, Driver, Plugin } from "@/api/models";
+import { Adapter, Driver, Plugin } from "@/api/schemas";
 import { AxiosError } from "axios";
 
 const api = new API();
@@ -41,68 +41,24 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
     async updateData(projectID: string) {
       const isSearch = this.searchInput ? true : false;
       this.requesting = true;
-      if (this.choiceClass === "plugin") {
-        await api
-          .getPlugins(this.nowPage, isSearch, projectID)
-          .then((resp) => {
-            this.requesting = false;
-            this.totalPage = resp.total_page;
-            this.totalItem = resp.total_item;
-            this.storeData = resp.data;
-          })
-          .catch((error: AxiosError) => {
-            this.requesting = false;
-            let reason: string;
-            if (error.response) {
-              reason = (error.response.data as { detail: string })?.detail;
-            } else {
-              reason = error.message;
-            }
-            notice.error(`获取插件列表失败：${reason}`);
-          });
-      }
-
-      if (this.choiceClass === "adapter") {
-        await api
-          .getAdapters(this.nowPage, isSearch, projectID)
-          .then((resp) => {
-            this.requesting = false;
-            this.storeData = resp.data;
-            this.totalPage = resp.total_page;
-            this.totalItem = resp.total_item;
-          })
-          .catch((error: AxiosError) => {
-            this.requesting = false;
-            let reason: string;
-            if (error.response) {
-              reason = (error.response.data as { detail: string })?.detail;
-            } else {
-              reason = error.message;
-            }
-            notice.error(`获取适配器列表失败：${reason}`);
-          });
-      }
-
-      if (this.choiceClass === "driver") {
-        await api
-          .getDrivers(this.nowPage, isSearch, projectID)
-          .then((resp) => {
-            this.requesting = false;
-            this.storeData = resp.data;
-            this.totalPage = resp.total_page;
-            this.totalItem = resp.total_item;
-          })
-          .catch((error: AxiosError) => {
-            this.requesting = false;
-            let reason: string;
-            if (error.response) {
-              reason = (error.response.data as { detail: string })?.detail;
-            } else {
-              reason = error.message;
-            }
-            notice.error(`获取驱动器列表失败：${reason}`);
-          });
-      }
+      await api
+        .getNoneBotModules(this.choiceClass, this.nowPage, projectID, isSearch)
+        .then((resp) => {
+          this.requesting = false;
+          this.storeData = resp.detail;
+          this.totalPage = resp.total_page;
+          this.totalItem = resp.total_item;
+        })
+        .catch((error: AxiosError) => {
+          this.requesting = false;
+          let reason: string;
+          if (error.response) {
+            reason = (error.response.data as { detail: string })?.detail;
+          } else {
+            reason = error.message;
+          }
+          notice.error(`获取 NoneBot 拓展商店模块 ${this.choiceClass} 失败：${reason}`);
+        });
     },
 
     async updateDataBySearch(projectID: string) {
@@ -111,7 +67,7 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
         .searchStore(projectID, this.choiceClass, this.searchInput)
         .then((resp) => {
           this.requesting = false;
-          this.storeData = resp.data;
+          this.storeData = resp.detail;
           this.totalPage = resp.total_page;
           this.totalItem = resp.total_item;
         })

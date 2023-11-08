@@ -7,7 +7,7 @@ import CloseIcon from "@/components/Icons/CloseIcon.vue";
 import { ref } from "vue";
 import { AxiosError } from "axios";
 import { notice } from "@/utils/notification";
-import { CheckProjectTomlDetail } from "@/api/models";
+import { CheckProjectTomlDetail } from "@/api/schemas";
 import { api, mirrorList } from "../client";
 
 const addProjectByPathModal = ref<HTMLDialogElement>();
@@ -53,7 +53,7 @@ const doCheck = async () => {
   await api
     .checkProjectToml(projectDir.value)
     .then((resp) => {
-      checkIsPass.value = resp.is_pass;
+      checkIsPass.value = true;
       checkNoticeLevel.value = resp.level;
       checkMsg.value = resp.msg;
       checkDetail.value = resp.detail;
@@ -62,6 +62,7 @@ const doCheck = async () => {
       }
     })
     .catch((error: AxiosError) => {
+      checkIsPass.value = false;
       let reason: string;
       if (error.response) {
         reason = (error.response.data as { detail: string })?.detail;
@@ -89,7 +90,7 @@ const doAddProject = async () => {
       builtin_plugins: checkDetail.value?.builtin_plugins ?? [],
     })
     .then((resp) => {
-      logKey.value = resp.log_key;
+      logKey.value = resp.detail;
       closeNextModal();
       logShowModal.value?.openModal();
     })

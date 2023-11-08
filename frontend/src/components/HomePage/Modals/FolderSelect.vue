@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { notice } from "@/utils/notification";
-import { FileInfo } from "@/api/models";
+import { FileInfo } from "@/api/schemas";
 import { limitContent } from "@/utils";
 import { api } from "../client";
 import { AxiosError } from "axios";
@@ -31,7 +31,7 @@ const getFiles = async (path: string) => {
   await api
     .getFileList(path)
     .then((resp) => {
-      files.value = resp.files;
+      files.value = resp.detail;
       nowPathStack.value = nowPath.value.split("/");
     })
     .catch((error: AxiosError) => {
@@ -49,7 +49,7 @@ const createFile = async (fileName: string, path: string) => {
   await api
     .createFile(fileName, true, path)
     .then((resp) => {
-      files.value = resp.files;
+      files.value = resp.detail;
       nowPathStack.value = nowPath.value.split("/");
       newFolderName.value = "";
       showCreateFolderModal.value?.close();
@@ -70,7 +70,7 @@ const deleteFile = async (path: string) => {
   await api
     .deleteFile(path)
     .then((resp) => {
-      files.value = resp.files;
+      files.value = resp.detail;
       nowPathStack.value = nowPath.value.split("/");
       selectedFolder.value = "";
     })
@@ -85,7 +85,7 @@ const deleteFile = async (path: string) => {
     });
 };
 
-const nextDir = (path: string, is_dir: number) => {
+const nextDir = (path: string, is_dir: boolean) => {
   if (!is_dir) {
     return;
   }
@@ -93,7 +93,7 @@ const nextDir = (path: string, is_dir: number) => {
   getFiles(path);
 };
 
-const choiceDir = (path: string, is_dir: number) => {
+const choiceDir = (path: string, is_dir: boolean) => {
   if (!is_dir) {
     notice.warning("请选择文件夹");
     return;
@@ -125,9 +125,9 @@ watch(folderSelectModal, (newValue) => {
       <h3 class="font-bold text-lg">NoneBot 实例安装位置</h3>
       <div class="text-sm breadcrumbs">
         <ul>
-          <li><a @click="nextDir('', 1)">(Base Dir)</a></li>
+          <li><a @click="nextDir('', true)">(Base Dir)</a></li>
           <li v-for="(dir, index) in nowPathStack">
-            <a @click="nextDir(nowPathStack.slice(0, index + 1).join('\\'), 1)">
+            <a @click="nextDir(nowPathStack.slice(0, index + 1).join('\\'), true)">
               <svg
                 v-if="dir"
                 class="w-4 h-4 mr-2 stroke-current"
@@ -168,7 +168,7 @@ watch(folderSelectModal, (newValue) => {
             >
               <td class="flex items-center">
                 <svg
-                  v-if="i.is_dir === 1"
+                  v-if="i.is_dir"
                   class="w-4 h-4 mr-2 stroke-current"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -203,7 +203,7 @@ watch(folderSelectModal, (newValue) => {
               </td>
               <td>{{ convertTime(i.modified_time) }}</td>
               <td>
-                <p v-if="i.is_dir === 1">文件夹</p>
+                <p v-if="i.is_dir">文件夹</p>
                 <p v-else>文件</p>
               </td>
               <td class="p-0">
@@ -262,7 +262,7 @@ watch(folderSelectModal, (newValue) => {
           刷新
         </button>
 
-        <button class="btn rounded-lg h-10 min-h-0" @click="choiceDir(nowPath, 1)">
+        <button class="btn rounded-lg h-10 min-h-0" @click="choiceDir(nowPath, true)">
           选中当前目录
         </button>
 

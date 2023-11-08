@@ -46,7 +46,7 @@ async function doLogin() {
     .doLogin(token.value)
     .then((resp) => {
       notice.success("登录成功");
-      localStorage.setItem("jwtToken", resp.jwt_token);
+      localStorage.setItem("jwtToken", resp.detail);
       appStore().isAuth = true;
       router.push("/");
     })

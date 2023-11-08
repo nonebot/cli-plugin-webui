@@ -1,4 +1,4 @@
-import { SimpleInfo } from "@/api/models";
+import { SimpleInfo } from "@/api/schemas";
 
 export function isDebug(): boolean {
   const isDebugString = localStorage.getItem("isDebug");
@@ -14,10 +14,7 @@ export function isEqual(obj1: any, obj2: any): boolean {
     return true;
   }
 
-  if (
-    typeof obj1 !== typeof obj2 ||
-    Array.isArray(obj1) !== Array.isArray(obj2)
-  ) {
+  if (typeof obj1 !== typeof obj2 || Array.isArray(obj1) !== Array.isArray(obj2)) {
     return false;
   }
 
@@ -51,4 +48,20 @@ export function parseSimpleInfo(data: SimpleInfo[]): string {
   } else {
     return "unknown";
   }
+}
+
+export function getURL(path: string, isWebSocket?: boolean): string {
+  let href;
+  if (isDebug()) {
+    href = `http://${localStorage.getItem("host")}:${localStorage.getItem(
+      "port",
+    )}/${path}`;
+  } else {
+    href = location.href;
+  }
+  const url = new URL(path, href);
+  if (isWebSocket) {
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+  }
+  return url.href;
 }

@@ -31,9 +31,9 @@ class ProjectMetaConfig extends BaseConfig {
 
     const setAction = async (k: string, v: any, keyType: string) => {
       await api
-        .configSet(
-          store().choiceProject.project_id,
+        .configUpdate(
           this.name,
+          store().choiceProject.project_id,
           store().enabledEnv,
           keyType,
           k,
@@ -53,9 +53,9 @@ class ProjectMetaConfig extends BaseConfig {
         });
 
       await api
-        .getProjectDetail(appStore().choiceProject.project_id)
+        .getProjectProfile(appStore().choiceProject.project_id)
         .then((resp) => {
-          appStore().choiceProject = resp;
+          appStore().choiceProject = resp.detail;
           return Promise.resolve();
         })
         .catch((error: AxiosError) => {
@@ -94,7 +94,7 @@ class NonebotConfig extends BaseConfig {
     let resp: any;
 
     await api
-      .getNonebotConfig(projectID)
+      .getNoneBotConfig(projectID)
       .then((response) => {
         resp = response.detail;
         return Promise.resolve();
@@ -105,9 +105,9 @@ class NonebotConfig extends BaseConfig {
 
     const setAction = async (k: string, v: any, keyType: string) => {
       await api
-        .configSet(
-          store().choiceProject.project_id,
+        .configUpdate(
           this.name,
+          store().choiceProject.project_id,
           store().enabledEnv,
           keyType,
           k,
@@ -164,9 +164,9 @@ class PluginConfig extends BaseConfig {
 
     const setAction = async (k: string, v: any, keyType: string) => {
       await api
-        .configSet(
-          store().choiceProject.project_id,
+        .configUpdate(
           this.name,
+          store().choiceProject.project_id,
           store().enabledEnv,
           keyType,
           k,

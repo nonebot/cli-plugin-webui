@@ -3,7 +3,7 @@ import OfficialCheckIcon from "../Icons/OfficialCheckIcon.vue";
 import CheckCircleIcon from "../Icons/CheckCircleIcon.vue";
 import CancelCircleIcon from "../Icons/CancelCircleIcon.vue";
 
-import { Adapter, Driver, Plugin } from "@/api/models";
+import { Adapter, Driver, Plugin } from "@/api/schemas";
 import { computed, ref } from "vue";
 import { routerTo } from "@/router/client";
 import { API } from "@/api";
@@ -33,9 +33,9 @@ const itemData = computed(() => {
 const uninstallModule = async () => {
   await api
     .uninstallModule(
-      appStore().choiceProject.project_id,
       appStore().enabledEnv,
       props.itemData,
+      appStore().choiceProject.project_id,
     )
     .then(() => {
       extensionDetailModal.value?.close();

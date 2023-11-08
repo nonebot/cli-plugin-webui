@@ -3,7 +3,7 @@ import LogShow from "@/components/CustomModal/LogShow.vue";
 import FolderSelect from "@/components/HomePage/Modals/FolderSelect.vue";
 
 import { notice } from "@/utils/notification";
-import { Driver, Adapter } from "@/api/models";
+import { Driver, Adapter } from "@/api/schemas";
 import { onMounted, ref, watch } from "vue";
 import { api, mirrorList, getProjectList } from "../client";
 import { AxiosError } from "axios";
@@ -42,9 +42,9 @@ const selectedAdapterList = ref<Adapter[]>([]);
 
 const getDrivers = async () => {
   await api
-    .getDrivers(0, false, "", true)
+    .getNoneBotModules("driver", 0, "", false, true)
     .then((resp) => {
-      driverList.value = resp.data;
+      driverList.value = resp.detail;
     })
     .catch((error: AxiosError) => {
       let reason: string;
@@ -59,9 +59,9 @@ const getDrivers = async () => {
 
 const getAdapters = async () => {
   await api
-    .getAdapters(0, false, "", true)
+    .getNoneBotModules("adapter", 0, "", false, true)
     .then((resp) => {
-      adapterList.value = resp.data;
+      adapterList.value = resp.detail;
     })
     .catch((error: AxiosError) => {
       let reason: string;
@@ -70,7 +70,7 @@ const getAdapters = async () => {
       } else {
         reason = error.message;
       }
-      notice.error(`获取适配器列表失败：${reason}`);
+      notice.error(`获取驱动器列表失败：${reason}`);
     });
 };
 
@@ -132,7 +132,7 @@ const doCreate = async () => {
       use_src: projectUseSrc.value,
     })
     .then((resp) => {
-      logKey.value = resp.log_key;
+      logKey.value = resp.detail;
     })
     .catch((error: AxiosError) => {
       let reason: string;
