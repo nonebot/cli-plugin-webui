@@ -1,25 +1,19 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 import { isDebug } from "@/utils";
 import {
-  FileListResponse,
-  IsAvailableResponse,
-  LoginResponse,
-  CreateProjectResponse,
+  FileResponse,
+  GenericResponse,
   CreateProjectData,
-  NonebotProjectListResponse,
-  DeleteProjectResponse,
-  ProcessInfo,
+  ProcessLog,
   StoreListResponse,
-  InstallModuleResponse,
   SimpleInfo,
-  ModuleConfigResponse,
-  DotenvListResponse,
-  LogHistoryResponse,
-  NonebotProjectMeta,
+  Plugin,
+  NoneBotProjectMeta,
   CheckProjectTomlResponse,
   AddProjectData,
-} from "./models";
+  ModuleConfigResponse,
+} from "@/api/schemas";
 
 export class API {
   private generateBaseURL(): string {
@@ -34,7 +28,7 @@ export class API {
   private async baseGetRequest<T>(endpoint: string, params = {}): Promise<T> {
     const url = this.generateBaseURL() + endpoint;
     try {
-      const resp: AxiosResponse<T> = await axios.get(url, {
+      const resp = await axios.get(url, {
         params: { ...params },
       });
       return resp.data;
@@ -43,10 +37,12 @@ export class API {
     }
   }
 
-  private async basePostRequest<T>(endpoint: string, data = {}): Promise<T> {
+  private async basePostRequest<T>(endpoint: string, data = {}, params = {}): Promise<T> {
     const url = this.generateBaseURL() + endpoint;
     try {
-      const resp: AxiosResponse<T> = await axios.post(url, (data = data));
+      const resp = await axios.post(url, data, {
+        params: params,
+      });
       return resp.data;
     } catch (error: any) {
       return Promise.reject(error);
@@ -56,7 +52,7 @@ export class API {
   private async baseDeleteRequest<T>(endpoint: string, params = {}): Promise<T> {
     const url = this.generateBaseURL() + endpoint;
     try {
-      const resp: AxiosResponse<T> = await axios.delete(url, {
+      const resp = await axios.delete(url, {
         params: { ...params },
       });
       return resp.data;
@@ -65,171 +61,127 @@ export class API {
     }
   }
 
-  async doLogin(token: string): Promise<LoginResponse> {
+  async doLogin(token: string): Promise<GenericResponse<string>> {
     const mark = new Date().toString();
-    const requestData = {
-      login_data: {
-        token: token,
-        mark: mark,
-      },
-    };
-    return await this.basePostRequest<LoginResponse>("/auth/login", requestData);
+    return await this.basePostRequest("/auth/login", {
+      token: token,
+      mark: mark,
+    });
   }
 
-  async isAvailable(): Promise<IsAvailableResponse> {
-    return await this.baseGetRequest<IsAvailableResponse>("/auth/is_available");
-  }
-
-  async getFileList(path: string): Promise<FileListResponse> {
-    const requestData = {
+  async getFileList(path: string): Promise<FileResponse> {
+    return await this.baseGetRequest("/file/list", {
       path: path,
-    };
-    return await this.baseGetRequest<FileListResponse>("/file/list", requestData);
+    });
   }
 
   async createFile(
     fileName: string,
     isFolder: boolean,
     path: string,
-  ): Promise<FileListResponse> {
-    const requestData = {
-      file_data: {
-        name: fileName,
-        is_dir: isFolder ? 1 : 0,
-        path: path,
-      },
-    };
-    return await this.basePostRequest<FileListResponse>("/file/create", requestData);
-  }
-
-  async deleteFile(path: string): Promise<FileListResponse> {
-    const requestData = {
+  ): Promise<FileResponse> {
+    return await this.basePostRequest("/file/create", {
+      name: fileName,
+      is_dir: isFolder,
       path: path,
-    };
-    return await this.baseDeleteRequest<FileListResponse>("/file/delete", requestData);
+    });
   }
 
-  async createProject(data: CreateProjectData): Promise<CreateProjectResponse> {
-    const requestData = {
-      project_data: data,
-    };
-    return await this.basePostRequest<CreateProjectResponse>(
-      "/project/create",
-      requestData,
+  async deleteFile(path: string): Promise<FileResponse> {
+    return await this.baseDeleteRequest("/file/delete", {
+      path: path,
+    });
+  }
+
+  async createProject(data: CreateProjectData): Promise<GenericResponse<string>> {
+    return await this.basePostRequest("/project/create", data);
+  }
+
+  async addProject(data: AddProjectData): Promise<GenericResponse<string>> {
+    return await this.basePostRequest("/project/add", data);
+  }
+
+  async getProjectProfile(
+    projectID: string,
+  ): Promise<GenericResponse<NoneBotProjectMeta>> {
+    return await this.baseGetRequest("/project/profile", {
+      project_id: projectID,
+    });
+  }
+
+  async deleteProject(projectID: string): Promise<GenericResponse<string>> {
+    return await this.baseDeleteRequest("/project/delete", {
+      project_id: projectID,
+    });
+  }
+
+  async getProjectList(): Promise<
+    GenericResponse<{ [key: string]: NoneBotProjectMeta }>
+  > {
+    return await this.baseGetRequest("/project/list");
+  }
+
+  async runProject(projectID: string): Promise<GenericResponse<string>> {
+    return await this.basePostRequest(
+      "/process/run",
+      {},
+      {
+        project_id: projectID,
+      },
     );
   }
 
-  async getProjectList(): Promise<NonebotProjectListResponse> {
-    return await this.baseGetRequest<NonebotProjectListResponse>("/project/list");
-  }
-
-  async deleteProject(projectID: string): Promise<DeleteProjectResponse> {
-    const requestData = {
-      project_id: projectID,
-    };
-    return await this.baseDeleteRequest<DeleteProjectResponse>(
-      "/project/delete",
-      requestData,
+  async stopProject(projectID: string): Promise<GenericResponse<string>> {
+    return await this.basePostRequest(
+      "/process/stop",
+      {},
+      {
+        project_id: projectID,
+      },
     );
   }
 
-  async runProject(projectID: string): Promise<void> {
-    const requestData = {
-      project_id: projectID,
-    };
-    return await this.basePostRequest<void>("/project/run", requestData);
-  }
-
-  async stopProject(projectID: string): Promise<void> {
-    const requestData = {
-      project_id: projectID,
-    };
-    return await this.basePostRequest<void>("/project/stop", requestData);
-  }
-
-  async writeStdin(projectID: string, content: string): Promise<void> {
-    const requestData = {
-      project_id: projectID,
-      content: content,
-    };
-    return await this.basePostRequest<void>("/project/write", requestData);
-  }
-
-  async getProjectProcessStatus(projectID: string): Promise<ProcessInfo> {
-    const requestData = {
-      project_id: projectID,
-    };
-    return await this.baseGetRequest("/project/status", requestData);
+  async writeToProjectProcessStdin(
+    content: string,
+    projectID: string,
+  ): Promise<GenericResponse<number>> {
+    return await this.basePostRequest(
+      "/process/write",
+      {},
+      {
+        content: content,
+        project_id: projectID,
+      },
+    );
   }
 
   async getProcessLogHistory(
-    logKey: string,
+    logID: string,
     logCount: number,
-  ): Promise<LogHistoryResponse> {
-    const requestData = {
-      log_key: logKey,
+  ): Promise<GenericResponse<ProcessLog[]>> {
+    return await this.baseGetRequest("/process/log/history", {
+      log_id: logID,
       log_count: logCount,
-    };
-    return await this.baseGetRequest<LogHistoryResponse>(
-      "/log/logs/history",
-      requestData,
-    );
+    });
   }
 
-  async getPlugins(
+  async getNoneBotModules(
+    moduleType: string,
     page: number,
-    isSearch?: boolean,
     projectID?: string,
+    isSearch?: boolean,
     showAll?: boolean,
   ): Promise<StoreListResponse> {
-    const requestData = {
+    return await this.baseGetRequest("/store/nonebot/list", {
+      module_type: moduleType,
       page: page,
-      is_search: isSearch ? 1 : 0,
       project_id: projectID,
-      show_all: showAll ? 1 : 0,
-    };
-    return await this.baseGetRequest<StoreListResponse>(
-      "/store/list/plugin",
-      requestData,
-    );
+      is_search: isSearch,
+      show_all: showAll,
+    });
   }
 
-  async getAdapters(
-    page: number,
-    isSearch?: boolean,
-    projectID?: string,
-    showAll?: boolean,
-  ): Promise<StoreListResponse> {
-    const requestData = {
-      page: page,
-      is_search: isSearch ? 1 : 0,
-      project_id: projectID,
-      show_all: showAll ? 1 : 0,
-    };
-    return await this.baseGetRequest<StoreListResponse>(
-      "/store/list/adapter",
-      requestData,
-    );
-  }
-
-  async getDrivers(
-    page: number,
-    isSearch?: boolean,
-    projectID?: string,
-    showAll?: boolean,
-  ): Promise<StoreListResponse> {
-    const requestData = {
-      page: page,
-      is_search: isSearch ? 1 : 0,
-      project_id: projectID,
-      show_all: showAll ? 1 : 0,
-    };
-    return await this.baseGetRequest<StoreListResponse>(
-      "/store/list/driver",
-      requestData,
-    );
-  }
-
+  // TODO: need attention
   async refreshStore(): Promise<void> {
     return await this.baseGetRequest<void>("/store/list/refresh");
   }
@@ -250,136 +202,110 @@ export class API {
   }
 
   async installModule(
-    projectID: string,
     env: string,
-    module: SimpleInfo,
-  ): Promise<InstallModuleResponse> {
-    const requestData = {
-      project_id: projectID,
+    module: SimpleInfo | Plugin,
+    projectID: string,
+  ): Promise<GenericResponse<string>> {
+    const module_type = "valid" in module ? "plugin" : "module";
+    const data = { module_type: module_type, ...module };
+    return await this.basePostRequest("/store/nonebot/install", data, {
       env: env,
-      module: module,
-    };
-    return await this.basePostRequest<InstallModuleResponse>(
-      "/project/module/install",
-      requestData,
-    );
+      project_id: projectID,
+    });
   }
 
-  async uninstallModule(projectID: string, env: string, module: any): Promise<void> {
-    const requestData = {
-      project_id: projectID,
+  async uninstallModule(
+    env: string,
+    module: SimpleInfo | Plugin,
+    projectID: string,
+  ): Promise<GenericResponse<string>> {
+    const module_type = "valid" in module ? "plugin" : "module";
+    const data = { module_type: module_type, ...module };
+    return await this.basePostRequest("/store/nonebot/uninstall", data, {
       env: env,
-      module: module,
-    };
-    return await this.basePostRequest<void>("/project/module/uninstall", requestData);
+      project_id: projectID,
+    });
   }
 
   async getProjectMetaConfig(projectID: string): Promise<ModuleConfigResponse> {
-    const requestData = {
+    return await this.baseGetRequest("/project/config/meta/detail", {
       project_id: projectID,
-    };
-    return await this.baseGetRequest<ModuleConfigResponse>(
-      "/project/config/meta/list",
-      requestData,
-    );
+    });
   }
 
-  async getNonebotConfig(projectID: string): Promise<ModuleConfigResponse> {
-    const requestData = {
+  async getNoneBotConfig(projectID: string): Promise<ModuleConfigResponse> {
+    return await this.baseGetRequest("/project/config/nonebot/detail", {
       project_id: projectID,
-    };
-    return await this.baseGetRequest<ModuleConfigResponse>(
-      "/project/config/nonebot/list",
-      requestData,
-    );
+    });
   }
 
   async getProjectPluginConfigList(projectID: string): Promise<ModuleConfigResponse> {
-    const requestData = {
+    return await this.baseGetRequest("/project/config/nonebot/plugins/detail", {
       project_id: projectID,
-    };
-    return await this.baseGetRequest<ModuleConfigResponse>(
-      "/project/config/plugin/list",
-      requestData,
+    });
+  }
+
+  async getEnvs(projectID: string): Promise<GenericResponse<string[]>> {
+    return await this.baseGetRequest("/project/config/env/list", {
+      project_id: projectID,
+    });
+  }
+
+  async createEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
+    return await this.basePostRequest("/project/config/env/create", {
+      env: env,
+      project_id: projectID,
+    });
+  }
+
+  async deleteEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
+    return await this.baseDeleteRequest("/project/config/env/delete", {
+      env: env,
+      project_id: projectID,
+    });
+  }
+
+  async useEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
+    return await this.basePostRequest(
+      "/project/config/env/use",
+      {},
+      {
+        env: env,
+        project_id: projectID,
+      },
     );
   }
 
-  async getDotenvList(projectID: string): Promise<DotenvListResponse> {
-    const requestData = {
-      project_id: projectID,
-    };
-    return await this.baseGetRequest<DotenvListResponse>(
-      "/project/config/dotenv/list",
-      requestData,
-    );
-  }
-
-  async createDotenvFile(projectID: string, env: string): Promise<void> {
-    const requestData = {
-      project_id: projectID,
-      env: env,
-    };
-    return await this.basePostRequest<void>("/project/config/dotenv/create", requestData);
-  }
-
-  async deleteDotenvFile(projectID: string, env: string): Promise<void> {
-    const requestData = {
-      project_id: projectID,
-      env: env,
-    };
-    return await this.basePostRequest<void>("/project/config/dotenv/delete", requestData);
-  }
-
-  async activeDotenvFile(projectID: string, env: string): Promise<void> {
-    const requestData = {
-      project_id: projectID,
-      env: env,
-    };
-    return await this.basePostRequest<void>("/project/config/dotenv/active", requestData);
-  }
-
-  async configSet(
-    projectID: string,
+  async configUpdate(
     moduleType: string,
+    projectID: string,
     env: string,
     keyType: string,
     k: string,
     v: any,
-  ): Promise<void> {
-    const requestData = {
-      project_id: projectID,
-      module_type: moduleType,
-      data: {
+  ): Promise<GenericResponse<string>> {
+    return await this.basePostRequest(
+      "/project/config/update",
+      {
         env: env,
-        k_type: keyType,
+        key_type: keyType,
         k: k,
         v: v,
       },
-    };
-    return await this.basePostRequest<void>("/project/config/set", requestData);
-  }
-
-  async getProjectDetail(projectID: string): Promise<NonebotProjectMeta> {
-    const requestData = {
-      project_id: projectID,
-    };
-    return await this.baseGetRequest("/project/detail", requestData);
-  }
-
-  async checkProjectToml(projectDir: string): Promise<CheckProjectTomlResponse> {
-    const requestData = {
-      project_dir: projectDir,
-    };
-    return await this.basePostRequest<CheckProjectTomlResponse>(
-      "/project/module/check_toml",
-      requestData,
+      {
+        module_type: moduleType,
+        project_id: projectID,
+      },
     );
   }
 
-  async addProject(data: AddProjectData): Promise<CreateProjectResponse> {
-    const requestData = {
-      project_data: data,
-    };
-    return await this.basePostRequest<CreateProjectResponse>("/project/add", requestData);
+  async checkProjectToml(projectDir: string): Promise<CheckProjectTomlResponse> {
+    return await this.basePostRequest(
+      "/project/check_toml",
+      {},
+      {
+        project_dir: projectDir,
+      },
+    );
   }
 }

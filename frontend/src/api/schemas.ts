@@ -1,15 +1,4 @@
-export interface LoginResponse {
-  jwt_token: string;
-}
-
-export interface IsAvailableResponse {
-  detail: string;
-}
-
-interface Tag {
-  label: string;
-  color: string;
-}
+export type GenericResponse<T> = T extends void ? {} : { detail: T };
 
 export interface SimpleInfo {
   module_name: string;
@@ -18,7 +7,10 @@ export interface SimpleInfo {
   desc: string;
   author: string;
   homepage: string;
-  tags?: Tag[];
+  tags?: {
+    label: string;
+    color: string;
+  }[];
   is_official: boolean;
   is_download: boolean;
 }
@@ -28,30 +20,24 @@ export interface Plugin extends SimpleInfo {
   supported_adapters?: string[];
   valid: boolean;
   time: string;
+  version: string;
 }
 
-export interface Adapter extends SimpleInfo {}
+export type Adapter = SimpleInfo;
+export type Driver = SimpleInfo;
 
-export interface Driver extends SimpleInfo {}
-
-export interface FileDetails {
+interface FileSimpleInfo {
   name: string;
-  is_dir: number;
+  is_dir: boolean;
   path: string;
+}
+
+export interface FileInfo extends FileSimpleInfo {
   modified_time: string;
   absolute_path: string;
 }
 
-export interface FileInfo {
-  name: string;
-  modified_time: string;
-  is_dir: number;
-  path: string;
-}
-
-export interface FileListResponse {
-  files: FileDetails[];
-}
+export type FileResponse = GenericResponse<FileInfo[]>;
 
 export interface CreateProjectData {
   is_bootstrap: boolean;
@@ -63,11 +49,7 @@ export interface CreateProjectData {
   use_src: boolean;
 }
 
-export interface CreateProjectResponse {
-  log_key: string;
-}
-
-export interface NonebotProjectMeta {
+export interface NoneBotProjectMeta {
   project_id: string;
   project_name: string;
   project_dir: string;
@@ -82,16 +64,6 @@ export interface NonebotProjectMeta {
 
   use_run_script: boolean;
   run_script_name: string;
-}
-
-export interface NonebotProjectListResponse {
-  projects: {
-    [key: string]: NonebotProjectMeta;
-  };
-}
-
-export interface DeleteProjectResponse {
-  project_id: string;
 }
 
 export interface ProcessLog {
@@ -112,18 +84,12 @@ export interface ProcessInfo {
   performance?: ProcessPerformance;
 }
 
-export interface LogHistoryResponse {
-  detail: ProcessLog[];
-}
-
-export interface StoreListResponse {
+export interface StoreListResponse
+  extends GenericResponse<Plugin[] & Adapter[] & Driver[]> {
   now_page: number;
   total_page: number;
   total_item: number;
-  data: Plugin[] | Adapter[] | Driver[];
 }
-
-export interface InstallModuleResponse extends CreateProjectResponse {}
 
 interface ModuleConfigSimpleInfo {
   title: string;
@@ -143,13 +109,7 @@ export interface ModuleConfigFather extends ModuleConfigSimpleInfo {
   properties: ModuleConfigChild[];
 }
 
-export interface ModuleConfigResponse {
-  detail: ModuleConfigFather[];
-}
-
-export interface DotenvListResponse {
-  detail: string[];
-}
+export type ModuleConfigResponse = GenericResponse<ModuleConfigFather[]>;
 
 export interface CheckProjectTomlDetail {
   project_name: string;
@@ -162,11 +122,10 @@ export interface CheckProjectTomlDetail {
   builtin_plugins: string[];
 }
 
-export interface CheckProjectTomlResponse {
-  is_pass: boolean;
-  level: "success" | "warn" | "error";
+export interface CheckProjectTomlResponse
+  extends GenericResponse<CheckProjectTomlDetail> {
   msg: string;
-  detail?: CheckProjectTomlDetail;
+  level: "success" | "warn" | "error";
 }
 
 export interface AddProjectData {
