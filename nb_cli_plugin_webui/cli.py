@@ -81,12 +81,11 @@ async def run(host: str, port: int):
             click.secho(_("Port must be between 0 and 65535."))
             return
 
-    await server.run_server(host, port)
-
     try:
         webbrowser.open(f"http://{host}:{port}/")
     except webbrowser.Error:
         pass
+    await server.run_server(host, port)
 
 
 @webui.command(help=_("Reset access token."))
