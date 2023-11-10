@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import DeleteIcon from "@/components/Icons/DeleteIcon.vue";
-import CheckIcon from "@/components/Icons/CheckIcon.vue";
-
 import { ref } from "vue";
 
 const props = defineProps<{
@@ -56,13 +53,15 @@ const deleteAction = (item: any) => {
               class="swap pl-1 pr-1 rounded opacity-30 hover:opacity-100 transition-all ease-in"
             >
               <input type="checkbox" />
-              <CheckIcon class="swap-on fill-current h-5 w-5" title="删除" />
-
-              <DeleteIcon
-                class="swap-off fill-current h-5 w-5"
-                title="确认"
+              <span
+                class="swap-off material-symbols-outlined text-xl leading-5"
                 @click="deleteAction(i)"
-              />
+              >
+                delete
+              </span>
+              <span class="swap-on material-symbols-outlined text-xl leading-5">
+                check
+              </span>
             </label>
           </td>
         </tr>
@@ -81,7 +80,7 @@ const deleteAction = (item: any) => {
         class="select select-xs rounded bg-base-300 w-full max-w-xs"
         @change="
           (event: any) => {
-            inputValue = event.target.value
+            inputValue = event.target.value;
           }
         "
       >

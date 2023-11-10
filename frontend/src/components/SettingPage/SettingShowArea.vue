@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import GeneralConfigTemplate from "@/components/SettingPage/GeneralConfigTemplate.vue";
-import SettingIcon from "../Icons/SettingIcon.vue";
-import MenuIcon from "../Icons/MenuIcon.vue";
 
 import { settingStore } from "@/store/setting";
 import { hideScrollBarWhileSwiping } from "@/utils/scrollbar";
@@ -26,17 +24,19 @@ onMounted(() => {
       }"
     >
       <div class="flex items-center">
-        <SettingIcon class="h-6 w-6 mr-2" />
+        <span class="material-symbols-outlined mr-2"> settings </span>
         <div class="text-lg font-bold whitespace-nowrap">设置</div>
       </div>
 
       <div class="w-full"></div>
 
-      <MenuIcon
+      <span
         role="button"
-        class="h-9 w-9 visible md:hidden"
+        class="material-symbols-outlined flex items-center visible md:hidden"
         @click="settingStore().switchNavVisible()"
-      />
+      >
+        menu
+      </span>
     </div>
 
     <div

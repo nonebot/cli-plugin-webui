@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import InvisibleIcon from "@/components/Icons/InvisibleIcon.vue";
-import VisibleIcon from "@/components/Icons/VisibleIcon.vue";
-
 import { ref, watch } from "vue";
 import { ToastWrapper } from "@/utils/notification";
 import { API } from "@/api";
@@ -75,19 +72,21 @@ async function doLogin() {
             <div class="form-control w-full">
               <label class="label">
                 <span class="text-sm">访问 Token</span>
-                <span>
+                <span class="flex">
                   <label class="swap">
                     <input type="checkbox" />
-                    <VisibleIcon
-                      title="查看"
-                      class="swap-on h-5 w-5"
+                    <span
+                      class="swap-on material-symbols-outlined"
                       @click="checkToken = true"
-                    />
-                    <InvisibleIcon
-                      title="隐藏"
-                      class="swap-off h-5 w-5"
+                    >
+                      visibility
+                    </span>
+                    <span
+                      class="swap-off material-symbols-outlined"
                       @click="checkToken = false"
-                    />
+                    >
+                      visibility_off
+                    </span>
                   </label>
                 </span>
               </label>

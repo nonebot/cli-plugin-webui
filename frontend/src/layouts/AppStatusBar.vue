@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import RobotIcon from "@/components/Icons/RobotIcon.vue";
-import FlashOnIcon from "@/components/Icons/FlashOnIcon.vue";
 import NoticeDetailCard from "./AppStatusBar/NoticeDetailCard.vue";
 
 import { appStore } from "@/store/global";
@@ -28,7 +26,7 @@ const showChoiceProject = () => {
           class="tooltip h-full flex items-center gap-1 text-black"
           :data-tip="showChoiceProject()"
         >
-          <RobotIcon class="h-4 w-4 mr-1" />
+          <span class="material-symbols-outlined text-lg"> book </span>
           <div class="text-xs">
             {{
               appStore().choiceProject.project_name
@@ -44,7 +42,7 @@ const showChoiceProject = () => {
           class="tooltip h-full flex items-center gap-1"
           :data-tip="`当前环境：${appStore().enabledEnv}`"
         >
-          <FlashOnIcon class="h-4 w-4" />
+          <span class="material-symbols-outlined text-lg"> bolt </span>
           <div class="text-xs">
             {{ appStore().enabledEnv }}
           </div>

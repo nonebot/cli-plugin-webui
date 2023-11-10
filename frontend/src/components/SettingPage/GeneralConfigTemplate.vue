@@ -1,6 +1,4 @@
 <script setup lang="ts" generic="T extends Config">
-import SettingIcon from "@/components/Icons/SettingIcon.vue";
-
 import NumberInput from "./DataInputTemplate/NumberInput.vue";
 import StringOrObjectInput from "./DataInputTemplate/StringOrObjectInput.vue";
 import BooleanInput from "./DataInputTemplate/BooleanInput.vue";
@@ -64,7 +62,11 @@ const config = computed(() => {
               }"
             >
               <label tabindex="0" class="tooltip tooltip-right" data-tip="更多操作">
-                <SettingIcon class="h-5 w-5" />
+                <span
+                  class="material-symbols-outlined flex items-center text-xl leading-5"
+                >
+                  settings
+                </span>
               </label>
               <ul
                 tabindex="0"

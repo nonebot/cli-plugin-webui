@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import ExtensionCard from "@/components/NonebotStore/ExtensionCard.vue";
-import PluginIcon from "@/components/Icons/PluginIcon.vue";
-import AdapterIcon from "@/components/Icons/AdapterIcon.vue";
-import DriverIcon from "@/components/Icons/DriverIcon.vue";
-import MenuIcon from "@/components/Icons/MenuIcon.vue";
 
 import { ref, computed, watch, onMounted } from "vue";
 import { hideScrollBarWhileSwiping } from "@/utils/scrollbar";
@@ -11,9 +7,9 @@ import { nonebotExtensionStore } from "@/store/extensionStore";
 import { appStore } from "@/store/global";
 
 const titleItems = {
-  plugin: { tip: "插件", icon: PluginIcon },
-  adapter: { tip: "适配器", icon: AdapterIcon },
-  driver: { tip: "驱动器", icon: DriverIcon },
+  plugin: { tip: "插件", icon: "extension" },
+  adapter: { tip: "适配器", icon: "lan" },
+  driver: { tip: "驱动器", icon: "electrical_services" },
 };
 
 const pages = ref<any[]>([]);
@@ -108,7 +104,9 @@ watch(
       }"
     >
       <div class="flex items-center">
-        <component :is="getTitle.icon" class="h-6 w-6 mr-2" />
+        <span class="material-symbols-outlined mr-2">
+          {{ getTitle.icon }}
+        </span>
         <div class="text-lg font-bold whitespace-nowrap">
           {{ getTitle.tip }}
         </div>
@@ -123,11 +121,13 @@ watch(
 
       <div class="w-full"></div>
 
-      <MenuIcon
+      <span
         role="button"
-        class="h-9 w-9 visible md:hidden"
+        class="material-symbols-outlined flex items-center visible md:hidden"
         @click="nonebotExtensionStore().switchNavVisible()"
-      />
+      >
+        menu
+      </span>
     </div>
 
     <div
@@ -195,6 +195,14 @@ watch(
 </template>
 
 <style scoped>
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 40;
+}
+
 .extension-card-move,
 .extension-card-enter-active,
 .extension-card-leave-active {

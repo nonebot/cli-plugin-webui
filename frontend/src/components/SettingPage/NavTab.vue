@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import PlayArrowIcon from "@/components/Icons/PlayArrowIcon.vue";
-
 import { ref } from "vue";
 import { API } from "@/api";
 import { appStore as store } from "@/store/global";
@@ -129,35 +127,28 @@ const assignEnv = async (env: string) => {
               <tr v-for="env in tabs" class="hover:bg-base-300">
                 <td>{{ env }}</td>
                 <td class="flex">
-                  <PlayArrowIcon
+                  <span
                     v-if="store().enabledEnv !== env"
                     role="button"
-                    class="h-6 w-6 mr-2 opacity-30 hover:opacity-100 transition-all ease-in duration-100"
+                    class="material-symbols-outlined text-3xl leading-5 opacity-30 hover:opacity-100 transition-all ease-in duration-100"
                     @click="assignEnv(env)"
-                  />
+                  >
+                    play_arrow
+                  </span>
 
                   <label
                     class="swap pl-1 pr-1 rounded opacity-30 hover:opacity-100 transition-all ease-in duration-100"
                   >
                     <input type="checkbox" />
-                    <svg
-                      class="swap-on fill-current h-5 w-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
+                    <span
+                      class="swap-off material-symbols-outlined text-xl leading-5"
+                      @click="console.log(1)"
                     >
-                      <title>删除</title>
-                      <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
-                    </svg>
-                    <svg
-                      class="swap-off fill-current h-5 w-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                    >
-                      <title>确认</title>
-                      <path
-                        d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"
-                      />
-                    </svg>
+                      delete
+                    </span>
+                    <span class="swap-on material-symbols-outlined text-xl leading-5">
+                      check
+                    </span>
                   </label>
                 </td>
               </tr>

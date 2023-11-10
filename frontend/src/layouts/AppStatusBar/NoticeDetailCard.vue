@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import BellIcon from "@/components/Icons/BellIcon.vue";
-import ChevronDownIcon from "@/components/Icons/ChevronDownIcon.vue";
-import InfoCircleIcon from "@/components/Icons/InfoCircleIcon.vue";
-import WarningCircleIcon from "@/components/Icons/WarningCircleIcon.vue";
-import ErrorCircleIcon from "@/components/Icons/ErrorCircleIcon.vue";
-
 import { ref, computed } from "vue";
 import { noticeStore } from "@/store/global";
 
@@ -58,7 +52,7 @@ const dismissNotice = (id: number | string) => {
               'badge h-1.5 pl-0.5 pr-0.5 badge-primary indicator-item': haveNotice,
             }"
           ></span>
-          <BellIcon class="h-4 w-4" />
+          <span class="material-symbols-outlined text-lg leading-3"> notifications </span>
         </div>
       </button>
     </div>
@@ -79,7 +73,7 @@ const dismissNotice = (id: number | string) => {
             class="btn btn-sm btn-circle absolute right-2 top-2"
             @click="changeNoticeCardState()"
           >
-            <ChevronDownIcon class="h-7 w-7" />
+            <span class="material-symbols-outlined text-2xl"> expand_more </span>
           </label>
           <span class="font-bold">
             <span v-if="haveNotice">
@@ -97,20 +91,26 @@ const dismissNotice = (id: number | string) => {
           :key="notice.id"
           class="alert-card rounded-lg alert shadow-lg"
         >
-          <InfoCircleIcon
+          <span
             v-if="notice.level === 'info'"
-            class="fill-info stroke-current flex-shrink-0 w-6 h-6"
-          />
+            class="material-symbols-outlined text-info"
+          >
+            info
+          </span>
 
-          <WarningCircleIcon
+          <span
             v-if="notice.level === 'warning'"
-            class="fill-warning stroke-current flex-shrink-0 h-6 w-6"
-          />
+            class="material-symbols-outlined text-warning"
+          >
+            warning
+          </span>
 
-          <ErrorCircleIcon
+          <span
             v-if="notice.level === 'error'"
-            class="fill-error stroke-current flex-shrink-0 h-6 w-6"
-          />
+            class="material-symbols-outlined text-error"
+          >
+            error
+          </span>
 
           <div>
             <h3 class="font-bold">{{ notice.content }}</h3>
@@ -130,6 +130,14 @@ const dismissNotice = (id: number | string) => {
 </template>
 
 <style scoped>
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 48;
+}
+
 @media screen and (max-width: 1280px) {
   .notice-card .dropdown-end .dropdown-content {
     right: -10px;

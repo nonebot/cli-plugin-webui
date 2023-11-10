@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import OfficialCheckIcon from "@/components/Icons/OfficialCheckIcon.vue";
-import CheckCircleIcon from "@/components/Icons/CheckCircleIcon.vue";
-import DownloadIcon from "@/components/Icons/DownloadIcon.vue";
-import FeatureIcon from "@/components/Icons/FeatureIcon.vue";
-import PluginIcon from "@/components/Icons/PluginIcon.vue";
-import AdapterIcon from "@/components/Icons/AdapterIcon.vue";
-import DriverIcon from "@/components/Icons/DriverIcon.vue";
-
 import { nonebotExtensionStore } from "@/store/extensionStore";
 import { appStore } from "@/store/global";
 
@@ -17,16 +9,16 @@ interface CustomDetail {
 }
 
 const classList: CustomDetail[] = [
-  { tip: "插件", name: "plugin", icon: PluginIcon },
-  { tip: "适配器", name: "adapter", icon: AdapterIcon },
-  { tip: "驱动器", name: "driver", icon: DriverIcon },
+  { tip: "插件", name: "plugin", icon: "extension" },
+  { tip: "适配器", name: "adapter", icon: "lan" },
+  { tip: "驱动器", name: "driver", icon: "electrical_services" },
 ];
 
 const filterList: CustomDetail[] = [
-  { tip: "官方认证", name: "official", icon: OfficialCheckIcon },
-  { tip: "测试通过", name: "valid", icon: CheckCircleIcon },
-  { tip: "已下载", name: "downloaded", icon: DownloadIcon },
-  { tip: "近期新增", name: "new", icon: FeatureIcon },
+  { tip: "官方认证", name: "official", icon: "verified" },
+  { tip: "测试通过", name: "valid", icon: "check_circle" },
+  { tip: "已下载", name: "downloaded", icon: "download" },
+  { tip: "近期新增", name: "new", icon: "shadow_add" },
 ];
 
 const setActiveClass = (cls: string) => {
@@ -71,7 +63,9 @@ const checkFilter = (item: CustomDetail) => {
             active: nonebotExtensionStore().choiceClass === i.name,
           }"
         >
-          <component :is="i.icon" class="h-4 w-4" />
+          <span class="material-symbols-outlined text-xl leading-5">
+            {{ i.icon }}
+          </span>
           {{ i.tip }}
         </a>
       </li>
@@ -83,10 +77,22 @@ const checkFilter = (item: CustomDetail) => {
       </li>
       <li v-for="i in filterList" @click="addFilter(i)">
         <a :class="{ 'pl-6': true, active: checkFilter(i) }">
-          <component :is="i.icon" class="h-4 w-4" />
+          <span class="material-symbols-outlined text-xl leading-5">
+            {{ i.icon }}
+          </span>
           {{ i.tip }}
         </a>
       </li>
     </ul>
   </div>
 </template>
+
+<style scoped>
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 40;
+}
+</style>

@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import LogShow from "@/components/CustomModal/LogShow.vue";
-import WarningCircleIcon from "@/components/Icons/WarningCircleIcon.vue";
-import ErrorCircleIcon from "@/components/Icons/ErrorCircleIcon.vue";
-import CloseIcon from "@/components/Icons/CloseIcon.vue";
 
 import { ref } from "vue";
 import { AxiosError } from "axios";
@@ -145,7 +142,7 @@ const finishAddProject = () => {
 
           <div class="mt-2">
             <div v-if="checkNoticeLevel === 'warning'" class="alert alert-warning">
-              <WarningCircleIcon class="flex-shrink-0 h-6 w-6" />
+              <span class="material-symbols-outlined"> warning </span>
               <div>
                 <div v-for="i in checkMsg.split(',')" class="text-sm">
                   {{ i }}
@@ -154,7 +151,7 @@ const finishAddProject = () => {
             </div>
 
             <div v-if="checkNoticeLevel === 'error'" class="alert alert-error">
-              <ErrorCircleIcon class="flex-shrink-0 h-6 w-6" />
+              <span class="material-symbols-outlined"> error </span>
               <div>{{ checkMsg }}</div>
             </div>
           </div>
@@ -167,15 +164,17 @@ const finishAddProject = () => {
             </label>
             <div class="flex flex-wrap gap-2">
               <div v-for="plugin in checkDetail?.plugins" class="badge badge-ghost gap-1">
-                <CloseIcon
+                <span
                   role="button"
-                  class="h-4 w-4"
+                  class="material-symbols-outlined text-lg"
                   @click="
                     checkDetail.plugins = checkDetail.plugins.filter(
                       (obj) => obj !== plugin,
                     )
                   "
-                />
+                >
+                  close
+                </span>
                 {{ plugin }}
               </div>
             </div>
@@ -190,15 +189,17 @@ const finishAddProject = () => {
                 v-for="plugin_dir in checkDetail?.plugin_dirs"
                 class="badge badge-ghost gap-1"
               >
-                <CloseIcon
+                <span
                   role="button"
-                  class="h-4 w-4"
+                  class="material-symbols-outlined text-lg"
                   @click="
                     checkDetail.plugin_dirs = checkDetail.plugin_dirs.filter(
                       (obj) => obj !== plugin_dir,
                     )
                   "
-                />
+                >
+                  close
+                </span>
                 {{ plugin_dir }}
               </div>
             </div>
@@ -213,15 +214,17 @@ const finishAddProject = () => {
                 v-for="adapter in checkDetail?.adapters"
                 class="badge badge-ghost gap-1"
               >
-                <CloseIcon
+                <span
                   role="button"
-                  class="h-4 w-4"
+                  class="material-symbols-outlined text-lg"
                   @click="
                     checkDetail.adapters = checkDetail.adapters.filter(
                       (obj) => obj !== adapter,
                     )
                   "
-                />
+                >
+                  close
+                </span>
                 {{ adapter.name }}
               </div>
             </div>
@@ -316,3 +319,13 @@ const finishAddProject = () => {
     :log-key="logKey"
   />
 </template>
+
+<style scoped>
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 48;
+}
+</style>

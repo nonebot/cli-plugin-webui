@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import SettingSearch from "@/components/SettingPage/SettingSearch.vue";
 import ClassifyNav from "@/components/SettingPage/ClassifyNav.vue";
-import RefreshIcon from "@/components/Icons/RefreshIcon.vue";
-import SettingIcon from "../Icons/SettingIcon.vue";
-import CloseIcon from "../Icons/CloseIcon.vue";
 
 import { getConfig } from "@/components/SettingPage/client";
 import { settingStore } from "@/store/setting";
@@ -20,25 +17,27 @@ import { settingStore } from "@/store/setting";
     <div class="p-2 flex justify-between items-center">
       <div class="h-8 w-full flex items-center">
         <div class="h-7 w-7 mr-2 rounded bg-base-100 flex items-center justify-center">
-          <SettingIcon class="h-6 w-6" />
+          <span class="material-symbols-outlined"> settings </span>
         </div>
         <div class="font-semibold">设置</div>
       </div>
-      <div class="h-8 grid grid-cols-2 md:grid-cols-1 gap-4">
+      <div class="h-8 grid grid-cols-2 md:grid-cols-1 gap-4 flex items-center">
         <div
           role="button"
-          class="h-full w-7 flex items-center justify-center rounded-lg hover:bg-base-100 duration-150 hover:ease-in-out"
+          class="flex items-center justify-center h-7 w-7 rounded hover:bg-base-100 duration-150 hover:ease-in-out"
           @click="getConfig()"
         >
-          <RefreshIcon class="h-5 w-5 rounded-lg" />
+          <span class="material-symbols-outlined"> refresh </span>
         </div>
 
         <div class="h-full w-7 flex items-center visible md:hidden">
-          <CloseIcon
+          <span
             role="button"
-            class="h-6 w-6"
+            class="material-symbols-outlined"
             @click="settingStore().switchNavVisible()"
-          />
+          >
+            close
+          </span>
         </div>
       </div>
     </div>

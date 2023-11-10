@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import NonebotIcon from "@/components/Icons/NonebotIcon.vue";
-import ExtensionIcon from "@/components/Icons/ExtensionIcon.vue";
-import LogoutIcon from "@/components/Icons/LogoutIcon.vue";
-import SettingIcon from "@/components/Icons/SettingIcon.vue";
-// import FileIcon from "@/components/Icons/FileIcon.vue";
-
 import { ref, watch } from "vue";
-import MenuIcon from "@/components/Icons/MenuIcon.vue";
 import { routerTo } from "@/router/client";
 import { appStore } from "@/store/global";
 import { router } from "@/router";
@@ -14,6 +7,7 @@ import { router } from "@/router";
 interface navItem {
   tip: string;
   icon: any;
+  iconClass?: string[];
   to: string;
   clickedFunc?: () => void;
 }
@@ -21,17 +15,18 @@ interface navItem {
 const topNavList: navItem[] = [
   {
     tip: "主页",
-    icon: NonebotIcon,
+    icon: "circle",
+    iconClass: ["text-primary"],
     to: "/",
     clickedFunc: () => {
       routerTo("/");
     },
   },
-  { tip: "拓展商店", icon: ExtensionIcon, to: "/store" },
-  // { tip: "文件管理", icon: FileIcon, to: "/file" },
+  { tip: "拓展商店", icon: "space_dashboard", to: "/store" },
+  // { tip: "文件管理", icon: "file_copy", to: "/file" },
 ];
 
-const buttonNavList: navItem[] = [{ tip: "设置", icon: SettingIcon, to: "/setting" }];
+const buttonNavList: navItem[] = [{ tip: "设置", icon: "settings", to: "/setting" }];
 
 const activeNav = ref<string>();
 const showMenuModal = ref<HTMLDialogElement>();
@@ -65,11 +60,13 @@ watch(
     <div
       class="fixed h-12 w-full visible md:invisible flex items-center pl-4 pr-4 border-b border-[hsl(var(--b3))] bg-base-100"
     >
-      <MenuIcon
+      <span
         role="button"
-        class="h-full w-9 mr-4"
+        class="material-symbols-outlined text-4xl mr-4"
         @click="showMenuModal?.showModal()"
-      />
+      >
+        menu
+      </span>
 
       <div class="pointer-events-none">{{ activeNav }}</div>
     </div>
@@ -97,7 +94,12 @@ watch(
             class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
             :data-tip="nav.tip"
           >
-            <component :is="nav.icon" class="h-9 w-9" />
+            <span
+              class="material-symbols-outlined text-4xl flex items-center"
+              :class="nav.iconClass"
+            >
+              {{ nav.icon }}
+            </span>
           </a>
         </li>
       </ul>
@@ -114,7 +116,9 @@ watch(
             class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
             :data-tip="nav.tip"
           >
-            <component :is="nav.icon" class="h-9 w-9" />
+            <span class="material-symbols-outlined text-4xl" :class="nav.iconClass">
+              {{ nav.icon }}
+            </span>
           </a>
         </li>
         <li @click="logout()">
@@ -122,7 +126,7 @@ watch(
             class="nav-custom-style tooltip tooltip-right flex items-center justify-center"
             data-tip="登出"
           >
-            <LogoutIcon class="h-9 w-9" />
+            <span class="material-symbols-outlined text-4xl"> logout </span>
           </a>
         </li>
       </ul>
@@ -135,7 +139,9 @@ watch(
       <ul class="menu">
         <li v-for="nav in topNavList" @click="routerTo(nav.to), showMenuModal?.close()">
           <a>
-            <component :is="nav.icon" class="h-7 w-7" />
+            <span class="material-symbols-outlined" :class="nav.iconClass">
+              {{ nav.icon }}
+            </span>
             <span>{{ nav.tip }}</span>
             <div class="w-full"></div>
             <span v-if="activeNav === nav.tip" class="badge bg-base-200">当前位置</span>
@@ -146,10 +152,18 @@ watch(
           @click="routerTo(nav.to), showMenuModal?.close()"
         >
           <a>
-            <component :is="nav.icon" class="h-7 w-7" />
+            <span class="material-symbols-outlined" :class="nav.iconClass">
+              {{ nav.icon }}
+            </span>
             <span>{{ nav.tip }}</span>
             <div class="w-full"></div>
             <span v-if="activeNav === nav.tip" class="badge bg-base-200">当前位置</span>
+          </a>
+        </li>
+        <li @click="logout()">
+          <a>
+            <span class="material-symbols-outlined"> logout </span>
+            <span>登出</span>
           </a>
         </li>
       </ul>

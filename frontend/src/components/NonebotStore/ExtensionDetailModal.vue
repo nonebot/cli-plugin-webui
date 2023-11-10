@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import OfficialCheckIcon from "../Icons/OfficialCheckIcon.vue";
-import CheckCircleIcon from "../Icons/CheckCircleIcon.vue";
-import CancelCircleIcon from "../Icons/CancelCircleIcon.vue";
-
 import { Adapter, Driver, Plugin } from "@/api/schemas";
 import { computed, ref } from "vue";
 import { routerTo } from "@/router/client";
@@ -60,17 +56,21 @@ const uninstallModule = async () => {
     <div class="modal-box w-11/12 max-w-5xl sm:max-w-4xl rounded-lg">
       <div class="flex items-center">
         <h2 class="font-bold text-xl mr-2">{{ itemData.name }}</h2>
-        <OfficialCheckIcon
+        <span
           v-if="itemData.is_official"
-          class="mr-1 h-6 w-6 text-green-600"
-        />
+          class="material-symbols-outlined text-green-600"
+        >
+          verified
+        </span>
 
-        <div v-if="(itemData as Plugin).valid">
-          <CheckCircleIcon
+        <div v-if="(itemData as Plugin).valid" class="flex items-center">
+          <span
             v-if="(itemData as Plugin).valid"
-            class="h-6 w-6 text-green-600"
-          />
-          <CancelCircleIcon v-else class="h-6 w-6 text-red-600" />
+            class="material-symbols-outlined text-green-600"
+          >
+            check_circle
+          </span>
+          <span v-else class="material-symbols-outlined text-red-600"> cancel </span>
         </div>
       </div>
 
@@ -105,3 +105,13 @@ const uninstallModule = async () => {
     </form>
   </dialog>
 </template>
+
+<style scoped>
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 40;
+}
+</style>

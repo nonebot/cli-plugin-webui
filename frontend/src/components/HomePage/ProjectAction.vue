@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import PlayArrowIcon from "@/components/Icons/PlayArrowIcon.vue";
-import StopIcon from "@/components/Icons/StopIcon.vue";
-import RefreshIcon from "@/components/Icons/RefreshIcon.vue";
-import DeleteIcon from "@/components/Icons/DeleteIcon.vue";
-import CheckIcon from "@/components/Icons/CheckIcon.vue";
-
 import { appStore as store } from "@/store/global";
 import { notice } from "@/utils/notification";
 import { ref } from "vue";
@@ -136,7 +130,7 @@ const deleteProject = async () => {
               title="启动"
               @click="runProject()"
             >
-              <PlayArrowIcon class="h-6 w-6" />
+              <span class="material-symbols-outlined"> play_arrow </span>
             </button>
 
             <button
@@ -147,7 +141,7 @@ const deleteProject = async () => {
               title="停止"
               @click="stopProject()"
             >
-              <StopIcon class="h-6 w-6" />
+              <span class="material-symbols-outlined"> stop </span>
             </button>
 
             <button
@@ -158,7 +152,7 @@ const deleteProject = async () => {
               title="重启"
               @click="restartProject()"
             >
-              <RefreshIcon class="h-6 w-6" />
+              <span class="material-symbols-outlined"> restart_alt </span>
             </button>
 
             <label
@@ -168,12 +162,14 @@ const deleteProject = async () => {
               }"
             >
               <input type="checkbox" />
-              <CheckIcon
+              <span
                 title="销毁实例"
-                class="swap-on h-6 w-6 text-primary"
+                class="swap-off material-symbols-outlined"
                 @click="deleteProject()"
-              />
-              <DeleteIcon title="确认" class="swap-off h-6 w-6" />
+              >
+                delete
+              </span>
+              <span class="swap-on material-symbols-outlined"> check </span>
             </label>
           </div>
         </div>

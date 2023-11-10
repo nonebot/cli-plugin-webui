@@ -1,9 +1,4 @@
 <script setup lang="ts" generic="T extends Plugin | Adapter | Driver">
-import OfficialCheckIcon from "@/components/Icons/OfficialCheckIcon.vue";
-import CheckCircleIcon from "@/components/Icons/CheckCircleIcon.vue";
-import CancelCircleIcon from "@/components/Icons/CancelCircleIcon.vue";
-import PackageIcon from "@/components/Icons/PackageIcon.vue";
-import AccountIcon from "@/components/Icons/AccountIcon.vue";
 import LogShow from "@/components/CustomModal/LogShow.vue";
 import ExtensionDetailModal from "@/components/NonebotStore/ExtensionDetailModal.vue";
 
@@ -106,22 +101,22 @@ const isRetry = async (data: boolean) => {
         <div class="flex items-center">
           <div
             v-if="itemData.is_official"
-            class="mr-1 tooltip font-normal"
+            class="tooltip flex font-normal"
             data-tip="官方认证"
           >
-            <OfficialCheckIcon class="h-6 w-6 text-green-600" />
+            <span class="material-symbols-outlined text-green-600"> verified </span>
           </div>
 
           <div v-if="'valid' in itemData" class="flex items-center">
             <div
               v-if="(itemData as Plugin).valid"
-              class="tooltip font-normal"
+              class="tooltip flex font-normal"
               data-tip="测试通过"
             >
-              <CheckCircleIcon class="h-6 w-6 text-green-600" />
+              <span class="material-symbols-outlined text-green-600"> check_circle </span>
             </div>
-            <div v-else class="tooltip font-normal" data-tip="测试未通过">
-              <CancelCircleIcon class="h-6 w-6 text-red-600" />
+            <div v-else class="tooltip flex font-normal" data-tip="测试未通过">
+              <span class="material-symbols-outlined text-red-600"> cancel </span>
             </div>
           </div>
         </div>
@@ -144,11 +139,13 @@ const isRetry = async (data: boolean) => {
             class="tooltip flex items-center text-xs text-gray-500"
             :data-tip="itemData.project_link"
           >
-            <PackageIcon class="h-4 w-4 mr-2" />
+            <span class="material-symbols-outlined mr-1 text-xl leading-5">
+              package_2
+            </span>
             {{ limitContent(itemData.project_link, 25) }}
           </div>
-          <div class="mt-2 flex items-center text-xs text-gray-500">
-            <AccountIcon class="h-4 w-4 mr-2" />
+          <div class="flex items-center text-xs text-gray-500">
+            <span class="material-symbols-outlined mr-1 text-xl leading-5"> person </span>
             {{ itemData.author }}
           </div>
         </div>
@@ -179,6 +176,14 @@ const isRetry = async (data: boolean) => {
 </template>
 
 <style scoped>
+.card-title .material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 40;
+}
+
 .extension-card .install-btn {
   opacity: 0;
 }
