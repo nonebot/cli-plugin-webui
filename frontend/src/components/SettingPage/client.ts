@@ -31,14 +31,7 @@ class ProjectMetaConfig extends BaseConfig {
 
     const setAction = async (k: string, v: any, keyType: string) => {
       await api
-        .configUpdate(
-          this.name,
-          store().choiceProject.project_id,
-          store().enabledEnv,
-          keyType,
-          k,
-          v,
-        )
+        .configUpdate(this.name, projectID, store().enabledEnv, keyType, k, v)
         .then(() => {
           return Promise.resolve();
         })
@@ -53,7 +46,7 @@ class ProjectMetaConfig extends BaseConfig {
         });
 
       await api
-        .getProjectProfile(appStore().choiceProject.project_id)
+        .getProjectProfile(projectID)
         .then((resp) => {
           appStore().choiceProject = resp.detail;
           return Promise.resolve();
@@ -105,14 +98,7 @@ class NonebotConfig extends BaseConfig {
 
     const setAction = async (k: string, v: any, keyType: string) => {
       await api
-        .configUpdate(
-          this.name,
-          store().choiceProject.project_id,
-          store().enabledEnv,
-          keyType,
-          k,
-          v,
-        )
+        .configUpdate(this.name, projectID, store().enabledEnv, keyType, k, v)
         .then(() => {
           return Promise.resolve();
         })
@@ -164,14 +150,7 @@ class PluginConfig extends BaseConfig {
 
     const setAction = async (k: string, v: any, keyType: string) => {
       await api
-        .configUpdate(
-          this.name,
-          store().choiceProject.project_id,
-          store().enabledEnv,
-          keyType,
-          k,
-          v,
-        )
+        .configUpdate(this.name, projectID, store().enabledEnv, keyType, k, v)
         .then(() => {
           return Promise.resolve();
         })
