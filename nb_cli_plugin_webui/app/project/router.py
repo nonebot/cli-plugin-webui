@@ -44,7 +44,7 @@ async def add_project(data: AddProjectData) -> GenericResponse[str]:
     return GenericResponse(detail=result)
 
 
-@router.post("/profile", response_model=GenericResponse[NoneBotProjectMeta])
+@router.get("/profile", response_model=GenericResponse[NoneBotProjectMeta])
 async def get_project_profile(
     project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
 ) -> GenericResponse[NoneBotProjectMeta]:
