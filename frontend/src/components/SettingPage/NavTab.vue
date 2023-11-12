@@ -75,6 +75,28 @@ const assignEnv = async (env: string) => {
 
   await getNonebotConfig();
 };
+
+const deleteEnv = async (env: string) => {
+  if (env === ".env") {
+    notice.warning("该环境不可删除");
+    return;
+  }
+
+  await api
+    .deleteEnv(env, store().choiceProject.project_id)
+    .then(() => {
+      store().enabledEnv = ".env";
+    })
+    .catch((error: AxiosError) => {
+      let reason: string;
+      if (error.response) {
+        reason = (error.response.data as { detail: string })?.detail;
+      } else {
+        reason = error.message;
+      }
+      notice.error(`删除环境失败：${reason}`);
+    });
+};
 </script>
 
 <template>
@@ -142,7 +164,7 @@ const assignEnv = async (env: string) => {
                     <input type="checkbox" />
                     <span
                       class="swap-off material-symbols-outlined text-xl leading-5"
-                      @click="console.log(1)"
+                      @click="deleteEnv(env)"
                     >
                       delete
                     </span>
