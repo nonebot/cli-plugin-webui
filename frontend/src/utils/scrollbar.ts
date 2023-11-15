@@ -1,9 +1,6 @@
 import { onUnmounted } from "vue";
 
-export function hideScrollBarWhileSwiping(
-  bar: HTMLElement,
-  content: HTMLElement,
-) {
+export function hideScrollBarWhileSwiping(bar: HTMLElement, content: HTMLElement) {
   let lastScrollPosition = content.scrollTop;
 
   const handleScroll = () => {

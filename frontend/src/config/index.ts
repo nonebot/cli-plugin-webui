@@ -23,11 +23,7 @@ export class BaseConfig {
 
 class WebUIConfig extends BaseConfig {
   constructor() {
-    super(
-      "Nonebot WebUI",
-      "Nonebot (CLI)WebUI 相关设置。（不受实例环境影响）",
-      "webui",
-    );
+    super("NoneBot WebUI", "NoneBot (CLI)WebUI 相关设置。（不受实例环境影响）", "webui");
   }
 
   init() {
@@ -103,8 +99,7 @@ class WebUIConfig extends BaseConfig {
               default: "1",
               item_type: "boolean",
               enum: [],
-              configured:
-                this.getItem("theme:colorFollowSystem") === "1" ? true : false,
+              configured: this.getItem("theme:colorFollowSystem") === "1" ? true : false,
             },
           ],
         },

@@ -6,9 +6,7 @@ import { ref, watch } from "vue";
 const inputValue = ref("");
 
 const doSearch = async () => {
-  await nonebotExtensionStore().updateDataBySearch(
-    appStore().choiceProject.project_id,
-  );
+  await nonebotExtensionStore().updateDataBySearch(appStore().choiceProject.project_id);
 };
 
 watch(inputValue, () => {
