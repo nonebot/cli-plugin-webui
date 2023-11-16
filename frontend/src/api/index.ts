@@ -191,14 +191,15 @@ export class API {
     moduleType: string,
     content: string,
   ): Promise<StoreListResponse> {
-    const requestData = {
-      data: {
+    return await this.basePostRequest<StoreListResponse>(
+      "/store/nonebot/search",
+      {},
+      {
         project_id: projectID,
         module_type: moduleType,
         content: content,
       },
-    };
-    return await this.basePostRequest<StoreListResponse>("/store/search", requestData);
+    );
   }
 
   async installModule(

@@ -73,7 +73,7 @@ async def _get_nonebot_store_items(
     )
 
 
-@router.get("/nonebot/search", response_model=StoreListResponse)
+@router.post("/nonebot/search", response_model=StoreListResponse)
 async def search_nonebot_store_item(
     module_type: str,
     content: str,
