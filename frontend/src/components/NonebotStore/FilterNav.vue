@@ -22,6 +22,7 @@ const filterList: CustomDetail[] = [
 ];
 
 const setActiveClass = (cls: string) => {
+  nonebotExtensionStore().nowPage = 0;
   nonebotExtensionStore().assignClass(cls);
   if (appStore().choiceProject.project_id) {
     nonebotExtensionStore().updateData(appStore().choiceProject.project_id);
