@@ -112,7 +112,7 @@ class ModuleStoreManager(Generic[_T]):
         self.search_result: List[_T] = list()
 
     async def load_item(self) -> None:
-        self.items = await load_module_data(self.module_type)  # type: ignore
+        self.items = await load_module_data(self.module_type) or list()  # type: ignore
 
     def get_item(self, *, is_search: bool = False) -> List[_T]:
         if is_search:
