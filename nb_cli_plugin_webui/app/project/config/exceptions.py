@@ -13,3 +13,7 @@ class EnvNotFound(NotFound):
 
 class ConfigNotFound(NotFound):
     detail = ErrorCode.CONFIG_NOT_FOUND
+
+
+class BaseEnvCannotBeDeleted(BadRequest):
+    detail = ErrorCode.BASE_ENV_CANNOT_BE_DELETED

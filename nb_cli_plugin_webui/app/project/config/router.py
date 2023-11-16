@@ -13,7 +13,7 @@ from nb_cli_plugin_webui.app.handlers import (
 )
 
 from ..dependencies import get_nonebot_project_manager
-from .exceptions import EnvExists, EnvNotFound, ConfigNotFound
+from .exceptions import EnvExists, EnvNotFound, ConfigNotFound, BaseEnvCannotBeDeleted
 from .schemas import (
     GenericResponse,
     ModuleConfigChild,
@@ -68,6 +68,9 @@ async def _delete_project_env(
     """
     - 删除 NoneBot 实例中的环境文件
     """
+    if env == ".env":
+        raise BaseEnvCannotBeDeleted()
+
     project_meta = project.read()
     project_dir = Path(project_meta.project_dir)
     for i in project_dir.iterdir():
