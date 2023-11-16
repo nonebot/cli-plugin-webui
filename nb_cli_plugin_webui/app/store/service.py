@@ -48,12 +48,13 @@ def install_nonebot_module(
     )
 
     async def install_module():
-        await call_pip_install(
+        proc, _ = await call_pip_install(
             module.project_link,
             ["-i", project_meta.mirror_url],
             log_storage=log,
             python_path=project.config_manager.python_path,
         )
+        await proc.wait()
         return True
 
     process.add(install_module)
