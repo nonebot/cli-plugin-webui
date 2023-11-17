@@ -5,3 +5,7 @@ from .constants import ErrorCode
 
 class ModuleTypeNotFound(NotFound):
     detail = ErrorCode.MODULE_TYPE_NOT_FOUND
+
+
+class ModuleIsExisted(NotFound):
+    detail = ErrorCode.MODULE_IS_EXISTED

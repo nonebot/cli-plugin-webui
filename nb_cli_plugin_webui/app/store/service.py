@@ -18,7 +18,7 @@ from nb_cli_plugin_webui.app.handlers.process import (
 )
 
 from .schemas import Plugin, ModuleInfo
-from .exception import ModuleTypeNotFound
+from .exception import ModuleIsExisted, ModuleTypeNotFound
 
 
 def install_nonebot_module(
@@ -26,6 +26,19 @@ def install_nonebot_module(
     env: str,
     module: Annotated[Union[ModuleInfo, Plugin], Field(discriminator="module_type")],
 ) -> str:
+    project_meta = project.read()
+    if isinstance(module, Plugin):
+        for plugin in project_meta.plugins:
+            if module.module_name == plugin.module_name:
+                raise ModuleIsExisted()
+    elif isinstance(module, ModuleInfo):
+        for adapter in project_meta.adapters:
+            if module.module_name == adapter.module_name:
+                raise ModuleIsExisted()
+        for driver in project_meta.drivers:
+            if module.module_name == driver.module_name:
+                raise ModuleIsExisted()
+
     module_type = "driver"
     if "~" not in module.module_name:
         pattern = r"nonebot-(.*?)-"
@@ -34,7 +47,6 @@ def install_nonebot_module(
             raise ModuleTypeNotFound()
         module_type = _match.group(1)
 
-    project_meta = project.read()
     log = LogStorage(Config.process_log_destroy_seconds)
     log_key = generate_complexity_string(8)
     LogStorageFather.add_storage(log, log_key)
