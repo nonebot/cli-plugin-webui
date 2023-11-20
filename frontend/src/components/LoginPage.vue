@@ -2,9 +2,7 @@
 import { ref, watch } from "vue";
 import { ToastWrapper } from "@/utils/notification";
 import { API } from "@/api";
-import { appStore } from "@/store/global";
 import { router } from "@/router";
-import { AxiosError } from "axios";
 
 const api = new API();
 const notice = new ToastWrapper("Login");
@@ -20,7 +18,7 @@ watch(isDebug, () => {
   notice.info(`已${isDebug.value ? "启用" : "禁用"}开发模式`);
 });
 
-async function doLogin() {
+const doLogin = async () => {
   if (!token.value) {
     notice.warning("缺少 Token");
     return;
@@ -44,10 +42,9 @@ async function doLogin() {
     .then((resp) => {
       notice.success("登录成功");
       localStorage.setItem("jwtToken", resp.detail);
-      appStore().isAuth = true;
       router.push("/");
     })
-    .catch((error: AxiosError) => {
+    .catch((error) => {
       let reason: string;
       if (error.response) {
         reason = (error.response.data as { detail: string })?.detail;
@@ -56,7 +53,7 @@ async function doLogin() {
       }
       notice.error(`验证失败：${reason}`);
     });
-}
+};
 </script>
 
 <template>
