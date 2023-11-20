@@ -10,7 +10,11 @@ from .application import app
 from .utils.security import jwt
 
 AUTH_ROUTES = ["/api"]
-PASS_PATHS = ["/api/auth/login"]
+PASS_PATHS = [
+    "/api/v1/auth/login",
+    "/api/docs",
+    "/api/docs/openapi.json",
+]
 
 RequestHandler = Callable[[Request], Awaitable[Response]]
 

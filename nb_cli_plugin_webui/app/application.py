@@ -1,9 +1,9 @@
 from pathlib import Path
 from importlib.metadata import version
 
-from starlette.responses import Response
 from starlette.types import Send, Scope, Receive
 from fastapi import FastAPI, HTTPException, status
+from starlette.responses import Response, JSONResponse
 from fastapi.staticfiles import StaticFiles as BaseStaticFiles
 from starlette.exceptions import HTTPException as StarlettleHTTPException
 
@@ -55,12 +55,26 @@ class StaticFiles(BaseStaticFiles):
                 raise err
 
 
-app = FastAPI(
+frontend = FastAPI(openapi_url="")
+frontend.mount("/", StaticFiles(directory=STATIC_PATH, html=True), "NoneBot WebUI")
+
+
+api = FastAPI(
+    debug=Config.debug,
     title="NoneBot CLI WebUI",
     description="WebUI for NoneBot CLI",
     version=version("nb_cli_plugin_webui"),
-    debug=Config.debug,
+    openapi_url="/docs/openapi.json",
+    root_path="/api",
+    docs_url=None,
+    redoc_url="/docs",
 )
+api.include_router(api_router, prefix="/v1")
+
+
+app = FastAPI(openapi_url="")
+app.mount("/api", app=api)
+app.mount("/", app=frontend)
 
 
 @app.on_event("startup")
@@ -88,5 +102,9 @@ async def shutdown_event():
             await process.stop()
 
 
-app.include_router(api_router, prefix="/api")
-app.mount("/", StaticFiles(directory=STATIC_PATH, html=True), "NoneBot WebUI")
+@app.exception_handler(404)
+async def _not_found():
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"detail": [{"msg": "Not Found"}]},
+    )
