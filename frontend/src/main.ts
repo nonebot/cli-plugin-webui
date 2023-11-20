@@ -3,7 +3,6 @@ import "@/style.css";
 import App from "@/App.vue";
 import { registerPlugins } from "@/plugins";
 
-import "@/api/authenticationInterceptor";
 import { webuiConfig } from "@/config";
 
 webuiConfig.init();
