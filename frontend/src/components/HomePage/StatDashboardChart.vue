@@ -6,11 +6,11 @@ import { appStore } from "@/store/global";
 const props = withDefaults(
   defineProps<{
     chartDom: string;
+    timeData: U[];
     itemName?: string;
     itemData: T[];
     anotherItemName?: string;
     anotherItemData?: T[];
-    timeData: U[];
   }>(),
   {
     itemName: () => "",

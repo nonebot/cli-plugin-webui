@@ -2,7 +2,7 @@
 import { appStore } from "@/store/global";
 import api from "@/api";
 import AnsiUp from "ansi_up";
-import { onBeforeUnmount, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { getURL } from "@/utils";
 import { notice } from "@/utils/notification";
 import { ProcessLog } from "@/api/schemas";
@@ -110,6 +110,14 @@ const handleWebSocket = () => {
     websocket.value = undefined;
   };
 };
+
+onMounted(async () => {
+  if (appStore().choiceProject.project_id) {
+    viewProject.value = appStore().choiceProject.project_id;
+    await getHistoryLog(viewProject.value, 50);
+    handleWebSocket();
+  }
+});
 
 onBeforeUnmount(() => {
   websocket.value?.close();

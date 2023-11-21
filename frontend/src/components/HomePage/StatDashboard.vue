@@ -1,81 +1,115 @@
 <script setup lang="ts">
 import StatDashboardChart from "@/components/HomePage/StatDashboardChart.vue";
-import { getURL } from "@/utils";
-import { systemStatStore, projectStatStore } from "@/store/status";
+import { useStatusStore } from "@/store/status";
 import { appStore } from "@/store/global";
-import { ProcessInfo } from "@/api/schemas";
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onMounted, watch, computed, ComputedRef } from "vue";
+import { statusWebSocket } from "@/components/HomePage/client";
 
-const viewProject = ref("");
-const websocket = ref<WebSocket>();
+interface StatChartData {
+  title: string;
+  subtitle: ComputedRef<string>;
+  chartDomName: string;
+  timeData: any[];
+  yDataName: string;
+  yData: any[];
+  yAnotherDataName?: string;
+  yAnotherData?: any[];
+}
 
-const handleProjectMonitorWebSocket = () => {
-  websocket.value?.close();
+const statStore = useStatusStore();
 
-  websocket.value = new WebSocket(
-    getURL(`/api/process/status/${viewProject.value}/ws`, true),
+const chartData: StatChartData[] = [
+  {
+    title: "实例 CPU 利用率 (%)",
+    subtitle: computed(() => {
+      const lastData =
+        statStore.process.cpuPercentList[
+          statStore.process.cpuPercentList.length - 1
+        ].toFixed(2);
+      return `当前: ${lastData} %`;
+    }),
+    chartDomName: "cpu-chart",
+    timeData: statStore.timeList,
+    yDataName: "CPU 利用率",
+    yData: statStore.process.cpuPercentList,
+  },
+  {
+    title: "实例内存使用率 (%)",
+    subtitle: computed(() => {
+      const lastData =
+        statStore.process.memPercentList[
+          statStore.process.memPercentList.length - 1
+        ].toFixed(2);
+      return `当前: ${lastData} %`;
+    }),
+    chartDomName: "mem-chart",
+    timeData: statStore.timeList,
+    yDataName: "内存利用率(压力)",
+    yData: statStore.process.memPercentList,
+  },
+  {
+    title: "平台网络吞吐 (Kbps)",
+    subtitle: computed(() => {
+      const lastSentDataSpeed =
+        statStore.system.netSentSpeedList[
+          statStore.system.netSentSpeedList.length - 1
+        ].toFixed(3);
+      const lastRecvDataSpeed =
+        statStore.system.netRecvSpeedList[
+          statStore.system.netRecvSpeedList.length - 1
+        ].toFixed(3);
+      return `发送: ${lastSentDataSpeed} 接收: ${lastRecvDataSpeed}`;
+    }),
+    chartDomName: "net-chart",
+    timeData: statStore.timeList,
+    yDataName: "发送",
+    yData: statStore.system.netSentSpeedList,
+    yAnotherDataName: "接收",
+    yAnotherData: statStore.system.netRecvSpeedList,
+  },
+  {
+    title: "平台硬盘 IO (MB)",
+    subtitle: computed(() => {
+      const lastReadSpeed =
+        statStore.system.diskReadSpeedList[
+          statStore.system.diskReadSpeedList.length - 1
+        ].toFixed(3);
+      const lastWriteSpeed =
+        statStore.system.diskWriteSpeedList[
+          statStore.system.diskWriteSpeedList.length - 1
+        ].toFixed(3);
+      return `读取: ${lastReadSpeed} 写入: ${lastWriteSpeed}`;
+    }),
+    chartDomName: "disk-chart",
+    timeData: statStore.timeList,
+    yDataName: "读取",
+    yData: statStore.system.diskReadSpeedList,
+    yAnotherDataName: "写入",
+    yAnotherData: statStore.system.diskWriteSpeedList,
+  },
+];
+
+const changeProject = (projectID: string) => {
+  statusWebSocket?.send(
+    JSON.stringify({
+      type: "process",
+      project_id: projectID,
+    }),
   );
-
-  projectStatStore().clearList();
-
-  websocket.value.onopen = () => {
-    const token = localStorage.getItem("jwtToken") ?? "";
-    websocket.value?.send(token);
-  };
-
-  websocket.value.onmessage = (event: MessageEvent) => {
-    const wsData: ProcessInfo = JSON.parse(event.data);
-
-    if (!wsData.performance) {
-      return;
-    }
-
-    const date = new Date();
-    if (projectStatStore().timeList.length >= 100) {
-      projectStatStore().timeList.shift();
-    }
-    projectStatStore().timeList.push(
-      `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
-    );
-
-    if (projectStatStore().cpuList.length >= 100) {
-      projectStatStore().cpuList.shift();
-    }
-    projectStatStore().cpuList.push(Number(wsData.performance!.cpu.toFixed(3)) * 100);
-
-    if (projectStatStore().memList.length >= 100) {
-      projectStatStore().memList.shift();
-    }
-    projectStatStore().memList.push(Number(wsData.performance!.mem.toFixed(3)) * 100);
-  };
-};
-
-const clearList = () => {
-  projectStatStore().cpuList = Array(100).fill(0);
-  projectStatStore().memList = Array(100).fill(0);
-  projectStatStore().timeList = Array(100).fill(0);
 };
 
 onMounted(() => {
   if (appStore().choiceProject.project_id && appStore().choiceProject.is_running) {
-    viewProject.value = appStore().choiceProject.project_id;
-    handleProjectMonitorWebSocket();
+    changeProject(appStore().choiceProject.project_id);
   }
-});
-
-onBeforeUnmount(() => {
-  websocket.value?.close();
 });
 
 watch(
   () => appStore().choiceProject,
   (newValue) => {
-    viewProject.value = newValue.project_id;
     if (newValue.is_running) {
-      clearList();
-      handleProjectMonitorWebSocket();
-    } else {
-      websocket.value?.close();
+      statStore.clearProcessList();
+      changeProject(newValue.project_id);
     }
   },
 );
@@ -84,8 +118,7 @@ watch(
   () => appStore().choiceProject.is_running,
   (newValue) => {
     if (newValue) {
-      clearList();
-      handleProjectMonitorWebSocket();
+      changeProject(appStore().choiceProject.project_id);
     }
   },
 );
@@ -102,105 +135,21 @@ watch(
 
     <Transition>
       <div v-if="appStore().choiceProject.project_id" class="mt-2 m-auto flex flex-wrap">
-        <div class="w-1/2 h-44">
+        <div v-for="data in chartData" class="w-1/2 h-44">
           <div class="relative h-full flex flex-col">
-            <h3 class="text-xs font-bold">实例 CPU 利用率 (%)</h3>
+            <h3 class="text-xs font-bold">{{ data.title }}</h3>
             <div class="grow relative flex items-center">
               <div class="absolute top-0 mt-2 mb-2 text-xs">
-                当前：{{
-                  projectStatStore().cpuList[
-                    projectStatStore().cpuList.length - 1
-                  ].toFixed(2)
-                }}
-                %
+                {{ data.subtitle.value }}
               </div>
               <StatDashboardChart
                 class="h-full w-full"
-                chart-dom="cpuChart"
-                item-name="CPU 利用率"
-                :item-data="projectStatStore().cpuList"
-                :time-data="projectStatStore().timeList"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="w-1/2 h-44">
-          <div class="relative h-full flex flex-col">
-            <h3 class="text-xs font-bold">实例内存使用率 (%)</h3>
-            <div class="grow relative flex items-center">
-              <div class="absolute top-0 mt-2 mb-2 text-xs">
-                当前：{{
-                  projectStatStore().memList[
-                    projectStatStore().memList.length - 1
-                  ].toFixed(2)
-                }}
-                %
-              </div>
-              <StatDashboardChart
-                class="h-full w-full"
-                chart-dom="memChart"
-                item-name="内存利用率"
-                :item-data="projectStatStore().memList"
-                :time-data="projectStatStore().timeList"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="w-1/2 h-44">
-          <div class="relative h-full flex flex-col">
-            <h3 class="text-xs font-bold">平台网络吞吐 (Kbps)</h3>
-            <div class="grow relative flex items-center">
-              <div class="absolute top-0 mt-2 mb-2 text-xs">
-                发送：{{
-                  systemStatStore().netSentSpeedList[
-                    systemStatStore().netSentSpeedList.length - 1
-                  ].toFixed(3)
-                }}
-                接收：{{
-                  systemStatStore().netRecvSpeedList[
-                    systemStatStore().netRecvSpeedList.length - 1
-                  ].toFixed(3)
-                }}
-              </div>
-              <StatDashboardChart
-                class="h-full w-full"
-                chart-dom="netChart"
-                item-name="发送"
-                :item-data="systemStatStore().netSentSpeedList"
-                another-item-name="接收"
-                :another-item-data="systemStatStore().netRecvSpeedList"
-                :time-data="systemStatStore().timeList"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="w-1/2 h-44">
-          <div class="relative h-full flex flex-col">
-            <h3 class="text-xs font-bold">平台硬盘 IO (MB)</h3>
-            <div class="grow relative flex items-center">
-              <div class="absolute top-0 mt-2 mb-2 text-xs">
-                读取：{{
-                  systemStatStore().diskReadSpeedList[
-                    systemStatStore().diskReadSpeedList.length - 1
-                  ].toFixed(3)
-                }}
-                写入：{{
-                  systemStatStore().diskWriteSpeedList[
-                    systemStatStore().diskWriteSpeedList.length - 1
-                  ].toFixed(3)
-                }}
-              </div>
-              <StatDashboardChart
-                class="h-full w-full"
-                chart-dom="diskChart"
-                item-name="读取"
-                :item-data="systemStatStore().diskReadSpeedList"
-                another-item-name="写入"
-                :another-item-data="systemStatStore().diskWriteSpeedList"
-                :time-data="systemStatStore().timeList"
+                :chart-dom="data.chartDomName"
+                :time-data="data.timeData"
+                :item-name="data.yDataName"
+                :item-data="data.yData"
+                :another-item-name="data?.yAnotherDataName"
+                :another-item-data="data?.yAnotherData"
               />
             </div>
           </div>

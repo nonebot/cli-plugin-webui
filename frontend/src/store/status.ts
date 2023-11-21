@@ -1,31 +1,47 @@
 import { defineStore } from "pinia";
 
-export const systemStatStore = defineStore("systemStatStore", {
-  state() {
-    return {
-      diskReadSpeedList: Array(100).fill(0) as number[],
-      diskWriteSpeedList: Array(100).fill(0) as number[],
-      netSentSpeedList: Array(100).fill(0) as number[],
-      netRecvSpeedList: Array(100).fill(0) as number[],
-      timeList: Array(100).fill(0) as string[],
-    };
-  },
-});
+const ARRAY_LENGTH = 100;
+const initialArray = Array.from({ length: ARRAY_LENGTH }, () => 0);
 
-export const projectStatStore = defineStore("projectStatStore", {
-  state() {
+interface SystemState {
+  diskReadSpeedList: number[];
+  diskWriteSpeedList: number[];
+  netSentSpeedList: number[];
+  netRecvSpeedList: number[];
+}
+
+interface ProcessState {
+  cpuPercentList: number[];
+  memPercentList: number[];
+}
+
+interface State {
+  system: SystemState;
+  process: ProcessState;
+  timeList: string[];
+}
+
+export const useStatusStore = defineStore("useStatusStore", {
+  state: (): State => {
     return {
-      cpuList: Array(100).fill(0) as number[],
-      memList: Array(100).fill(0) as number[],
-      timeList: Array(100).fill(0) as string[],
+      system: {
+        diskReadSpeedList: [...initialArray],
+        diskWriteSpeedList: [...initialArray],
+        netSentSpeedList: [...initialArray],
+        netRecvSpeedList: [...initialArray],
+      },
+      process: {
+        cpuPercentList: [...initialArray],
+        memPercentList: [...initialArray],
+      },
+      timeList: Array.from({ length: ARRAY_LENGTH }, () => "00:00:00"),
     };
   },
 
   actions: {
-    clearList() {
-      this.cpuList = Array(100).fill(0) as number[];
-      this.memList = Array(100).fill(0) as number[];
-      this.timeList = Array(100).fill(0) as string[];
+    clearProcessList() {
+      this.process.cpuPercentList = [...initialArray];
+      this.process.memPercentList = [...initialArray];
     },
   },
 });

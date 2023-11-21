@@ -6,18 +6,15 @@ import LogView from "@/components/HomePage/LogView.vue";
 import WelcomeAndGuide from "@/components/HomePage/WelcomeAndGuide.vue";
 import ProjectAction from "@/components/HomePage/ProjectAction.vue";
 
-import {
-  handlePlatformMonitorWebsocket,
-  websocketForPlatformMonitor,
-} from "@/components/HomePage/client";
+import { handleStatusWebsocket, statusWebSocket } from "@/components/HomePage/client";
 import { onMounted, onUnmounted } from "vue";
 
 onMounted(() => {
-  handlePlatformMonitorWebsocket();
+  handleStatusWebsocket();
 });
 
 onUnmounted(() => {
-  websocketForPlatformMonitor?.close();
+  statusWebSocket?.close();
 });
 </script>
 

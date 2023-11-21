@@ -1,6 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
+
+from nb_cli_plugin_webui.app.handlers.process import ProcessInfo
 
 
 class PlatformProfile(BaseModel):
@@ -41,9 +43,14 @@ class NetInfo(BaseModel):
     speed: List[int]
 
 
-class PlatformInfo(BaseModel):
+class SystemInfo(BaseModel):
     platform: PlatformProfile
     cpu: CpuInfo
     mem: MemInfo
     disk: DiskInfo
     net: NetInfo
+
+
+class StatusInfo(BaseModel):
+    system: SystemInfo
+    process: Optional[ProcessInfo]

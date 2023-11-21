@@ -1,10 +1,12 @@
+import type { ProcessInfo } from "@/api/schemas";
+
 interface PlatformProfile {
   name: string;
   struct: string;
   platform_type: string;
 }
 
-export interface Cpu {
+interface Cpu {
   name: string;
   count: number;
   max_freq: string;
@@ -13,7 +15,7 @@ export interface Cpu {
   process: number;
 }
 
-export interface Mem {
+interface Mem {
   total: number;
   available: number;
   percent: number;
@@ -21,14 +23,14 @@ export interface Mem {
   free: number;
 }
 
-export interface Disk {
+interface Disk {
   total: number;
   used: number;
   free: number;
   speed: number[];
 }
 
-export interface Net {
+interface Net {
   sent_total: number;
   recv_total: number;
   package_sent: number;
@@ -36,10 +38,15 @@ export interface Net {
   speed: number[];
 }
 
-export interface PlatformInfo {
+interface SystemInfo {
   platform: PlatformProfile;
   cpu: Cpu;
   mem: Mem;
   disk: Disk;
   net: Net;
+}
+
+export interface StatusInfo {
+  system: SystemInfo;
+  process?: ProcessInfo;
 }
