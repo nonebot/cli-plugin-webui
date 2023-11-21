@@ -2,11 +2,11 @@
 import { Adapter, Driver, Plugin } from "@/api/schemas";
 import { computed, ref } from "vue";
 import { routerTo } from "@/router/client";
-import { API } from "@/api";
+import api from "@/api";
 import { appStore } from "@/store/global";
 import { notice } from "@/utils/notification";
 import { nonebotExtensionStore } from "@/store/extensionStore";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
 
 const extensionDetailModal = ref<HTMLDialogElement>();
 
@@ -18,8 +18,6 @@ defineExpose({
     extensionDetailModal.value?.close();
   },
 });
-
-const api = new API();
 
 const props = defineProps<{ itemData: Plugin | Adapter | Driver }>();
 const itemData = computed(() => {

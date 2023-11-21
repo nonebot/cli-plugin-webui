@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { appStore } from "@/store/global";
-import { api } from "./client";
+import api from "@/api";
 import AnsiUp from "ansi_up";
 import { onBeforeUnmount, ref, watch } from "vue";
 import { getURL } from "@/utils";
 import { notice } from "@/utils/notification";
 import { ProcessLog } from "@/api/schemas";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
 
 const ansiUp = new AnsiUp();
 
@@ -44,7 +44,7 @@ const getHistoryLog = async (logID: string, logCount: number) => {
   await api
     .getProcessLogHistory(logID, logCount)
     .then((resp) => {
-      const detail = resp.detail;
+      const detail = resp.data.detail;
       if (detail.length) {
         for (const log of detail) {
           writeToArea(ansiUp.ansi_to_html(log.message));
@@ -85,7 +85,7 @@ const handleWebSocket = () => {
   websocket.value?.close();
 
   websocket.value = new WebSocket(
-    getURL(`/api/process/log/${viewProject.value}/ws`, true),
+    getURL(`/api/v1/process/log/${viewProject.value}/ws`, true),
   );
 
   websocket.value.onopen = () => {

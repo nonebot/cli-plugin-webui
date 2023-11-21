@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { API } from "@/api";
+import api from "@/api";
 import { appStore as store } from "@/store/global";
 import { limitContent } from "@/utils";
 import { notice, getNonebotConfig } from "./client";
-import { AxiosError } from "axios";
-
-const api = new API();
+import type { AxiosError } from "axios";
 
 const tabs = ref<string[]>([]);
 const addEnvInput = ref("");
@@ -16,7 +14,7 @@ const getDotenv = async () => {
   await api
     .getEnvs(store().choiceProject.project_id)
     .then((resp) => {
-      tabs.value = resp.detail;
+      tabs.value = resp.data.detail;
     })
     .catch((error: AxiosError) => {
       let reason: string;

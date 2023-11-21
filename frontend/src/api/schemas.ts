@@ -1,4 +1,6 @@
-export type GenericResponse<T> = T extends void ? {} : { detail: T };
+import { AxiosResponse } from "axios";
+
+export type GenericResponse<T, R = {}> = AxiosResponse<{ detail: T } & R>;
 
 export interface SimpleInfo {
   module_name: string;
@@ -84,12 +86,14 @@ export interface ProcessInfo {
   performance?: ProcessPerformance;
 }
 
-export interface StoreListResponse
-  extends GenericResponse<Plugin[] & Adapter[] & Driver[]> {
-  now_page: number;
-  total_page: number;
-  total_item: number;
-}
+export type StoreListResponse = GenericResponse<
+  Plugin[] & Adapter[] & Driver[],
+  {
+    now_page: number;
+    total_page: number;
+    total_item: number;
+  }
+>;
 
 interface ModuleConfigSimpleInfo {
   title: string;
@@ -122,11 +126,10 @@ export interface CheckProjectTomlDetail {
   builtin_plugins: string[];
 }
 
-export interface CheckProjectTomlResponse
-  extends GenericResponse<CheckProjectTomlDetail> {
-  msg: string;
-  level: "success" | "warn" | "error";
-}
+export type CheckProjectTomlResponse = GenericResponse<
+  CheckProjectTomlDetail,
+  { msg: string; level: "success" | "warn" | "error" }
+>;
 
 export interface AddProjectData {
   project_name: string;

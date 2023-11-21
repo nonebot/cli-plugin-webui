@@ -3,8 +3,8 @@ import { ref, watch } from "vue";
 import { notice } from "@/utils/notification";
 import { FileInfo } from "@/api/schemas";
 import { limitContent } from "@/utils";
-import { api } from "../client";
-import { AxiosError } from "axios";
+import api from "@/api";
+import type { AxiosError } from "axios";
 
 const folderSelectModal = ref<HTMLDialogElement>();
 
@@ -31,7 +31,7 @@ const getFiles = async (path: string) => {
   await api
     .getFileList(path)
     .then((resp) => {
-      files.value = resp.detail;
+      files.value = resp.data.detail;
       nowPathStack.value = nowPath.value.split("/");
     })
     .catch((error: AxiosError) => {
@@ -49,7 +49,7 @@ const createFile = async (fileName: string, path: string) => {
   await api
     .createFile(fileName, true, path)
     .then((resp) => {
-      files.value = resp.detail;
+      files.value = resp.data.detail;
       nowPathStack.value = nowPath.value.split("/");
       newFolderName.value = "";
       showCreateFolderModal.value?.close();
@@ -70,7 +70,7 @@ const deleteFile = async (path: string) => {
   await api
     .deleteFile(path)
     .then((resp) => {
-      files.value = resp.detail;
+      files.value = resp.data.detail;
       nowPathStack.value = nowPath.value.split("/");
       selectedFolder.value = "";
     })

@@ -1,4 +1,4 @@
-import { API } from "@/api";
+import api from "@/api";
 import { BaseConfig } from "@/config";
 import type { Config } from "@/types";
 import { appStore as store } from "@/store/global";
@@ -6,9 +6,8 @@ import { webuiConfig } from "@/config";
 import { settingStore } from "@/store/setting";
 import { appStore } from "@/store/global";
 import { ToastWrapper } from "@/utils/notification";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
 
-const api = new API();
 export const notice = new ToastWrapper("NoneBot Setting");
 
 class ProjectMetaConfig extends BaseConfig {
@@ -22,7 +21,7 @@ class ProjectMetaConfig extends BaseConfig {
     await api
       .getProjectMetaConfig(projectID)
       .then((response) => {
-        resp = response.detail;
+        resp = response.data.detail;
         return Promise.resolve();
       })
       .catch((error: AxiosError) => {
@@ -48,7 +47,7 @@ class ProjectMetaConfig extends BaseConfig {
       await api
         .getProjectProfile(projectID)
         .then((resp) => {
-          appStore().choiceProject = resp.detail;
+          appStore().choiceProject = resp.data.detail;
           return Promise.resolve();
         })
         .catch((error: AxiosError) => {
@@ -89,7 +88,7 @@ class NonebotConfig extends BaseConfig {
     await api
       .getNoneBotConfig(projectID)
       .then((response) => {
-        resp = response.detail;
+        resp = response.data.detail;
         return Promise.resolve();
       })
       .catch((error: AxiosError) => {
@@ -141,7 +140,7 @@ class PluginConfig extends BaseConfig {
     await api
       .getProjectPluginConfigList(projectID)
       .then((response) => {
-        resp = response.detail;
+        resp = response.data.detail;
         return Promise.resolve();
       })
       .catch((error: AxiosError) => {

@@ -1,10 +1,9 @@
 import { defineStore } from "pinia";
-import { API } from "@/api";
+import api from "@/api";
 import { ToastWrapper } from "@/utils/notification";
 import { Adapter, Driver, Plugin } from "@/api/schemas";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
 
-const api = new API();
 const notice = new ToastWrapper("Nonebot Store");
 
 export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
@@ -45,9 +44,9 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
         .getNoneBotModules(this.choiceClass, this.nowPage, projectID, isSearch)
         .then((resp) => {
           this.requesting = false;
-          this.storeData = resp.detail;
-          this.totalPage = resp.total_page;
-          this.totalItem = resp.total_item;
+          this.storeData = resp.data.detail;
+          this.totalPage = resp.data.total_page;
+          this.totalItem = resp.data.total_item;
         })
         .catch((error: AxiosError) => {
           this.requesting = false;
@@ -67,9 +66,9 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
         .searchStore(projectID, this.choiceClass, this.searchInput)
         .then((resp) => {
           this.requesting = false;
-          this.storeData = resp.detail;
-          this.totalPage = resp.total_page;
-          this.totalItem = resp.total_item;
+          this.storeData = resp.data.detail;
+          this.totalPage = resp.data.total_page;
+          this.totalItem = resp.data.total_item;
         })
         .catch((error: AxiosError) => {
           this.requesting = false;
@@ -83,24 +82,24 @@ export const nonebotExtensionStore = defineStore("nonebotExtensionStore", {
         });
     },
 
-    async refresh() {
-      this.requesting = true;
-      await api
-        .refreshStore()
-        .then(() => {
-          this.requesting = false;
-        })
-        .catch((error: AxiosError) => {
-          this.requesting = false;
-          let reason: string;
-          if (error.response) {
-            reason = (error.response.data as { detail: string })?.detail;
-          } else {
-            reason = error.message;
-          }
-          notice.error(`NoneBot 拓展商店刷新失败：${reason}`);
-        });
-    },
+    // async refresh() {
+    //   this.requesting = true;
+    //   await api
+    //     .refreshStore()
+    //     .then(() => {
+    //       this.requesting = false;
+    //     })
+    //     .catch((error: AxiosError) => {
+    //       this.requesting = false;
+    //       let reason: string;
+    //       if (error.response) {
+    //         reason = (error.response.data as { detail: string })?.detail;
+    //       } else {
+    //         reason = error.message;
+    //       }
+    //       notice.error(`NoneBot 拓展商店刷新失败：${reason}`);
+    //     });
+    // },
 
     switchNavVisible() {
       this.sideNavShow = !this.sideNavShow;

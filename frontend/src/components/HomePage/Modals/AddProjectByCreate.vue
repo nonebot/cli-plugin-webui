@@ -5,8 +5,9 @@ import FolderSelect from "@/components/HomePage/Modals/FolderSelect.vue";
 import { notice } from "@/utils/notification";
 import { Driver, Adapter } from "@/api/schemas";
 import { onMounted, ref, watch } from "vue";
-import { api, mirrorList, getProjectList } from "../client";
-import { AxiosError } from "axios";
+import { mirrorList, getProjectList } from "../client";
+import type { AxiosError } from "axios";
+import api from "@/api";
 
 const addProjectByCreateModal = ref<HTMLDialogElement>();
 
@@ -44,7 +45,7 @@ const getDrivers = async () => {
   await api
     .getNoneBotModules("driver", 0, "", false, true)
     .then((resp) => {
-      driverList.value = resp.detail;
+      driverList.value = resp.data.detail;
     })
     .catch((error: AxiosError) => {
       let reason: string;
@@ -61,7 +62,7 @@ const getAdapters = async () => {
   await api
     .getNoneBotModules("adapter", 0, "", false, true)
     .then((resp) => {
-      adapterList.value = resp.detail;
+      adapterList.value = resp.data.detail;
     })
     .catch((error: AxiosError) => {
       let reason: string;
@@ -132,7 +133,7 @@ const doCreate = async () => {
       use_src: projectUseSrc.value,
     })
     .then((resp) => {
-      logKey.value = resp.detail;
+      logKey.value = resp.data.detail;
     })
     .catch((error: AxiosError) => {
       let reason: string;

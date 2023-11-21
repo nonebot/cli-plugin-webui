@@ -2,10 +2,11 @@
 import LogShow from "@/components/CustomModal/LogShow.vue";
 
 import { ref } from "vue";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
 import { notice } from "@/utils/notification";
 import { CheckProjectTomlDetail } from "@/api/schemas";
-import { api, mirrorList } from "../client";
+import { mirrorList } from "../client";
+import api from "@/api";
 
 const addProjectByPathModal = ref<HTMLDialogElement>();
 
@@ -51,9 +52,9 @@ const doCheck = async () => {
     .checkProjectToml(projectDir.value)
     .then((resp) => {
       checkIsPass.value = true;
-      checkNoticeLevel.value = resp.level;
-      checkMsg.value = resp.msg;
-      checkDetail.value = resp.detail;
+      checkNoticeLevel.value = resp.data.level;
+      checkMsg.value = resp.data.msg;
+      checkDetail.value = resp.data.detail;
       if (checkDetail.value) {
         projectName.value = checkDetail.value.project_name;
       }
@@ -87,7 +88,7 @@ const doAddProject = async () => {
       builtin_plugins: checkDetail.value?.builtin_plugins ?? [],
     })
     .then((resp) => {
-      logKey.value = resp.detail;
+      logKey.value = resp.data.detail;
       closeNextModal();
       logShowModal.value?.openModal();
     })

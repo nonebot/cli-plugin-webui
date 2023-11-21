@@ -5,15 +5,14 @@ import ExtensionDetailModal from "@/components/NonebotStore/ExtensionDetailModal
 import { Adapter, Driver, Plugin } from "@/api/schemas";
 import { computed, ref } from "vue";
 import { nonebotExtensionStore } from "@/store/extensionStore";
-import { API } from "@/api";
+import api from "@/api";
 import { appStore } from "@/store/global";
 import { ToastWrapper } from "@/utils/notification";
 import { limitContent } from "@/utils";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
 
 const props = defineProps<{ itemData: T }>();
 
-const api = new API();
 const notice = new ToastWrapper("Nonebot Store");
 
 const logKey = ref("");
@@ -36,7 +35,7 @@ const doInstall = async (pass?: boolean) => {
     await api
       .installModule(appStore().enabledEnv, module, projectID)
       .then((resp) => {
-        logKey.value = resp.detail;
+        logKey.value = resp.data.detail;
       })
       .catch((error: AxiosError) => {
         let reason: string;

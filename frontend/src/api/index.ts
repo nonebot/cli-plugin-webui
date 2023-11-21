@@ -16,13 +16,13 @@ import {
   ModuleConfigResponse,
 } from "@/api/schemas";
 
-export class API extends CustomAPI {
+class API extends CustomAPI {
   public basePoint = "/api/v1";
 
   protected async beforeRequest(
     config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> {
-    const token = localStorage.getItem("jwtToken") ?? "";
+    const token = localStorage.getItem("jwtToken");
     config.headers.Authorization = `Bearer ${token}`;
 
     return config;
@@ -43,11 +43,9 @@ export class API extends CustomAPI {
 
   async doLogin(token: string): Promise<GenericResponse<string>> {
     const mark = new Date().toString();
-    return await this.request.get("/auth/login", {
-      params: {
-        token: token,
-        mark: mark,
-      },
+    return await this.request.post("/auth/login", {
+      token: token,
+      mark: mark,
     });
   }
 
@@ -65,11 +63,9 @@ export class API extends CustomAPI {
     path: string,
   ): Promise<FileResponse> {
     return await this.request.post("/file/create", {
-      data: {
-        name: fileName,
-        is_dir: isFolder,
-        path: path,
-      },
+      name: fileName,
+      is_dir: isFolder,
+      path: path,
     });
   }
 
@@ -81,78 +77,32 @@ export class API extends CustomAPI {
     });
   }
 
-  async createProject(data: CreateProjectData): Promise<GenericResponse<string>> {
-    return await this.request.post("/project/create", {
-      data: data,
-    });
-  }
-
-  async addProject(data: AddProjectData): Promise<GenericResponse<string>> {
-    return await this.request.post("/project/add", {
-      data: data,
-    });
-  }
-
-  async getProjectProfile(
+  async installModule(
+    env: string,
+    module: SimpleInfo | Plugin,
     projectID: string,
-  ): Promise<GenericResponse<NoneBotProjectMeta>> {
-    return await this.request.get("/project/profile", {
+  ): Promise<GenericResponse<string>> {
+    const module_type = "valid" in module ? "plugin" : "module";
+    const data = { module_type: module_type, ...module };
+    return await this.request.post("/store/nonebot/install", data, {
       params: {
+        env: env,
         project_id: projectID,
       },
     });
   }
 
-  async deleteProject(projectID: string): Promise<GenericResponse<string>> {
-    return await this.request.delete("/project/delete", {
-      params: {
-        project_id: projectID,
-      },
-    });
-  }
-
-  async getProjectList(): Promise<
-    GenericResponse<{ [key: string]: NoneBotProjectMeta }>
-  > {
-    return await this.request.get("/project/list");
-  }
-
-  async runProject(projectID: string): Promise<GenericResponse<string>> {
-    return await this.request.post("/process/run", {
-      params: {
-        project_id: projectID,
-      },
-    });
-  }
-
-  async stopProject(projectID: string): Promise<GenericResponse<string>> {
-    return await this.request.post("/process/stop", {
-      params: {
-        project_id: projectID,
-      },
-    });
-  }
-
-  async writeToProjectProcessStdin(
-    content: string,
+  async uninstallModule(
+    env: string,
+    module: SimpleInfo | Plugin,
     projectID: string,
-  ): Promise<GenericResponse<number>> {
-    return await this.request.post("/process/write", {
+  ): Promise<GenericResponse<string>> {
+    const module_type = "valid" in module ? "plugin" : "module";
+    const data = { module_type: module_type, ...module };
+    return await this.request.post("/store/nonebot/uninstall", data, {
       params: {
-        content: content,
+        env: env,
         project_id: projectID,
-      },
-    });
-  }
-
-  async getProcessLogHistory(
-    logID: string,
-    logCount: number,
-  ): Promise<GenericResponse<ProcessLog[]>> {
-    return await this.request.get("/process/log/history", {
-      params: {
-        log_id: logID,
-        log_count: logCount,
       },
     });
   }
@@ -180,7 +130,7 @@ export class API extends CustomAPI {
     moduleType: string,
     content: string,
   ): Promise<StoreListResponse> {
-    return await this.request.post("/store/nonebot/search", {
+    return await this.request.post("/store/nonebot/search", undefined, {
       params: {
         project_id: projectID,
         module_type: moduleType,
@@ -189,15 +139,63 @@ export class API extends CustomAPI {
     });
   }
 
-  async installModule(
-    env: string,
-    module: SimpleInfo | Plugin,
+  async runProject(projectID: string): Promise<GenericResponse<string>> {
+    return await this.request.post("/process/run", undefined, {
+      params: {
+        project_id: projectID,
+      },
+    });
+  }
+
+  async stopProject(projectID: string): Promise<GenericResponse<string>> {
+    return await this.request.post("/process/stop", undefined, {
+      params: {
+        project_id: projectID,
+      },
+    });
+  }
+
+  async writeToProjectProcessStdin(
+    content: string,
     projectID: string,
-  ): Promise<GenericResponse<string>> {
-    const module_type = "valid" in module ? "plugin" : "module";
-    const data = { module_type: module_type, ...module };
-    return await this.request.post("/store/nonebot/install", {
-      data: data,
+  ): Promise<GenericResponse<number>> {
+    return await this.request.post("/process/write", undefined, {
+      params: {
+        content: content,
+        project_id: projectID,
+      },
+    });
+  }
+
+  async getProcessLogHistory(
+    logID: string,
+    logCount: number,
+  ): Promise<GenericResponse<ProcessLog[]>> {
+    return await this.request.get("/process/log/history", {
+      params: {
+        log_id: logID,
+        log_count: logCount,
+      },
+    });
+  }
+
+  async getEnvs(projectID: string): Promise<GenericResponse<string[]>> {
+    return await this.request.get("/project/config/env/list", {
+      params: {
+        project_id: projectID,
+      },
+    });
+  }
+
+  async createEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
+    return await this.request.post("/project/config/env/create", {
+      env: env,
+      project_id: projectID,
+    });
+  }
+
+  async deleteEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
+    return await this.request.delete("/project/config/env/delete", {
       params: {
         env: env,
         project_id: projectID,
@@ -205,15 +203,8 @@ export class API extends CustomAPI {
     });
   }
 
-  async uninstallModule(
-    env: string,
-    module: SimpleInfo | Plugin,
-    projectID: string,
-  ): Promise<GenericResponse<string>> {
-    const module_type = "valid" in module ? "plugin" : "module";
-    const data = { module_type: module_type, ...module };
-    return await this.request.post("/store/nonebot/uninstall", {
-      data: data,
+  async useEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
+    return await this.request.post("/project/config/env/use", undefined, {
       params: {
         env: env,
         project_id: projectID,
@@ -245,41 +236,6 @@ export class API extends CustomAPI {
     });
   }
 
-  async getEnvs(projectID: string): Promise<GenericResponse<string[]>> {
-    return await this.request.get("/project/config/env/list", {
-      params: {
-        project_id: projectID,
-      },
-    });
-  }
-
-  async createEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
-    return await this.request.post("/project/config/env/create", {
-      data: {
-        env: env,
-        project_id: projectID,
-      },
-    });
-  }
-
-  async deleteEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
-    return await this.request.delete("/project/config/env/delete", {
-      params: {
-        env: env,
-        project_id: projectID,
-      },
-    });
-  }
-
-  async useEnv(env: string, projectID: string): Promise<GenericResponse<string>> {
-    return await this.request.post("/project/config/env/use", {
-      params: {
-        env: env,
-        project_id: projectID,
-      },
-    });
-  }
-
   async configUpdate(
     moduleType: string,
     projectID: string,
@@ -288,25 +244,64 @@ export class API extends CustomAPI {
     k: string,
     v: any,
   ): Promise<GenericResponse<string>> {
-    return await this.request.post("/project/config/update", {
-      data: {
+    return await this.request.post(
+      "/project/config/update",
+      {
         env: env,
         key_type: keyType,
         k: k,
         v: v,
       },
+      {
+        params: {
+          module_type: moduleType,
+          project_id: projectID,
+        },
+      },
+    );
+  }
+
+  async createProject(data: CreateProjectData): Promise<GenericResponse<string>> {
+    return await this.request.post("/project/create", data);
+  }
+
+  async addProject(data: AddProjectData): Promise<GenericResponse<string>> {
+    return await this.request.post("/project/add", data);
+  }
+
+  async getProjectProfile(
+    projectID: string,
+  ): Promise<GenericResponse<NoneBotProjectMeta>> {
+    return await this.request.get("/project/profile", {
       params: {
-        module_type: moduleType,
         project_id: projectID,
       },
     });
   }
 
+  async deleteProject(projectID: string): Promise<GenericResponse<string>> {
+    return await this.request.delete("/project/delete", {
+      params: {
+        project_id: projectID,
+      },
+    });
+  }
+
+  async getProjectList(): Promise<
+    GenericResponse<{ [key: string]: NoneBotProjectMeta }>
+  > {
+    return await this.request.get("/project/list");
+  }
+
   async checkProjectToml(projectDir: string): Promise<CheckProjectTomlResponse> {
-    return await this.request.post("/project/check_toml", {
+    return await this.request.post("/project/check_toml", undefined, {
       params: {
         project_dir: projectDir,
       },
     });
   }
 }
+
+const api = new API();
+api.basePoint = "/api/v1";
+export default api;

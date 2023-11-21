@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { ToastWrapper } from "@/utils/notification";
-import { API } from "@/api";
+import api from "@/api";
 import { router } from "@/router";
 
-const api = new API();
 const notice = new ToastWrapper("Login");
 
 const token = ref("");
@@ -40,9 +39,9 @@ const doLogin = async () => {
   await api
     .doLogin(token.value)
     .then((resp) => {
-      notice.success("登录成功");
-      localStorage.setItem("jwtToken", resp.detail);
+      localStorage.setItem("jwtToken", resp.data.detail);
       router.push("/");
+      notice.success("登录成功");
     })
     .catch((error) => {
       let reason: string;

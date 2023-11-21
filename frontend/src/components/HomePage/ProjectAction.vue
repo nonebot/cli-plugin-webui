@@ -2,8 +2,9 @@
 import { appStore as store } from "@/store/global";
 import { notice } from "@/utils/notification";
 import { ref } from "vue";
-import { api, getProjectList } from "./client";
-import { AxiosError } from "axios";
+import { getProjectList } from "./client";
+import api from "@/api";
+import type { AxiosError } from "axios";
 
 const oprateLock = ref(false);
 
