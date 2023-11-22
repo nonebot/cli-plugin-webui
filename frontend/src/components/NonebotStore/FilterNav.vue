@@ -30,6 +30,7 @@ const setActiveClass = (cls: string) => {
 };
 
 const addFilter = (item: CustomDetail) => {
+  nonebotExtensionStore().nowPage = 0;
   let beforeInput;
   const ft = `is:${item.name}`;
   if (nonebotExtensionStore().searchInput.includes(ft)) {
