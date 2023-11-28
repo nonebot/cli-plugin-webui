@@ -51,7 +51,7 @@ const handleWebSocket = () => {
 
   websocket.value?.close();
 
-  websocket.value = new WebSocket(getURL(`/api/process/log/${props.logKey}/ws`, true));
+  websocket.value = new WebSocket(getURL(`/api/v1/process/log/${props.logKey}/ws`, true));
 
   websocket.value.onopen = () => {
     const token = localStorage.getItem("jwtToken") ?? "";

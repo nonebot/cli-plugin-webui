@@ -123,6 +123,7 @@ watch(props, () => {
 watch(
   () => appStore().choiceProject.project_id,
   () => {
+    chart?.dispose();
     createChart();
   },
 );

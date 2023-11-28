@@ -47,7 +47,7 @@ async def get_performance(websocket: WebSocket) -> None:
                     if task == receive_task:
                         try:
                             msg = receive_task.result()
-                            if msg.get("type") == "process":
+                            if msg.get("type") == "status":
                                 project_id = msg.get("project_id")
                                 process = get_process(project_id)
                         except Exception:

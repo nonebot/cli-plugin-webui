@@ -92,7 +92,7 @@ const chartData: StatChartData[] = [
 const changeProject = (projectID: string) => {
   statusWebSocket?.send(
     JSON.stringify({
-      type: "process",
+      type: "status",
       project_id: projectID,
     }),
   );
