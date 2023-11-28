@@ -1,5 +1,4 @@
-import asyncio
-from typing import List
+from typing import Dict, List, Callable, Optional, Awaitable
 
 from fastapi.websockets import WebSocketState
 from fastapi import Depends, APIRouter, WebSocket
@@ -24,6 +23,8 @@ from .dependencies import get_process, get_log_storage
 from .exceptions import DriverNotFound, AdapterNotFound
 
 router = APIRouter()
+log_storage: Optional[LogStorage[ProcessLog]] = None
+log_listeners: Dict[WebSocket, Callable[[ProcessLog], Awaitable[None]]] = dict()
 
 
 @router.post("/run", response_model=GenericResponse[str])
@@ -66,39 +67,6 @@ async def write_to_process(
     return GenericResponse(detail=result)
 
 
-@router.websocket("/status/{process_id}/ws")
-async def _get_process_status(websocket: WebSocket, process_id: str) -> None:
-    await websocket.accept()
-
-    auth = await websocket_auth(
-        websocket, secret_key=Config.secret_key.get_secret_value()
-    )
-    if not auth:
-        try:
-            await websocket.close()
-        except Exception:
-            pass
-        return
-
-    try:
-        process: Processor = get_process(process_id)
-    except Exception:
-        try:
-            await websocket.close()
-        except Exception:
-            pass
-        return
-
-    try:
-        while websocket.client_state == WebSocketState.CONNECTED:
-            data = process.get_status()
-            await websocket.send_json(data.dict())
-            await asyncio.sleep(1)
-    except Exception as err:
-        logger.debug(f"Process Status: {process_id=} websocket exception {err=}")
-    return
-
-
 @router.get("/log/history", response_model=GenericResponse[List[ProcessLog]])
 async def get_log_history(
     log_id: str, log_count: int
@@ -115,11 +83,8 @@ async def get_log_history(
     return GenericResponse(detail=result)
 
 
-@router.websocket("/log/{log_id}/ws")
-async def get_process_log(
-    websocket: WebSocket,
-    log_id: str,
-) -> None:
+@router.websocket("/log/ws")
+async def _get_process_log(websocket: WebSocket):
     await websocket.accept()
 
     auth = await websocket_auth(
@@ -132,28 +97,39 @@ async def get_process_log(
             pass
         return
 
-    try:
-        log_storage: LogStorage[ProcessLog] = get_log_storage(log_id)
-    except LogStorageNotFound:
-        try:
-            await websocket.close()
-        except Exception:
-            pass
-        return
+    def unregister_listener(log_storage: LogStorage[ProcessLog]):
+        listener = log_listeners.get(websocket)
+        if listener is not None:
+            log_storage.unregister_listener(listener)
+            log_listeners.pop(websocket)
 
     async def log_listener(log: ProcessLog):
         await websocket.send_text(log.json())
 
-    log_storage.register_listener(log_listener)
-    logger.debug(f"Process Log: {log_id=} register listener")
+    async def receive_listener(recv: dict):
+        global log_storage
+
+        if log_storage is not None:
+            unregister_listener(log_storage)
+
+        if recv.get("type") != "log":
+            return
+
+        project_id = recv.get("project_id", str())
+        try:
+            log_storage = get_log_storage(project_id)
+        except LogStorageNotFound:
+            return
+
+        log_storage.register_listener(log_listener)
+        log_listeners[websocket] = log_listener
 
     try:
         while websocket.client_state == WebSocketState.CONNECTED:
-            msg = await websocket.receive()
-            logger.debug(f"Process Log: websocket receive msg: {msg}")
+            recv = await websocket.receive_json()
+            await receive_listener(recv)
     except Exception as err:
-        logger.debug(f"Process Log: {log_id=} websocket exception {err=}")
+        logger.debug(f"Process Log: websocket exception {err=}")
     finally:
-        log_storage.unregister_listener(log_listener)
-        logger.debug(f"Process Log: {log_id=} unregister listener")
-    return
+        if log_storage is not None:
+            unregister_listener(log_storage)
