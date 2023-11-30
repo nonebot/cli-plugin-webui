@@ -50,7 +50,7 @@ export function parseSimpleInfo(data: SimpleInfo[]): string {
   }
 }
 
-export function getURL(path: string, isWebSocket?: boolean): string {
+export function getURL(path: string, isWebSocket?: boolean, params?: any): string {
   let href;
   if (isDebug()) {
     href = `http://${localStorage.getItem("host")}:${localStorage.getItem(
@@ -62,6 +62,11 @@ export function getURL(path: string, isWebSocket?: boolean): string {
   const url = new URL(path, href);
   if (isWebSocket) {
     url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+  }
+  if (params) {
+    Object.keys(params).forEach((key) => {
+      url.searchParams.append(key, params[key]);
+    });
   }
   return url.href;
 }
