@@ -75,7 +75,7 @@ const changeProject = async (projectID: string) => {
     }
     return Promise.resolve();
   });
-  websocket.value?.send(JSON.stringify({ type: "log", project_id: projectID }));
+  websocket.value?.send(JSON.stringify({ type: "log", log_key: projectID }));
 };
 
 websocket.value = useWebSocket(getURL("/api/v1/process/log/ws", true), {

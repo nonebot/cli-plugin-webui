@@ -69,22 +69,17 @@ async def write_to_process(
 
 @router.get("/log/history", response_model=GenericResponse[List[ProcessLog]])
 async def get_log_history(
-    log_id: str, log_count: int
+    log_count: int, log_storage: LogStorage = Depends(get_log_storage)
 ) -> GenericResponse[List[ProcessLog]]:
     """
     - 获取历史进程日志
     """
-    try:
-        log_storage: LogStorage[ProcessLog] = get_log_storage(log_id)
-    except LogStorageNotFound:
-        raise LogStorageNotFound()
-
     result = log_storage.get_logs(count=log_count)
     return GenericResponse(detail=result)
 
 
 @router.websocket("/log/ws")
-async def _get_process_log(websocket: WebSocket):
+async def get_process_log(websocket: WebSocket):
     await websocket.accept()
 
     auth = await websocket_auth(
@@ -115,9 +110,9 @@ async def _get_process_log(websocket: WebSocket):
         if recv.get("type") != "log":
             return
 
-        project_id = recv.get("project_id", str())
+        log_key = recv.get("log_key", str())
         try:
-            log_storage = get_log_storage(project_id)
+            log_storage = get_log_storage(log_key)
         except LogStorageNotFound:
             return
 
