@@ -1,7 +1,9 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends any">
 import { ProcessLog } from "@/api/schemas";
 import { getURL } from "@/utils";
-import { ref, watch } from "vue";
+import { onUnmounted, ref, watch } from "vue";
+import { useWebSocket } from "@vueuse/core";
+import type { UseWebSocketReturn } from "@vueuse/core";
 
 const logShowModal = ref<HTMLDialogElement>();
 
@@ -20,11 +22,10 @@ const props = defineProps({
   logKey: String,
 });
 
-const websocket = ref<WebSocket>();
-
-const isFailed = ref(false);
-const isDone = ref(false);
-const logShowArea = ref<HTMLElement>();
+const isFailed = ref(false),
+  isDone = ref(false),
+  logShowArea = ref<HTMLElement>(),
+  websocket = ref<UseWebSocketReturn<T>>();
 
 interface LogItem {
   message: string;
@@ -49,32 +50,30 @@ const clearArea = () => {
 const handleWebSocket = () => {
   if (!props.logKey) return;
 
-  websocket.value?.close();
+  websocket.value = useWebSocket(getURL(`/api/v1/process/log/ws`, true), {
+    onConnected(ws) {
+      const token = localStorage.getItem("jwtToken") ?? "";
+      ws.send(token);
+      ws.send(JSON.stringify({ type: "log", log_key: props.logKey }));
+    },
+    onMessage(ws, event) {
+      const data: ProcessLog = JSON.parse(event.data.toString());
+      if (logShowArea.value) {
+        writeToArea(data.message, data.time, data.level);
+        const logRows = logShowArea.value.getElementsByTagName("tr");
+        const lastLogRow = logRows[logRows.length - 1];
+        lastLogRow.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
 
-  websocket.value = new WebSocket(getURL(`/api/v1/process/log/${props.logKey}/ws`, true));
-
-  websocket.value.onopen = () => {
-    const token = localStorage.getItem("jwtToken") ?? "";
-    websocket.value?.send(token);
-  };
-
-  websocket.value.onmessage = (event: MessageEvent) => {
-    const data: ProcessLog = JSON.parse(event.data.toString());
-    if (logShowArea.value) {
-      writeToArea(data.message, data.time, data.level);
-      const logRows = logShowArea.value.getElementsByTagName("tr");
-      const lastLogRow = logRows[logRows.length - 1];
-      lastLogRow.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-
-    if (data.message === "✨ Done!") {
-      websocket.value?.close();
-      isDone.value = true;
-    } else if (data.message === "❌ Failed!") {
-      websocket.value?.close();
-      isFailed.value = true;
-    }
-  };
+      if (data.message === "✨ Done!") {
+        ws.close();
+        isDone.value = true;
+      } else if (data.message === "❌ Failed!") {
+        ws.close();
+        isFailed.value = true;
+      }
+    },
+  });
 };
 
 const retry = () => {
@@ -89,6 +88,11 @@ const clearState = () => {
   isDone.value = false;
   isFailed.value = false;
 };
+
+onUnmounted(() => {
+  websocket.value?.close();
+  clearArea();
+});
 
 watch(props, () => {
   clearState();
