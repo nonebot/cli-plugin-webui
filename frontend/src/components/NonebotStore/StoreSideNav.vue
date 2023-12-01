@@ -2,6 +2,7 @@
 import StoreSearch from "@/components/NonebotStore/StoreSearch.vue";
 import FilterNav from "@/components/NonebotStore/FilterNav.vue";
 
+import { appStore } from "@/store/global";
 import { nonebotExtensionStore } from "@/store/extensionStore";
 </script>
 
@@ -24,7 +25,7 @@ import { nonebotExtensionStore } from "@/store/extensionStore";
         <div
           role="button"
           class="flex items-center justify-center h-7 w-7 rounded hover:bg-base-100 duration-150 hover:ease-in-out"
-          @click="nonebotExtensionStore().refresh()"
+          @click="nonebotExtensionStore().updateData(appStore().choiceProject.project_id)"
         >
           <span class="material-symbols-outlined"> refresh </span>
         </div>
