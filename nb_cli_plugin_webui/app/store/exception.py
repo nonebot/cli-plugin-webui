@@ -9,3 +9,7 @@ class ModuleTypeNotFound(NotFound):
 
 class ModuleIsExisted(NotFound):
     detail = ErrorCode.MODULE_IS_EXISTED
+
+
+class ModuleNotFound(NotFound):
+    detail = ErrorCode.MODULE_NOT_FOUND

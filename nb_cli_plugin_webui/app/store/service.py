@@ -18,7 +18,7 @@ from nb_cli_plugin_webui.app.handlers.process import (
 )
 
 from .schemas import Plugin, ModuleInfo
-from .exception import ModuleIsExisted, ModuleTypeNotFound
+from .exception import ModuleNotFound, ModuleIsExisted, ModuleTypeNotFound
 
 
 def install_nonebot_module(
@@ -92,6 +92,23 @@ async def uninstall_nonebot_module(
     env: str,
     module: Annotated[Union[ModuleInfo, Plugin], Field(discriminator="module_type")],
 ) -> None:
+    if isinstance(module, Plugin):
+        for plugin in project.read().plugins:
+            if module.module_name == plugin.module_name:
+                break
+        else:
+            raise ModuleNotFound()
+    elif isinstance(module, ModuleInfo):
+        for adapter in project.read().adapters:
+            if module.module_name == adapter.module_name:
+                break
+        else:
+            for driver in project.read().drivers:
+                if module.module_name == driver.module_name:
+                    break
+            else:
+                raise ModuleNotFound()
+
     async def _call_pip_uninstall(package) -> None:
         proc = await call_pip_uninstall(
             package,
