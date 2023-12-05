@@ -71,7 +71,7 @@ class NoneBotProjectManager:
 
         return info
 
-    def add_project(
+    async def add_project(
         self,
         *,
         project_name: str,
@@ -96,6 +96,7 @@ class NoneBotProjectManager:
                 builtin_plugins=builtin_plugins,
             )
         )
+        await self.update_plugin_config_schema()
 
     def remove_project(self) -> None:
         data = self._load()

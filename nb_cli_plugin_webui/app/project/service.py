@@ -100,7 +100,7 @@ def create_nonebot_project(data: CreateProjectData) -> str:
     process.add(install_dependencies)
     process.add(log.add_log, CustomLog(message="Finished install."))
 
-    def add_project_info():
+    async def add_project_info():
         _adapters: List[ModuleInfo] = [
             ModuleInfo.parse_obj(adapter.dict()) for adapter in data.adapters
         ]
@@ -110,7 +110,7 @@ def create_nonebot_project(data: CreateProjectData) -> str:
 
         project_id = generate_complexity_string(6)
         manager = NoneBotProjectManager(project_id=project_id)
-        manager.add_project(
+        await manager.add_project(
             project_name=project_name,
             project_dir=project_dir,
             mirror_url=data.mirror_url,
@@ -120,6 +120,7 @@ def create_nonebot_project(data: CreateProjectData) -> str:
         )
 
         manager.write_to_env(".env", "ENVIRONMENT", "prod")
+        return True
 
     process.add(add_project_info)
     process.add(log.add_log, CustomLog(message="✨ Done!"))
@@ -209,7 +210,7 @@ async def add_nonebot_project(data: AddProjectData) -> str:
 
     project_id = generate_complexity_string(6)
     manager = NoneBotProjectManager(project_id=project_id)
-    manager.add_project(
+    await manager.add_project(
         project_name=project_name,
         project_dir=project_dir,
         mirror_url=data.mirror_url,
