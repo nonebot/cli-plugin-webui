@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import List, Union, Literal
 
 from nb_cli_plugin_webui.app.schemas import Driver
 from nb_cli_plugin_webui.app.schemas import Adapter
@@ -16,7 +16,7 @@ class ModuleInfo(BaseModuleInfo):
 
 
 class StoreListResponse(
-    GenericResponse[List[BasePlugin] | List[Adapter] | List[Driver]]
+    GenericResponse[Union[List[BasePlugin], List[Adapter], List[Driver]]]
 ):
     now_page: int
     total_page: int
