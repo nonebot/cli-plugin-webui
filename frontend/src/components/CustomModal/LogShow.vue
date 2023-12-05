@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends any">
+<script setup lang="ts">
 import { ProcessLog } from "@/api/schemas";
 import { getURL } from "@/utils";
 import { onUnmounted, ref, watch } from "vue";
@@ -25,7 +25,7 @@ const props = defineProps({
 const isFailed = ref(false),
   isDone = ref(false),
   logShowArea = ref<HTMLElement>(),
-  websocket = ref<UseWebSocketReturn<T>>();
+  websocket = ref<UseWebSocketReturn<any>>();
 
 interface LogItem {
   message: string;

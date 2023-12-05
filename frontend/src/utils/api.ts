@@ -55,11 +55,13 @@ export abstract class CustomAPI {
     return config;
   }
 
+  // @ts-ignore
   protected async beforeRequestError(error: AxiosError): Promise<any> {}
 
   protected async afterRequest(response: AxiosResponse): Promise<AxiosResponse> {
     return response;
   }
 
+  // @ts-ignore
   protected async afterRequestError(error: AxiosError): Promise<any> {}
 }

@@ -125,7 +125,6 @@ def get_disk_info() -> DiskInfo:
     )
 
 
-@staticmethod
 def get_net_info() -> NetInfo:
     net = psutil.net_io_counters()
     return NetInfo(
