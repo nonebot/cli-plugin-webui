@@ -7,7 +7,6 @@ from starlette.responses import Response, JSONResponse
 from fastapi.staticfiles import StaticFiles as BaseStaticFiles
 from starlette.exceptions import HTTPException as StarlettleHTTPException
 
-from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui import __version__
 
 from .config import Config
@@ -18,9 +17,6 @@ from .handlers.process import ProcessManager
 from .handlers import driver_store_manager, plugin_store_manager, adapter_store_manager
 
 STATIC_PATH = Path(__file__).parent.parent / "dist"
-
-if not STATIC_PATH.exists():
-    raise FileNotFoundError(_("WebUI dist directory not found."))
 
 
 class StaticFiles(BaseStaticFiles):
@@ -103,7 +99,7 @@ async def shutdown_event():
 
 
 @app.exception_handler(404)
-async def _not_found():
+async def not_found():
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={"detail": [{"msg": "Not Found"}]},

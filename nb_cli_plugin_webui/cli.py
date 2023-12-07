@@ -8,8 +8,9 @@ from nb_cli.cli import CLI_DEFAULT_STYLE, ClickAliasedGroup, run_sync, run_async
 from noneprompt import Choice, ListPrompt, InputPrompt, ConfirmPrompt, CancelledError
 
 from nb_cli_plugin_webui.i18n import _
-from nb_cli_plugin_webui.app.config import CONFIG_FILE, Config
+from nb_cli_plugin_webui.app.application import STATIC_PATH
 from nb_cli_plugin_webui.app.utils.storage import get_data_file
+from nb_cli_plugin_webui.app.config import CONFIG_FILE, Config, generate_config
 from nb_cli_plugin_webui.app.utils.string_utils import (
     check_string_complexity,
     generate_complexity_string,
@@ -22,6 +23,16 @@ from nb_cli_plugin_webui.app.utils.string_utils import (
 @click.pass_context
 @run_async
 async def webui(ctx: click.Context):
+    if not STATIC_PATH.exists():
+        click.secho(
+            _("WebUI dist directory not found, please reinstall to fix."), fg="red"
+        )
+        return
+
+    if not CONFIG_FILE.exists() and not Config.check_necessary_config():
+        await generate_config()
+        return
+
     if ctx.invoked_subcommand is not None:
         return
 
@@ -51,7 +62,7 @@ async def webui(ctx: click.Context):
     await run_sync(ctx.invoke)(sub_cmd)
 
 
-@webui.command(help=_("Run NB CLI UI."))
+@webui.command(help=_("Run WebUI."))
 @click.option(
     "-h",
     "--host",
@@ -122,8 +133,8 @@ CONFIG_DISABLED_LIST = ["hashed_token", "salt", "secret_key"]
 
 
 @webui.command(help=_("List webui config."))
-@run_async
-async def list_config():
+@run_sync
+def list_config():
     for key, value in Config.dict().items():
         if key in CONFIG_DISABLED_LIST:
             continue
