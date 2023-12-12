@@ -142,7 +142,7 @@ async def setting_token():
     click.secho(f"\n{token}\n", fg="green")
     click.secho(_("ATTENTION, TOKEN ONLY SHOW ONCE."), fg="red", bold=True)
 
-    Config.reset_token(token)
+    Config.reset_token(token.replace('"', "'"))
     CONFIG_FILE.write_text(Config.to_json())
 
 

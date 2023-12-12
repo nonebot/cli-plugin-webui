@@ -107,6 +107,8 @@ async def generate_config():
                 style=CLI_DEFAULT_STYLE
             )
 
+    token = token.replace('"', "'")
+
     click.secho(_("Your token is:"))
     click.secho(f"\n{token}\n", fg="green")
     click.secho(_("ATTENTION, TOKEN ONLY SHOW ONCE."), fg="red", bold=True)
