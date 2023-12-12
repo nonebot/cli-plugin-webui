@@ -23,7 +23,7 @@ def generate_complexity_string(
         random.choices(
             string.ascii_letters
             + (string.digits if use_digits else str())
-            + (string.punctuation if use_punctuation else str()),
+            + (string.punctuation.replace('"', "'") if use_punctuation else str()),
             k=length,
         )
     )
