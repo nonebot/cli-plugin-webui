@@ -16,6 +16,8 @@ def __get_git_revision(path: Path):
 
 
 def get_revision():
+    if "WEBUI_BUILD" in os.environ:
+        return os.environ["WEBUI_BUILD"]
     package_dir = Path(__file__)
     if package_dir.exists():
         return __get_git_revision(package_dir.parent.parent.absolute())

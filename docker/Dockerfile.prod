@@ -1,0 +1,20 @@
+FROM python:bullseye
+
+ARG SOURCE_COMMIT
+
+EXPOSE 8080
+
+ENV WEBUI_BUILD=${SOURCE_COMMIT:-unknown} \
+    HOST=127.0.0.1 \
+    PORT=8080
+
+COPY . /nb-cli-plugin-webui
+
+WORKDIR /nb-cli-plugin-webui
+
+RUN pip install nb-cli nb-cli-plugin-webui
+
+CMD nb ui run --h $HOST --p $PORT
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD httpx --verbose --follow-redirects http://127.0.0.1:${PORT}

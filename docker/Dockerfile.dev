@@ -1,0 +1,21 @@
+FROM weastur/poetry:latest-python-3.11 AS base
+
+COPY . /app
+
+WORKDIR /app
+
+RUN poetry install \
+    && poetry run nb self install .
+
+FROM base AS pre-production
+
+EXPOSE 8080
+
+ENV WEBUI_BUILD=docker-dev \
+    HOST=127.0.0.1 \
+    PORT=8080
+
+CMD poetry run nb ui run --port $PORT --host $HOST
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD httpx --verbose --follow-redirects http://127.0.0.1:${PORT}

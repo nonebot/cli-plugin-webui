@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from importlib.metadata import version
 
@@ -7,7 +8,7 @@ from starlette.responses import Response, JSONResponse
 from fastapi.staticfiles import StaticFiles as BaseStaticFiles
 from starlette.exceptions import HTTPException as StarlettleHTTPException
 
-from nb_cli_plugin_webui import __version__
+from nb_cli_plugin_webui import get_version
 
 from .config import Config
 from .logging import logger as log
@@ -75,8 +76,11 @@ app.mount("/", app=frontend)
 
 @app.on_event("startup")
 async def startup_event():
+    if "WEBUI_BUILD" in os.environ:
+        log.info("Running in docker.")
+
     log.info("Starting NoneBot CLI WebUI.")
-    log.info(f"NoneBot CLI WebUI version: {__version__}")
+    log.info(f"NoneBot CLI WebUI version: {get_version()}")
     if Config.debug:
         log.debug("Debug mode is enabled.")
 

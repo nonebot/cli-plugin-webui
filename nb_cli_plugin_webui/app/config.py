@@ -1,3 +1,4 @@
+import os
 import json
 from typing import Any
 from pathlib import Path
@@ -29,7 +30,12 @@ class SecretStrJSONEncoder(json.JSONEncoder):
 
 
 class AppConfig(BaseModel):
-    base_dir: str = Field(default=str(), description="基础目录，创建实例将由此开始")
+    base_dir: str = Field(
+        default_factory=lambda: str(Path.cwd() / "/projects")
+        if "WEBUI_BUILD" in os.environ
+        else str(),
+        description="基础目录，创建实例将由此开始",
+    )
     host: str = Field(default="localhost", description="主机名")
     port: str = Field(default="12345", description="端口号")
     debug: bool = Field(default=False, description="是否开启调试模式")
@@ -64,12 +70,17 @@ class AppConfig(BaseModel):
             self.base_dir and self.secret_key and self.hashed_token and self.salt
         )
 
-    @classmethod
-    def get_description(cls, field_name: str) -> str:
-        return cls.__fields__[field_name].field_info.description
+    def get_description(self, field_name: str) -> str:
+        return self.__fields__[field_name].field_info.description
 
 
-Config = AppConfig()
+class ConfigParser(AppConfig):
+    def load(self, path: Path):
+        new_conf = self.parse_file(path)
+        self.__dict__.update(new_conf.__dict__)
+
+
+Config = ConfigParser()
 
 
 async def generate_config():
@@ -120,7 +131,7 @@ async def generate_config():
                 break
             except ValueError:
                 click.secho(_("Port must be between 0 and 65535."))
-                port = InputPrompt(_("Please enter port:")).prompt(
+                port = await InputPrompt(_("Please enter port:")).prompt_async(
                     style=CLI_DEFAULT_STYLE
                 )
 
@@ -138,7 +149,7 @@ async def generate_config():
     click.secho(("  * Windows: C:/Users/Public/Pictures"))
     click.secho(_("- NoneBot will be stored here."))
     while True:
-        base_dir = InputPrompt(_("Please enter base directory:")).prompt(
+        base_dir = await InputPrompt(_("Please enter base directory:")).prompt_async(
             style=CLI_DEFAULT_STYLE
         )
         path = Path(base_dir)

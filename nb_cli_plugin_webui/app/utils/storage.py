@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Callable
 from typing_extensions import ParamSpec
@@ -10,6 +11,12 @@ APP_NAME = "nb-cli-plugin-webui"
 BASE_CACHE_DIR = (CACHE_DIR / APP_NAME).resolve()
 BASE_DATA_DIR = (DATA_DIR / APP_NAME).resolve()
 BASE_CONFIG_DIR = (CONFIG_DIR / APP_NAME).resolve()
+
+if "WEBUI_BUILD" in os.environ:
+    cwd = Path.cwd()
+    BASE_CACHE_DIR = cwd
+    BASE_DATA_DIR = cwd
+    BASE_CONFIG_DIR = cwd
 
 
 def _ensure_dir(path: Path) -> None:

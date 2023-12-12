@@ -1,8 +1,11 @@
 import os
+import shutil
 import webbrowser
+from pathlib import Path
 from typing import List, cast
 
 import click
+from pydantic import ValidationError
 from nb_cli.i18n import _ as nb_cli_i18n
 from nb_cli.cli import CLI_DEFAULT_STYLE, ClickAliasedGroup, run_sync, run_async
 from noneprompt import Choice, ListPrompt, InputPrompt, ConfirmPrompt, CancelledError
@@ -29,9 +32,23 @@ async def webui(ctx: click.Context):
         )
         return
 
-    if not CONFIG_FILE.exists() and not Config.check_necessary_config():
-        await generate_config()
-        return
+    if not CONFIG_FILE.exists():
+        if "WEBUI_BUILD" in os.environ:
+            click.secho(
+                _("Config not found in docker, run `nb ui copy` to fix."),
+                fg="yellow",
+            )
+            return
+
+        if not Config.check_necessary_config():
+            await generate_config()
+            return
+    else:
+        try:
+            Config.load(CONFIG_FILE)
+        except ValidationError:
+            click.secho(_("Config file is broken, run `nb ui clear` to fix."), fg="red")
+            return
 
     if ctx.invoked_subcommand is not None:
         return
@@ -192,6 +209,31 @@ async def setting_config(item: str, setting: str):
 
     setattr(conf, item, setting)
     CONFIG_FILE.write_text(conf.to_json())
+
+
+@webui.command(
+    help=_("Copy webui config and data to current directory. (For docker user)")
+)
+@run_async
+async def copy():
+    if await ConfirmPrompt(_("Confirm?")).prompt_async(style=CLI_DEFAULT_STYLE):
+        cwd = Path.cwd()
+        try:
+            shutil.copy(CONFIG_FILE, cwd / "config.json")
+            click.secho(_("Copy config file success."), fg="green")
+        except Exception as err:
+            click.secho(_("Config file copy failed: {err}").format(err=err), fg="red")
+            pass
+
+        try:
+            project_info_path = get_data_file("projects.json")
+            shutil.copy(project_info_path, cwd / "projects.json")
+            click.secho(_("Copy project info file success."), fg="green")
+        except Exception as err:
+            click.secho(
+                _("Project info file copy failed: {err}").format(err=err), fg="red"
+            )
+            pass
 
 
 @webui.command(help=_("Clear WebUI data. (config, all project info)"))
