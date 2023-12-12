@@ -216,7 +216,7 @@ async def setting_config(item: str, setting: str):
 )
 @run_async
 async def copy():
-    if await ConfirmPrompt(_("Confirm?")).prompt_async(style=CLI_DEFAULT_STYLE):
+    if await ConfirmPrompt(_("Are you sure?")).prompt_async(style=CLI_DEFAULT_STYLE):
         cwd = Path.cwd()
         try:
             shutil.copy(CONFIG_FILE, cwd / "config.json")
@@ -236,18 +236,33 @@ async def copy():
             pass
 
 
-@webui.command(help=_("Clear WebUI data. (config, all project info)"))
+@webui.command(help=_("Clear WebUI data."))
 @run_async
 async def clear():
-    if await ConfirmPrompt(_("Do you want to clear all data?")).prompt_async(
+    clear_target = await ListPrompt(
+        _("Which data do you want to clear?"),
+        choices=[Choice("config"), Choice("project")],
+    ).prompt_async(style=CLI_DEFAULT_STYLE)
+
+    if not await ConfirmPrompt(_("Are you sure?")).prompt_async(
         style=CLI_DEFAULT_STYLE
     ):
-        os.remove(CONFIG_FILE)
-        click.secho(_("Clear config file success."))
+        return
 
-        try:
-            project_info_path = get_data_file("projects.json")
-        except FileNotFoundError:
-            return
-        os.remove(project_info_path)
-        click.secho(_("Clear project info file success."))
+    file = Path()
+    if clear_target.data == "config":
+        file = CONFIG_FILE
+    elif clear_target.data == "project":
+        file = get_data_file("projects.json")
+
+    if not file.exists():
+        click.secho(_("File not found."))
+        return
+
+    try:
+        os.remove(file)
+    except Exception as err:
+        click.secho(_("Clear file failed: {err}").format(err=err), fg="red")
+        return
+
+    click.secho(_("Clear file success."))

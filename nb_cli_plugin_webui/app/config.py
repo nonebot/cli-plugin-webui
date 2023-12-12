@@ -171,7 +171,9 @@ async def generate_config():
     click.secho(_("Token: {token}").format(token=token))
     click.secho(_("WebUI URL: http://{host}:{port}/").format(host=host, port=port))
     click.secho(_("Base directory: {base_dir}").format(base_dir=base_dir))
-    if not await ConfirmPrompt(_("Confirm?")).prompt_async(style=CLI_DEFAULT_STYLE):
+    if not await ConfirmPrompt(_("Are you sure?")).prompt_async(
+        style=CLI_DEFAULT_STYLE
+    ):
         click.secho(_("Cleaning..."))
         return
 
