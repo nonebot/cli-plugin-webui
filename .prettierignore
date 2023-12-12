@@ -5,3 +5,4 @@ coverage
 # Ignore workspace files:
 pnpm-lock.yaml
 pnpm-workspace.yaml
+poetry.lock
