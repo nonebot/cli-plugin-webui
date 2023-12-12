@@ -256,7 +256,7 @@ async def clear():
         file = get_data_file("projects.json")
 
     if not file.exists():
-        click.secho(_("File not found."))
+        click.secho(_("File not found."), fg="red")
         return
 
     try:
@@ -265,4 +265,4 @@ async def clear():
         click.secho(_("Clear file failed: {err}").format(err=err), fg="red")
         return
 
-    click.secho(_("Clear file success."))
+    click.secho(_("Clear file success."), fg="green")
