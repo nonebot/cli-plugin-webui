@@ -7,143 +7,139 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-16 12:10+0800\n"
-"PO-Revision-Date: 2023-11-16 14:13+0800\n"
+"POT-Creation-Date: 2023-12-12 17:19+0800\n"
+"PO-Revision-Date: 2023-12-12 17:32+0800\n"
 "Last-Translator: Kyomotoi <kyomotoiowo@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 3.4.1\n"
 
-#: nb_cli_plugin_webui/app/config.py:72
+#: nb_cli_plugin_webui/app/config.py:87
 msgid "Welcome to use NB CLI WebUI."
-msgstr "欢迎使用 NB CLI 图形化管理面板."
+msgstr "欢迎使用 NB CLI 图形化管理界面."
 
-#: nb_cli_plugin_webui/app/config.py:74
+#: nb_cli_plugin_webui/app/config.py:89
 msgid "[Token Setting]"
-msgstr "[访问密钥设置]"
+msgstr "[密钥设置]"
 
-#: nb_cli_plugin_webui/app/config.py:75
+#: nb_cli_plugin_webui/app/config.py:90
 msgid "Token is your key to access WebUI."
 msgstr "密钥是你访问管理面板的重要凭证."
 
-#: nb_cli_plugin_webui/app/config.py:76 nb_cli_plugin_webui/cli.py:94
+#: nb_cli_plugin_webui/app/config.py:91 nb_cli_plugin_webui/cli.py:122
 msgid "Do you want it generated?"
 msgstr "你需要生成一个吗？"
 
-#: nb_cli_plugin_webui/app/config.py:79 nb_cli_plugin_webui/cli.py:99
+#: nb_cli_plugin_webui/app/config.py:96 nb_cli_plugin_webui/cli.py:127
 msgid "Please enter token:"
 msgstr "请键入密钥："
 
-#: nb_cli_plugin_webui/app/config.py:87 nb_cli_plugin_webui/cli.py:109
+#: nb_cli_plugin_webui/app/config.py:106 nb_cli_plugin_webui/cli.py:137
 msgid "Please enter again:"
 msgstr "请再次键入："
 
-#: nb_cli_plugin_webui/app/config.py:91 nb_cli_plugin_webui/cli.py:113
+#: nb_cli_plugin_webui/app/config.py:110 nb_cli_plugin_webui/cli.py:141
 msgid "Your token is:"
 msgstr "你的访问密钥是："
 
-#: nb_cli_plugin_webui/app/config.py:93 nb_cli_plugin_webui/cli.py:115
+#: nb_cli_plugin_webui/app/config.py:112 nb_cli_plugin_webui/cli.py:143
 msgid "ATTENTION, TOKEN ONLY SHOW ONCE."
 msgstr "请注意，该密钥仅在此展示一次."
 
-#: nb_cli_plugin_webui/app/config.py:96
+#: nb_cli_plugin_webui/app/config.py:115
 msgid "[Server Setting]"
 msgstr "[后端服务设置]"
 
-#: nb_cli_plugin_webui/app/config.py:99
+#: nb_cli_plugin_webui/app/config.py:119
 msgid "Do you want to decide (host) and (port) by yourself?"
-msgstr "你需要自行决定后端的 host 和 port 吗？"
+msgstr "你需要自行决定后端的 host 和端口吗？"
 
-#: nb_cli_plugin_webui/app/config.py:102
+#: nb_cli_plugin_webui/app/config.py:121
 msgid "Please enter host:"
 msgstr "请键入 host:"
 
-#: nb_cli_plugin_webui/app/config.py:103 nb_cli_plugin_webui/app/config.py:111
+#: nb_cli_plugin_webui/app/config.py:124 nb_cli_plugin_webui/app/config.py:134
 msgid "Please enter port:"
-msgstr "请键入 port:"
+msgstr "请键入端口:"
 
-#: nb_cli_plugin_webui/app/config.py:110 nb_cli_plugin_webui/cli.py:81
+#: nb_cli_plugin_webui/app/config.py:133 nb_cli_plugin_webui/cli.py:109
 msgid "Port must be between 0 and 65535."
-msgstr "Port 范围在 0 至 65535."
+msgstr "端口范围需在 0 至 65535 （推荐 10000 以上）."
 
-#: nb_cli_plugin_webui/app/config.py:115
+#: nb_cli_plugin_webui/app/config.py:138
 msgid "Your webui url is:"
 msgstr "你的图形化管理面板访问链接是："
 
-#: nb_cli_plugin_webui/app/config.py:118
+#: nb_cli_plugin_webui/app/config.py:141
 msgid "Your webui url will decide by nb-cli."
 msgstr "你的图形化管理面板访问链接将由 NB CLI 决定."
 
-#: nb_cli_plugin_webui/app/config.py:121
+#: nb_cli_plugin_webui/app/config.py:144
 msgid "[General Setting]"
 msgstr "[通用设置]"
 
-#: nb_cli_plugin_webui/app/config.py:122
+#: nb_cli_plugin_webui/app/config.py:145
+msgid "- Docker will ignore this and use current directory."
+msgstr "Docker 将无视这条设置并选择当前运行目录 (Docker 下强制为 work_dir/projects)."
+
+#: nb_cli_plugin_webui/app/config.py:146
 msgid "- Base directory. Example:"
 msgstr "- 基础目录. 示例："
 
-#: nb_cli_plugin_webui/app/config.py:126
+#: nb_cli_plugin_webui/app/config.py:150
 msgid "- NoneBot will be stored here."
-msgstr "后续创建的 NoneBot 将被存储在此."
+msgstr "后续创建的 NoneBot 实例将被存储在此."
 
-#: nb_cli_plugin_webui/app/config.py:128
+#: nb_cli_plugin_webui/app/config.py:152
 msgid "Please enter base directory:"
-msgstr "请建筑基础目录："
+msgstr "请键入基础目录："
 
-#: nb_cli_plugin_webui/app/config.py:137
+#: nb_cli_plugin_webui/app/config.py:161
 msgid "Directory must not be empty."
 msgstr "基础目录不能为空."
 
-#: nb_cli_plugin_webui/app/config.py:139
+#: nb_cli_plugin_webui/app/config.py:163
 msgid "Directory does not exist."
 msgstr "该目录不存在."
 
-#: nb_cli_plugin_webui/app/config.py:141
+#: nb_cli_plugin_webui/app/config.py:165
 msgid "Path must be absolute."
 msgstr "目录路径必须为绝对路径."
 
-#: nb_cli_plugin_webui/app/config.py:143
+#: nb_cli_plugin_webui/app/config.py:167
 msgid "Path must be folder."
 msgstr "目录目标必须为文件夹."
 
-#: nb_cli_plugin_webui/app/config.py:146
+#: nb_cli_plugin_webui/app/config.py:170
 msgid "[Setting Overview]"
 msgstr "[设置概览]"
 
-#: nb_cli_plugin_webui/app/config.py:147
+#: nb_cli_plugin_webui/app/config.py:171
 #, python-brace-format
 msgid "Token: {token}"
 msgstr "访问密钥: {token}"
 
-#: nb_cli_plugin_webui/app/config.py:148
+#: nb_cli_plugin_webui/app/config.py:172
 #, python-brace-format
 msgid "WebUI URL: http://{host}:{port}/"
 msgstr "图形化管理面板访问链接: http://{host}:{port}/"
 
-#: nb_cli_plugin_webui/app/config.py:149
+#: nb_cli_plugin_webui/app/config.py:173
 #, python-brace-format
 msgid "Base directory: {base_dir}"
 msgstr "基础目录: {base_dir}"
 
-#: nb_cli_plugin_webui/app/config.py:150
-msgid "Confirm or not:"
-msgstr "确认吗:"
+#: nb_cli_plugin_webui/app/config.py:174 nb_cli_plugin_webui/cli.py:219
+#: nb_cli_plugin_webui/cli.py:247
+msgid "Are you sure?"
+msgstr "确定吗？"
 
-#: nb_cli_plugin_webui/app/config.py:151
+#: nb_cli_plugin_webui/app/config.py:177
 msgid "Cleaning..."
 msgstr "清除中..."
-
-#: nb_cli_plugin_webui/app/config.py:173
-#, python-brace-format
-msgid "Config file is invalid: {err}"
-msgstr "设置文件有误: {err}"
-
-#: nb_cli_plugin_webui/app/config.py:174
-msgid "Enter command to clear: nb ui clear"
-msgstr "请键入该命令以清理: nb ui clear"
 
 #: nb_cli_plugin_webui/app/utils/string_utils.py:34
 msgid "Token should be at least 12 characters long."
@@ -165,79 +161,114 @@ msgstr "访问密钥至少包含一个大写字母."
 msgid "Token should contain at least one special character."
 msgstr "访问密钥至少包含一个符号."
 
-#: nb_cli_plugin_webui/app/application.py:23
-msgid "WebUI dist directory not found."
-msgstr "图形化管理面板前端文件未找到, 你可以通过重装以尝试解决."
-
 #: nb_cli_plugin_webui/app/handlers/store.py:62
 #, python-brace-format
 msgid "Invalid module type: {module_type}"
 msgstr "有误的类型: {module_type}"
 
-#: nb_cli_plugin_webui/cli.py:20
+#: nb_cli_plugin_webui/cli.py:24
 msgid "Start up NB CLI UI."
 msgstr "启动 NB CLI 图形化管理面板插件."
 
-#: nb_cli_plugin_webui/cli.py:54
-msgid "Run NB CLI UI."
-msgstr "运行 NB CLI 图形化管理面板."
+#: nb_cli_plugin_webui/cli.py:31
+msgid "WebUI dist directory not found, please reinstall to fix."
+msgstr "WebUI 前端文件未找到，请重装以尝试解决."
 
-#: nb_cli_plugin_webui/cli.py:60
+#: nb_cli_plugin_webui/cli.py:38
+msgid "Config not found in docker, run `nb ui copy` to fix."
+msgstr "在 Docker 中未找到设置文件，请运行 `nb ui copy` 以修复."
+
+#: nb_cli_plugin_webui/cli.py:50
+msgid "Config file is broken, run `nb ui clear` to fix."
+msgstr "设置文件有误，请运行 `nb ui clear` 以解决."
+
+#: nb_cli_plugin_webui/cli.py:82
+msgid "Run WebUI."
+msgstr "运行图形化管理界面."
+
+#: nb_cli_plugin_webui/cli.py:88
 msgid "The host required to access NB CLI UI."
 msgstr "图形化管理面板所需的 host."
 
-#: nb_cli_plugin_webui/cli.py:68
+#: nb_cli_plugin_webui/cli.py:96
 msgid "The port required to access NB CLI UI."
-msgstr "图形化管理面板所需的 port."
+msgstr "图形化管理面板所需的端口."
 
-#: nb_cli_plugin_webui/cli.py:91
+#: nb_cli_plugin_webui/cli.py:119
 msgid "Reset access token."
 msgstr "重置访问密钥."
 
-#: nb_cli_plugin_webui/cli.py:124
+#: nb_cli_plugin_webui/cli.py:152
 msgid "List webui config."
 msgstr "列出本拓展的设置."
 
-#: nb_cli_plugin_webui/cli.py:137
+#: nb_cli_plugin_webui/cli.py:165
 msgid "Setting webui config."
 msgstr "修改本拓展的配置."
 
-#: nb_cli_plugin_webui/cli.py:142
+#: nb_cli_plugin_webui/cli.py:170
 msgid "The key of config."
 msgstr "设置内的名称."
 
-#: nb_cli_plugin_webui/cli.py:148
+#: nb_cli_plugin_webui/cli.py:176
 msgid "The value of config."
 msgstr "设置内名称对应的值."
 
-#: nb_cli_plugin_webui/cli.py:153
+#: nb_cli_plugin_webui/cli.py:181
 msgid "Please enter key:"
 msgstr "请键入设置对应的名称:"
 
-#: nb_cli_plugin_webui/cli.py:157
+#: nb_cli_plugin_webui/cli.py:185
 msgid "This config is disabled."
 msgstr "该设置的修改已被禁用."
 
-#: nb_cli_plugin_webui/cli.py:160
+#: nb_cli_plugin_webui/cli.py:188
 msgid "Please enter value:"
 msgstr "请键入设置对应的值:"
 
-#: nb_cli_plugin_webui/cli.py:176
+#: nb_cli_plugin_webui/cli.py:204
 msgid "This config is not exist."
 msgstr "该设置不存在."
 
-#: nb_cli_plugin_webui/cli.py:186
-msgid "Clear WebUI data. (config, all project info)"
-msgstr "清除图形化控制面板的数据，包括设置和所有已存储的 NoneBot 实例信息."
+#: nb_cli_plugin_webui/cli.py:215
+msgid "Copy webui config and data to current directory. (For docker user)"
+msgstr "复制设置和实例信息文件至当前目录. （docker 用户专供）"
 
-#: nb_cli_plugin_webui/cli.py:189
-msgid "Do you want to clear all data?"
-msgstr "你确定要清除所有数据吗？"
+#: nb_cli_plugin_webui/cli.py:223
+msgid "Copy config file success."
+msgstr "复制设置文件成功."
 
-#: nb_cli_plugin_webui/cli.py:193
-msgid "Clear config file success."
-msgstr "清除设置成功."
+#: nb_cli_plugin_webui/cli.py:225
+#, python-brace-format
+msgid "Config file copy failed: {err}"
+msgstr "复制设置文件失败: {err}"
 
-#: nb_cli_plugin_webui/cli.py:200
-msgid "Clear project info file success."
-msgstr "清除所有 NoneBot 实例信息完成."
+#: nb_cli_plugin_webui/cli.py:231
+msgid "Copy project info file success."
+msgstr "复制实例信息文件成功."
+
+#: nb_cli_plugin_webui/cli.py:234
+#, python-brace-format
+msgid "Project info file copy failed: {err}"
+msgstr "复制实例信息文件失败: {err}"
+
+#: nb_cli_plugin_webui/cli.py:239
+msgid "Clear WebUI data."
+msgstr "清除图形化控制面板的数据."
+
+#: nb_cli_plugin_webui/cli.py:243
+msgid "Which data do you want to clear?"
+msgstr "哪个数据是你需要清理的?"
+
+#: nb_cli_plugin_webui/cli.py:259
+msgid "File not found."
+msgstr "文件未找到."
+
+#: nb_cli_plugin_webui/cli.py:265
+#, python-brace-format
+msgid "Clear file failed: {err}"
+msgstr "清理失败: {err}"
+
+#: nb_cli_plugin_webui/cli.py:268
+msgid "Clear file success."
+msgstr "清理成功."
