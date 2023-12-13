@@ -1,4 +1,10 @@
-FROM weastur/poetry:latest-python-3.11 AS base
+ARG SOURCE_COMMIT=
+ARG PYTHON_IMAGE=3.11
+ARG VARIANT=
+
+FROM python:${PYTHON_IMAGE}${VARIANT:+-$VARIANT} AS build-stage
+
+RUN pip install poetry
 
 COPY . /app
 
@@ -7,12 +13,12 @@ WORKDIR /app
 RUN poetry install \
     && poetry run nb self install .
 
-FROM base AS pre-production
+FROM python:${PYTHON_IMAGE}${VARIANT}
 
 EXPOSE 8080
 
-ENV WEBUI_BUILD=docker-dev \
-    HOST=127.0.0.1 \
+ENV WEBUI_BUILD=${SOURCE_COMMIT} \
+    HOST=0.0.0.0 \
     PORT=8080
 
 CMD poetry run nb ui run --port $PORT --host $HOST
