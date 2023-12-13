@@ -93,7 +93,7 @@ jobs:
       - name: 🔍 Get Latest Commit and Generate Build Arg
         id: commit
         run: |
-          if [[ "${{ needs.check-version.outputs.CHECK_PASS }}" ]]; then
+          if [[ ${{ needs.check-version.outputs.CHECK_PASS }} ]]; then
             echo "COMMIT=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           else
             echo "COMMIT=${GITHUB_SHA::7}-dev" >> $GITHUB_OUTPUT
