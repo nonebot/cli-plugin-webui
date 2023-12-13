@@ -93,7 +93,7 @@ jobs:
       - name: 🔍 Get Latest Commit and Generate Build Arg
         id: commit
         run: |
-          if [[ ${{ needs.check-version.outputs.CHECK_PASS }} ]]; then
+          if [[ "${{ needs.check-version.outputs.CHECK_PASS }}" == "true" ]]; then
             echo "COMMIT=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           else
             echo "COMMIT=${GITHUB_SHA::7}-dev" >> $GITHUB_OUTPUT
@@ -165,14 +165,13 @@ jobs:
       - name: ✨ Generate Image Name
         id: image
         run: |
-          echo "IMAGE=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+          echo "IMAGE=${{ github.repository }}" >> $GITHUB_OUTPUT
 
       - name: ✨ Generate Tags
         uses: docker/metadata-action@v5
         id: metadata
         with:
-          images: |
-            ${{ github.repository }}
+          images: ${{ steps.image.outputs.IMAGE }}
           flavor: |
             suffix=-py${{ matrix.python_version }}${{ matrix.python_variant }},onlatest=${{ needs.check-version.outputs.CHECK_PASS }}
           tags: |
