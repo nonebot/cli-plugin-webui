@@ -19,8 +19,8 @@ jobs:
       - name: 🛎️ Checkout
         uses: actions/checkout@v4
 
-      - name: 🚀 Setup poetry
-        run: pipx install poetry
+      - name: 🚀 Setup Python environment
+        uses: ./.github/actions/setup-python
 
       - name: 🔖 Get version
         id: version

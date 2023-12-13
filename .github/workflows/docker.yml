@@ -23,8 +23,8 @@ jobs:
       - name: 🛎️ Checkout
         uses: actions/checkout@v4
 
-      - name: 🚀 Setup poetry
-        run: pipx install poetry
+      - name: 🚀 Setup Python environment
+        uses: ./.github/actions/setup-python
 
       - name: 🔖 Get version
         id: version
@@ -37,9 +37,9 @@ jobs:
         id: check
         run: |
           if [[ "${{ steps.version.outputs.VERSION }}" != "${{ steps.version.outputs.TAG_VERSION }}" ]]; then
-            echo "CHECK_PASS=true" >> $GITHUB_OUTPUT
-          else
             echo "CHECK_PASS=false" >> $GITHUB_OUTPUT
+          else
+            echo "CHECK_PASS=true" >> $GITHUB_OUTPUT
           fi
 
   build:
