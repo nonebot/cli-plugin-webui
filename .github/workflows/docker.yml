@@ -175,9 +175,12 @@ jobs:
           flavor: |
             suffix=-py${{ matrix.python_version }}${{ matrix.python_variant }},onlatest=${{ needs.check-version.outputs.CHECK_PASS }}
           tags: |
+            type=ref,event=branch
+            type=ref,event=push
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
+            type=sha
 
       - name: 📦️ Create manifest list and push
         working-directory: /tmp/digests/${{ matrix.python_version }}${{ matrix.python_variant }}
