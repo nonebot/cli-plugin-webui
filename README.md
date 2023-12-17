@@ -51,15 +51,43 @@ _✨ NoneBot2 命令行工具 前端可视化页面（WebUI） 插件 ✨_
 
 ### 安装
 
+**需要 [nb-cli](https://github.com/nonebot/nb-cli/)**
+
+使用 nb-cli 安装
+
 ```shell
 nb self install nb-cli-plugin-webui
 ```
 
+使用 Docker 运行
+
+```shell
+docker pull nonebot/cil-plugin-webui:latest
+```
+
+Docker 镜像可以选择以下版本:
+
+- `latest`, `latest-slim`: 最新的稳定版本 (Release)
+- `latest-${python 版本}`, `latest-slim-${python 版本}`: 指定 Python 版本的最新版本
+- `sha-${commit sha:0:7}-${python 版本}`, `sha-${commit sha:0:7}-${python 版本}-slim`: 指定 commit 的版本
+- `${branch}-${python 版本}`, `${branch}-${python 版本}-slim`: 指定分支的最新版本
+
 ### 命令行使用
 
 ```shell
-nb ui
+nb ui --help
 ```
+
+Docker 镜像使用
+
+```shell
+docker run -it --rm -p 8080:8080 -v ./:/app nonebot/cli-plugin-webui:latest --help
+```
+
+可选附加 env 参数:
+
+- HOST: 指定监听地址，默认为 `0.0.0.0`
+- PORT: 指定监听端口，默认为 `8080`
 
 ## 开发
 
