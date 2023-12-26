@@ -2,11 +2,15 @@ import re
 import sys
 import logging as base_log
 from types import FrameType
+from datetime import datetime
 from typing import TYPE_CHECKING, Any, cast
 
 import loguru
 
+from nb_cli_plugin_webui.i18n import _
+
 from .config import Config
+from .utils.storage import get_data_dir
 from .utils.string_utils import filling_str
 
 if TYPE_CHECKING:
@@ -126,3 +130,30 @@ logger.add(
     filter=LoguruFilter(),
 )
 logger.level(LOG_LEVEL)
+
+if Config.log_is_store:
+    logger.info(_("Log store is enabled."))
+
+    logs_dir = get_data_dir() / "logs"
+    logs_dir.mkdir(parents=True, exist_ok=True)
+
+    logger.info(_("Log is stored in {logs_dir}").format(logs_dir=logs_dir))
+
+    now_time = datetime.now().strftime("%Y%m%d-%H")
+    levels = {
+        "info": "INFO",
+        "error": "ERROR",
+        "warning": "WARNING",
+        "debug": "DEBUG",
+    }
+
+    for level, log_level in levels.items():
+        logger.add(
+            logs_dir / level / f"{now_time}.log",
+            level=log_level,
+            diagnose=False,
+            format=log_format,
+            filter=LoguruFilter(),
+            rotation="1 week",
+            retention="1 month",
+        )

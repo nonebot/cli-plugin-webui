@@ -42,6 +42,7 @@ class AppConfig(BaseModel):
     enable_api_document: bool = Field(default=False, description="是否开启 API 文档")
 
     log_level: str = Field(default="INFO", description="日志等级")
+    log_is_store: bool = Field(default=False, description="是否存储日志")
 
     secret_key: SecretStr = Field(default=SecretStr(str()), description="验证密钥的密钥")
     hashed_token: str = Field(default=str(), description="哈希后的 token")
