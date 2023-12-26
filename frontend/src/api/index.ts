@@ -279,10 +279,14 @@ class API extends CustomAPI {
     });
   }
 
-  async deleteProject(projectID: string): Promise<GenericResponse<string>> {
+  async deleteProject(
+    projectID: string,
+    deleteFully: boolean,
+  ): Promise<GenericResponse<string>> {
     return await this.request.delete("/project/delete", {
       params: {
         project_id: projectID,
+        delete_fully: deleteFully,
       },
     });
   }

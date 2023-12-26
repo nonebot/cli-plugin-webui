@@ -57,18 +57,20 @@ async def get_project_profile(
 
 @router.delete("/delete", response_model=GenericResponse[str])
 async def delete_project(
+    delete_fully: bool = False,
     project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
 ) -> GenericResponse[str]:
     """
     - 删除 NoneBot 实例
     """
     data = project.read()
-    try:
-        shutil.rmtree(data.project_dir)
-    except OSError as err:
-        log.error(f"Delete nonebot project failed: {err}")
-        log.exception(err)
-        raise ProjectDeleteFailed()
+    if delete_fully:
+        try:
+            shutil.rmtree(data.project_dir)
+        except OSError as err:
+            log.error(f"Delete nonebot project failed: {err}")
+            log.exception(err)
+            raise ProjectDeleteFailed()
     project.remove_project()
     return GenericResponse(detail="success")
 

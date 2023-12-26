@@ -7,6 +7,7 @@ import api from "@/api";
 import type { AxiosError } from "axios";
 
 const oprateLock = ref(false);
+const deleteProjectModal = ref<HTMLDialogElement>();
 
 const oLock = () => {
   oprateLock.value = true;
@@ -90,14 +91,15 @@ const restartProject = async () => {
   oUnlock();
 };
 
-const deleteProject = async () => {
+const deleteProject = async (deleteFully: boolean) => {
   oLock();
   const project = store().choiceProject;
   await api
-    .deleteProject(project.project_id)
+    .deleteProject(project.project_id, deleteFully)
     .then(async () => {
       await getProjectList();
       store().choiceProject = Object();
+      deleteProjectModal.value?.close();
       oUnlock();
     })
     .catch((error: AxiosError) => {
@@ -114,6 +116,43 @@ const deleteProject = async () => {
 </script>
 
 <template>
+  <dialog ref="deleteProjectModal" class="modal">
+    <div class="modal-box rounded-lg">
+      <h2 class="font-bold text-lg">实例操作</h2>
+      <div class="py-4 text-sm">
+        <div>清除 - 仅删除其在 WebUI 上的信息</div>
+        <div>销毁 - 连同实例源代码一同删除</div>
+        <p class="font-bold py-4">注意：该操作不可逆</p>
+      </div>
+      <div class="flex gap-4 justify-end">
+        <label class="swap">
+          <input type="checkbox" />
+
+          <div class="swap-off btn h-10 min-h-0 rounded-lg" @click="deleteProject(false)">
+            清除实例信息
+          </div>
+          <div class="swap-on btn btn-primary h-10 min-h-0 rounded-lg text-white">
+            确定吗
+          </div>
+        </label>
+
+        <label class="swap">
+          <input type="checkbox" />
+
+          <div class="swap-off btn h-10 min-h-0 rounded-lg" @click="deleteProject(true)">
+            销毁整个实例
+          </div>
+          <div class="swap-on btn btn-primary h-10 min-h-0 rounded-lg text-white">
+            确定吗
+          </div>
+        </label>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
   <div class="!mt-0 !mb-0 sm:m-8 md:m-12 lg:m-16 xl:m-20 2xl:m-28">
     <Transition>
       <div
@@ -156,22 +195,15 @@ const deleteProject = async () => {
               <span class="material-symbols-outlined"> restart_alt </span>
             </button>
 
-            <label
+            <button
               :class="{
-                'swap btn btn-sm rounded hover:bg-[hsl(var(--bc)/0.1)] transition-all ease-in': true,
+                'btn btn-sm rounded hover:bg-[hsl(var(--bc)/0.1)] transition-all ease-in': true,
                 'btn-disabled': store().choiceProject.is_running || oprateLock,
               }"
+              @click="deleteProjectModal?.showModal()"
             >
-              <input type="checkbox" />
-              <span
-                title="销毁实例"
-                class="swap-off material-symbols-outlined"
-                @click="deleteProject()"
-              >
-                delete
-              </span>
-              <span class="swap-on material-symbols-outlined"> check </span>
-            </label>
+              <span class="swap-off material-symbols-outlined"> delete </span>
+            </button>
           </div>
         </div>
       </div>
