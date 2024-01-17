@@ -140,3 +140,8 @@ export interface AddProjectData {
   plugin_dirs: string[];
   builtin_plugins: string[];
 }
+
+export interface SearchTag {
+  label: "official" | "valid" | "latest" | "downloaded" | "author" | "tag";
+  text?: string;
+}

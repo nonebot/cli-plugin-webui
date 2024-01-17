@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nonebotExtensionStore } from "@/store/extensionStore";
+import { SearchTag } from "@/api/schemas";
 import { appStore } from "@/store/global";
 
 interface CustomDetail {
@@ -8,67 +9,92 @@ interface CustomDetail {
   icon: any;
 }
 
-const classList: CustomDetail[] = [
+interface FilterDetail extends CustomDetail {
+  tag: SearchTag;
+}
+
+const moduleList: CustomDetail[] = [
   { tip: "插件", name: "plugin", icon: "extension" },
   { tip: "适配器", name: "adapter", icon: "lan" },
   { tip: "驱动器", name: "driver", icon: "electrical_services" },
 ];
 
-const filterList: CustomDetail[] = [
-  { tip: "官方认证", name: "official", icon: "verified" },
-  { tip: "测试通过", name: "valid", icon: "check_circle" },
-  { tip: "已下载", name: "downloaded", icon: "download" },
-  { tip: "近期新增", name: "new", icon: "shadow_add" },
+const filterList: FilterDetail[] = [
+  {
+    tip: "官方认证",
+    name: "official",
+    icon: "verified",
+    tag: {
+      label: "official",
+    },
+  },
+  {
+    tip: "测试通过",
+    name: "valid",
+    icon: "check_circle",
+    tag: {
+      label: "valid",
+    },
+  },
+  {
+    tip: "已下载",
+    name: "downloaded",
+    icon: "download",
+    tag: {
+      label: "downloaded",
+    },
+  },
+  {
+    tip: "近期新增",
+    name: "latest",
+    icon: "shadow_add",
+    tag: {
+      label: "latest",
+    },
+  },
 ];
 
 const setActiveClass = (cls: string) => {
-  nonebotExtensionStore().nowPage = 0;
+  nonebotExtensionStore().turnPage(0);
   nonebotExtensionStore().assignClass(cls);
-  if (appStore().choiceProject.project_id) {
-    nonebotExtensionStore().updateData(appStore().choiceProject.project_id);
+  nonebotExtensionStore().updateData(appStore().choiceProject.project_id);
+};
+
+const addFilter = (item: FilterDetail) => {
+  nonebotExtensionStore().turnPage(0);
+  if (nonebotExtensionStore().searchTags.includes(item.tag)) {
+    nonebotExtensionStore().removeSearchTag(item.tag);
+  } else {
+    nonebotExtensionStore().addSearchTag(item.tag);
   }
 };
 
-const addFilter = (item: CustomDetail) => {
-  nonebotExtensionStore().nowPage = 0;
-  let beforeInput;
-  const ft = `is:${item.name}`;
-  if (nonebotExtensionStore().searchInput.includes(ft)) {
-    const beforeInput = nonebotExtensionStore().searchInput;
-    nonebotExtensionStore().searchInput = beforeInput.replace(ft, "").trim();
-  } else {
-    beforeInput = nonebotExtensionStore().searchInput;
-    nonebotExtensionStore().searchInput = `${ft} ${beforeInput}`;
-  }
+const checkModule = (module: string) => {
+  return nonebotExtensionStore().choiceModule === module;
 };
 
-const checkFilter = (item: CustomDetail) => {
-  const ft = `is:${item.name}`;
-  if (nonebotExtensionStore().searchInput.includes(ft)) {
-    return true;
-  } else {
-    return false;
-  }
+const checkFilter = (item: FilterDetail) => {
+  return nonebotExtensionStore().searchTags.includes(item.tag);
 };
 </script>
 
 <template>
-  <div class="w-full mt-6">
+  <div class="w-full">
     <ul class="menu w-full">
       <li>
         <div class="text-sm font-bold pointer-events-none">分类</div>
       </li>
-      <li v-for="i in classList" @click="setActiveClass(i.name)">
+      <li v-for="m in moduleList" @click="setActiveClass(m.name)">
         <a
           :class="{
             'pl-6': true,
-            active: nonebotExtensionStore().choiceClass === i.name,
+            active: checkModule(m.name),
           }"
         >
           <span class="material-symbols-outlined text-xl leading-5">
-            {{ i.icon }}
+            {{ m.icon }}
           </span>
-          {{ i.tip }}
+          {{ m.tip }}
         </a>
       </li>
     </ul>

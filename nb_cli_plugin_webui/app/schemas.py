@@ -3,6 +3,8 @@ from typing import List, Generic, TypeVar, Optional
 from pydantic import BaseModel
 from pydantic.generics import GenericModel
 
+from .constants import SEARCH_TAGS
+
 DataT = TypeVar("DataT")
 
 
@@ -72,3 +74,8 @@ class NoneBotProjectMeta(BaseModel):
 
     use_run_script: bool = False
     run_script_name: str = "bot.py"
+
+
+class SearchTag(BaseModel):
+    label: SEARCH_TAGS
+    text: str = str()

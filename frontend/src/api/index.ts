@@ -14,6 +14,7 @@ import {
   CheckProjectTomlResponse,
   AddProjectData,
   ModuleConfigResponse,
+  SearchTag,
 } from "@/api/schemas";
 
 class API extends CustomAPI {
@@ -128,15 +129,24 @@ class API extends CustomAPI {
   async searchStore(
     projectID: string,
     moduleType: string,
+    tags: SearchTag[],
     content: string,
   ): Promise<StoreListResponse> {
-    return await this.request.post("/store/nonebot/search", undefined, {
-      params: {
-        project_id: projectID,
-        module_type: moduleType,
-        content: content,
+    return await this.request.post(
+      "/store/nonebot/search",
+      {
+        data: {
+          module_type: moduleType,
+          tags: tags,
+          content: content,
+        },
       },
-    });
+      {
+        params: {
+          project_id: projectID,
+        },
+      },
+    );
   }
 
   async runProject(projectID: string): Promise<GenericResponse<string>> {

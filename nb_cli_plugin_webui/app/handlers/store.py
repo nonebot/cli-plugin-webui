@@ -1,4 +1,3 @@
-import re
 import math
 from asyncio import create_task, as_completed
 from datetime import datetime, timezone, timedelta
@@ -19,9 +18,16 @@ from dateutil import parser
 
 from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui.app.config import Config
+from nb_cli_plugin_webui.app.constants import MODULE_TYPE
 from nb_cli_plugin_webui.app.logging import logger as log
-from nb_cli_plugin_webui.app.utils.list_utils import safe_list_get
-from nb_cli_plugin_webui.app.schemas import Driver, Plugin, Adapter, NoneBotProjectMeta
+from nb_cli_plugin_webui.app.utils.list_utils import safe_list_get, safe_list_remove
+from nb_cli_plugin_webui.app.schemas import (
+    Driver,
+    Plugin,
+    Adapter,
+    SearchTag,
+    NoneBotProjectMeta,
+)
 
 _T = TypeVar("_T", Plugin, Adapter, Driver)
 VISIBLE_ITEMS = Config.extension_store_visible_items
@@ -41,7 +47,7 @@ if TYPE_CHECKING:
         ...
 
     async def load_module_data(
-        module_type: Literal["plugin", "adapter", "driver"],
+        module_type: MODULE_TYPE,
     ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
         ...
 
@@ -49,7 +55,7 @@ else:
 
     @cache(ttl="5m")
     async def load_module_data(
-        module_type: Literal["plugin", "adapter", "driver"],
+        module_type: MODULE_TYPE,
     ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
         if module_type == "plugin":
             module_class = Plugin
@@ -101,7 +107,7 @@ class ModuleStoreManager(Generic[_T]):
     def __init__(
         self,
         *,
-        module_type: Literal["plugin", "adapter", "driver"],
+        module_type: MODULE_TYPE,
         visible_items: int = VISIBLE_ITEMS,
     ) -> None:
         self.module_type = module_type
@@ -166,74 +172,89 @@ class ModuleStoreManager(Generic[_T]):
 
         return cache_list
 
-    def search_item(self, project_meta: NoneBotProjectMeta, *, content: str) -> None:
-        filters_pattern = r"(is:[^ ]+(?:\s+is:[^ ]+)*)"
-        filter_pattern = r"is:([^ ]+)"
-
+    def search_item(
+        self,
+        project_meta: NoneBotProjectMeta,
+        *,
+        content: str,
+        tags: List[SearchTag] = list(),
+    ):
         result: List[_T] = list()
 
-        def custom_filter() -> None:
-            for i in self.items:
-                if content in i.module_name:
-                    result.append(i)
-                elif content in i.name:
-                    result.append(i)
-                elif content in i.desc:
-                    result.append(i)
-                elif content in i.author:
-                    result.append(i)
-                elif i.project_link:
-                    if content in i.project_link:
-                        result.append(i)
+        for item in self.items:
+            if content in item.module_name:
+                result.append(item)
+            elif content in item.name:
+                result.append(item)
+            elif content in item.desc:
+                result.append(item)
+            elif content in item.author:
+                result.append(item)
+            elif item.project_link and content in item.project_link:
+                result.append(item)
 
-        def remove_item(item: _T) -> None:
-            try:
-                result.remove(item)
-            except ValueError:
-                pass
-
-        filters_match = re.search(filters_pattern, content)
-        if filters_match is None:
-            custom_filter()
-        else:
-            filters = filters_match.group(1)
-            content = content.replace(filters, str(), 1).strip()
-
-            custom_filter()
-
-            filters_match = re.findall(filter_pattern, filters)
-            if filters_match:
-                cache_list = result[:]
-
-                if "downloaded" in filters_match:
-                    item = safe_list_get(self.items, 0, str())
+        data = result[:]
+        for tag in tags:
+            if tag.label == "official":
+                for item in data:
+                    if not item.is_official:
+                        safe_list_remove(result, item)
+            elif tag.label == "valid":
+                for item in data:
+                    if isinstance(item, Plugin) and not item.valid:
+                        safe_list_remove(result, item)
+            elif tag.label == "latest":
+                for item in data:
                     if isinstance(item, Plugin):
-                        result = project_meta.plugins  # type: ignore
-                    elif isinstance(item, Adapter):
-                        result = project_meta.adapters  # type: ignore
-                    elif isinstance(item, Driver):
-                        result = project_meta.drivers  # type: ignore
+                        latest_time = (
+                            datetime.now(timezone(timedelta(hours=8)))
+                            - timedelta(weeks=1)
+                        ).timestamp()
+                        update_time = parser.parse(item.time).timestamp()
+                        if update_time < latest_time:
+                            safe_list_remove(result, item)
+            elif tag.label == "downloaded":
+                item = safe_list_get(self.items, 0, str())
+                if isinstance(item, Plugin):
+                    for item in data:
+                        if item.module_name not in [
+                            plugin.module_name for plugin in project_meta.plugins
+                        ]:
+                            safe_list_remove(result, item)
+                elif isinstance(item, Adapter):
+                    for item in data:
+                        if item.module_name not in [
+                            adapter.module_name for adapter in project_meta.adapters
+                        ]:
+                            safe_list_remove(result, item)
+                elif isinstance(item, Driver):
+                    for item in data:
+                        if item.module_name not in [
+                            driver.module_name for driver in project_meta.drivers
+                        ]:
+                            safe_list_remove(result, item)
+            elif tag.label == "author":
+                for item in data:
+                    if tag.text not in item.author:
+                        safe_list_remove(result, item)
+            elif tag.label == "tag":
+                for item in data:
+                    if item.tags:
+                        for t in item.tags:
+                            if tag.text not in t.label:
+                                safe_list_remove(result, item)
+                    else:
+                        safe_list_remove(result, item)
 
-                    if len(filters_match) == 1:
-                        self.search_result = result
-                        return
+        seen_models = list()
+        unique_base_models = list()
 
-                for i in cache_list:
-                    for f in filters_match:
-                        if f == "official" and not i.is_official:
-                            remove_item(i)
-                        if f == "valid" and isinstance(i, Plugin) and not i.valid:
-                            remove_item(i)
-                        if f == "new" and isinstance(i, Plugin):
-                            latest_time = (
-                                datetime.now(timezone(timedelta(hours=8)))
-                                - timedelta(weeks=1)
-                            ).timestamp()
-                            update_time = parser.parse(i.time).timestamp()
-                            if update_time < latest_time:
-                                remove_item(i)
+        for model in result:
+            if model.module_name not in seen_models:
+                seen_models.append(model.module_name)
+                unique_base_models.append(model)
 
-        self.search_result = result
+        self.search_result = unique_base_models
 
 
 plugin_store_manager = ModuleStoreManager[Plugin](module_type="plugin")

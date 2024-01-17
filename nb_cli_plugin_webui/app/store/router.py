@@ -2,13 +2,14 @@ from typing import Union, Optional
 
 from fastapi import Body, Depends, APIRouter
 
+from nb_cli_plugin_webui.app.constants import MODULE_TYPE
 from nb_cli_plugin_webui.app.schemas import GenericResponse
 from nb_cli_plugin_webui.app.handlers import NoneBotProjectManager
 from nb_cli_plugin_webui.app.project import get_nonebot_project_manager
 
 from .utils import get_store_manager
-from .schemas import Plugin, ModuleInfo, StoreListResponse
 from .service import install_nonebot_module, uninstall_nonebot_module
+from .schemas import Plugin, ModuleInfo, SearchRequest, StoreListResponse
 
 router = APIRouter()
 
@@ -41,7 +42,7 @@ async def _uninstall_nonebot_module(
 
 @router.get("/nonebot/list", response_model=StoreListResponse)
 async def _get_nonebot_store_items(
-    module_type: str,
+    module_type: MODULE_TYPE,
     page: int,
     is_search: bool = False,
     show_all: bool = False,
@@ -68,24 +69,23 @@ async def _get_nonebot_store_items(
     return StoreListResponse(
         now_page=int(page),
         total_page=store_manager.get_max_page(is_search=is_search),
-        total_item=len(store_manager.get_item(is_search=is_search)),
+        total_item=len(data),
         detail=data,
     )
 
 
 @router.post("/nonebot/search", response_model=StoreListResponse)
 async def search_nonebot_store_item(
-    module_type: str,
-    content: str,
+    data: SearchRequest = Body(..., embed=True),
     project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
 ) -> StoreListResponse:
     """
     - 搜索 NoneBot Store 中的模块
     """
     project_meta = project.read()
-    store_manager = get_store_manager(module_type)
+    store_manager = get_store_manager(data.module_type)
 
-    store_manager.search_item(project_meta, content=content)
+    store_manager.search_item(project_meta, content=data.content, tags=data.tags)
     result = store_manager.generate_page(project_meta, page=0, is_search=True)
     total_page = store_manager.get_max_page(is_search=True)
     total_item = len(store_manager.search_result)
