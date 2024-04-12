@@ -17,7 +17,7 @@ const bar = ref<HTMLElement>();
 const content = ref<HTMLElement>();
 
 const getTitle = computed(() => {
-  switch (nonebotExtensionStore().choiceClass) {
+  switch (nonebotExtensionStore().choiceModule) {
     case "adapter":
       return titleItems.adapter;
     case "driver":
