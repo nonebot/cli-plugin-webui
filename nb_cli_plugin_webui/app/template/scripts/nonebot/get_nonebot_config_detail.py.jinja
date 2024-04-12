@@ -5,6 +5,6 @@ import nonebot
 nonebot.logger.remove()
 nonebot.init()
 driver = nonebot.get_driver()
-schema = json.loads(driver.config.schema_json())
-config = json.loads(driver.config.json())
+schema = driver.config.model_json_schema()
+config = json.loads(driver.config.model_dump_json())
 print(json.dumps({"schema": schema, "config": config}))

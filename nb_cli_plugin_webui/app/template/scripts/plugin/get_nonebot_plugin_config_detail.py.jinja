@@ -23,8 +23,8 @@ def get_plugin_metadata(plugin: str):
 result = get_plugin_metadata("{{ plugin_name }}")
 if result:
     if result.config:
-        schema = json.loads(result.config().schema_json())
-        config = json.loads(result.config().json())
+        schema = result.config().model_json_schema()
+        config = json.loads(result.config().model_dump_json())
         print(json.dumps({"schema": schema, "config": config}))
 else:
     print("Failed")
