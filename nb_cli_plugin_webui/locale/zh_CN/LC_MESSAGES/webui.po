@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-26 10:02+0800\n"
-"PO-Revision-Date: 2023-12-26 10:14+0800\n"
+"POT-Creation-Date: 2024-04-12 18:26+0800\n"
+"PO-Revision-Date: 2024-04-12 18:38+0800\n"
 "Last-Translator: Kyomotoi <kyomotoiowo@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -141,8 +141,8 @@ msgstr "图形化管理面板访问链接: http://{host}:{port}/"
 msgid "Base directory: {base_dir}"
 msgstr "基础目录: {base_dir}"
 
-#: nb_cli_plugin_webui/app/config.py:177 nb_cli_plugin_webui/cli.py:219
-#: nb_cli_plugin_webui/cli.py:247
+#: nb_cli_plugin_webui/app/config.py:177 nb_cli_plugin_webui/cli.py:220
+#: nb_cli_plugin_webui/cli.py:248
 msgid "Are you sure?"
 msgstr "确定吗？"
 
@@ -170,7 +170,7 @@ msgstr "访问密钥至少包含一个大写字母."
 msgid "Token should contain at least one special character."
 msgstr "访问密钥至少包含一个符号."
 
-#: nb_cli_plugin_webui/app/handlers/store.py:62
+#: nb_cli_plugin_webui/app/handlers/store.py:68
 #, python-brace-format
 msgid "Invalid module type: {module_type}"
 msgstr "有误的类型: {module_type}"
@@ -239,45 +239,49 @@ msgstr "请键入设置对应的值:"
 msgid "This config is not exist."
 msgstr "该设置不存在."
 
-#: nb_cli_plugin_webui/cli.py:215
+#: nb_cli_plugin_webui/cli.py:212
+msgid "Setting success."
+msgstr "设置成功."
+
+#: nb_cli_plugin_webui/cli.py:216
 msgid "Copy webui config and data to current directory. (For docker user)"
 msgstr "复制设置和实例信息文件至当前目录. （docker 用户专供）"
 
-#: nb_cli_plugin_webui/cli.py:223
+#: nb_cli_plugin_webui/cli.py:224
 msgid "Copy config file success."
 msgstr "复制设置文件成功."
 
-#: nb_cli_plugin_webui/cli.py:225
+#: nb_cli_plugin_webui/cli.py:226
 #, python-brace-format
 msgid "Config file copy failed: {err}"
 msgstr "复制设置文件失败: {err}"
 
-#: nb_cli_plugin_webui/cli.py:231
+#: nb_cli_plugin_webui/cli.py:232
 msgid "Copy project info file success."
 msgstr "复制实例信息文件成功."
 
-#: nb_cli_plugin_webui/cli.py:234
+#: nb_cli_plugin_webui/cli.py:235
 #, python-brace-format
 msgid "Project info file copy failed: {err}"
 msgstr "复制实例信息文件失败: {err}"
 
-#: nb_cli_plugin_webui/cli.py:239
+#: nb_cli_plugin_webui/cli.py:240
 msgid "Clear WebUI data."
 msgstr "清除图形化控制面板的数据."
 
-#: nb_cli_plugin_webui/cli.py:243
+#: nb_cli_plugin_webui/cli.py:244
 msgid "Which data do you want to clear?"
 msgstr "哪个数据是你需要清理的?"
 
-#: nb_cli_plugin_webui/cli.py:259
+#: nb_cli_plugin_webui/cli.py:260
 msgid "File not found."
 msgstr "文件未找到."
 
-#: nb_cli_plugin_webui/cli.py:265
+#: nb_cli_plugin_webui/cli.py:266
 #, python-brace-format
 msgid "Clear file failed: {err}"
 msgstr "清理失败: {err}"
 
-#: nb_cli_plugin_webui/cli.py:268
+#: nb_cli_plugin_webui/cli.py:269
 msgid "Clear file success."
 msgstr "清理成功."

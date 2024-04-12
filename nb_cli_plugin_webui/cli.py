@@ -209,6 +209,7 @@ async def setting_config(item: str, setting: str):
 
     setattr(conf, item, setting)
     CONFIG_FILE.write_text(conf.to_json())
+    click.secho(_("Setting success."), fg="green")
 
 
 @webui.command(
