@@ -150,8 +150,8 @@ CONFIG_DISABLED_LIST = ["hashed_token", "salt", "secret_key"]
 
 
 @webui.command(help=_("List webui config."))
-@run_sync
-def list_config():
+@run_async
+async def list_config():
     for key, value in Config.dict().items():
         if key in CONFIG_DISABLED_LIST:
             continue
@@ -250,9 +250,9 @@ async def clear():
         return
 
     file = Path()
-    if clear_target.data == "config":
+    if clear_target.name == "config":
         file = CONFIG_FILE
-    elif clear_target.data == "project":
+    elif clear_target.name == "project":
         file = get_data_file("projects.json")
 
     if not file.exists():
