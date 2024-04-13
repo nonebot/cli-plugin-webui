@@ -1,59 +1,43 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { defaultRoutes } from './client'
 
-import LoginPage from "@/components/LoginPage.vue";
-import IndexView from "@/components/IndexView.vue";
-import HomePage from "@/components/HomePage.vue";
-import NonebotStore from "@/components/NonebotStore.vue";
-import FileExplorer from "@/components/FileExplorer.vue";
-import SettingPage from "@/components/SettingPage.vue";
-
-import { notice } from "@/utils/notification";
-import { appStore as store } from "@/store/global";
-
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
-    name: "Login",
-    path: "/login",
-    component: LoginPage,
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/Login/LoginIndex.vue')
   },
   {
-    name: "WebUI",
-    path: "/",
-    component: IndexView,
+    path: '/',
+    name: 'WebUI',
+    component: () => import('@/views/ViewIndex.vue'),
     children: [
       {
-        name: "Home",
-        path: "/",
-        component: HomePage,
-      },
-      {
-        name: "Store",
-        path: "/store",
-        component: NonebotStore,
-      },
-      {
-        name: "FileExplorer",
-        path: "/file",
-        component: FileExplorer,
-      },
-      {
-        name: "Setting",
-        path: "/setting",
-        component: SettingPage,
-      },
-    ],
+        path: '/',
+        name: 'Welcome',
+        component: () => import('@/views/Welcome.vue')
+      }
+    ]
   },
-];
-
-export const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
-
-router.beforeEach(async (to) => {
-  if (!store().choiceProject.project_id && to.path !== "/" && to.path !== "/login") {
-    router.push("/");
-    notice.warning("请先选择一项实例");
-    return false;
+  {
+    path: '/:pathMatched(.*)*',
+    name: 'Not Found',
+    props: (route: { params: { pathMatched: string } }) => ({
+      pathMatched: `/${route.params.pathMatched}`
+    }),
+    component: () => import('@/views/NotFound.vue')
   }
-});
+]
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: routes
+})
+
+defaultRoutes
+  .map((route) => route.routeData)
+  .forEach((route) => {
+    router.addRoute('WebUI', route)
+  })
+
+export default router

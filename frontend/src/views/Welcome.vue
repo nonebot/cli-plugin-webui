@@ -1,0 +1,1 @@
+<template>welcome</template>

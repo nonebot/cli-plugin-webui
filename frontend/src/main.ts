@@ -1,12 +1,19 @@
-import App from "@/App.vue";
-import { createApp } from "vue";
-import { registerPlugins } from "@/plugins";
-import { webuiConfig } from "@/config";
+import '@/assets/main.css'
 
-import "@/style.css";
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import router from '@/router'
+import { OpenAPI } from '@/client/api'
 
-const app = createApp(App);
-registerPlugins(app);
-app.mount("#app");
+import App from './App.vue'
 
-webuiConfig.init();
+const app = createApp(App)
+
+app.use(createPinia())
+app.use(router)
+
+app.mount('#app')
+
+OpenAPI.TOKEN = async () => {
+  return localStorage.getItem('token') || ''
+}

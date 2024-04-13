@@ -1,9 +1,7 @@
-<template>
-  <router-view />
-</template>
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
+</script>
 
-<style>
-[data-theme="light"] .view {
-  background: #fffdfd;
-}
-</style>
+<template>
+  <RouterView />
+</template>
