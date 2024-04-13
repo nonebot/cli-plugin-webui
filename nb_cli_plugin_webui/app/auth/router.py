@@ -7,7 +7,7 @@ from nb_cli_plugin_webui.app.utils.security import jwt, salt
 from .schemas import LoginRequest
 from .exceptions import TokenInvalid
 
-router = APIRouter()
+router = APIRouter(tags=["auth"])
 
 
 @router.post("/login", response_model=GenericResponse[str])

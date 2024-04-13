@@ -11,7 +11,7 @@ from .utils import get_store_manager
 from .service import install_nonebot_module, uninstall_nonebot_module
 from .schemas import Plugin, ModuleInfo, SearchRequest, StoreListResponse
 
-router = APIRouter()
+router = APIRouter(tags=["store"])
 
 
 @router.post("/nonebot/install", response_model=GenericResponse[str])

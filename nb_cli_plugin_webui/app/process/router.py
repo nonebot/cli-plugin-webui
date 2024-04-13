@@ -22,7 +22,7 @@ from .service import run_nonebot_project
 from .dependencies import get_process, get_log_storage
 from .exceptions import DriverNotFound, AdapterNotFound
 
-router = APIRouter()
+router = APIRouter(tags=["process"])
 log_storage: Optional[LogStorage[ProcessLog]] = None
 log_listeners: Dict[WebSocket, Callable[[ProcessLog], Awaitable[None]]] = dict()
 

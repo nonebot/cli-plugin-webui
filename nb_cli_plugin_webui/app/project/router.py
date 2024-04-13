@@ -20,7 +20,7 @@ from .schemas import (
     CheckProjectTomlResponse,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["project"])
 router.include_router(config_router, prefix="/config")
 
 
