@@ -1,2 +1,2 @@
-export { useViewHistoryRecorderStore } from './viewHistoryRecorder'
-export { useNoneBotStore } from './nonebotStorage'
+export { useViewHistoryRecorderStore } from './ViewHistoryRecorder'
+export { useNoneBotStore } from './NoneBotStorage'
