@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { useViewHistoryRecorderStore } from '@/stores/viewHistoryRecorder'
+import { useViewHistoryRecorderStore } from '@/stores'
 import type { RouteItem } from '@/router/client'
 import { ref } from 'vue'
 
