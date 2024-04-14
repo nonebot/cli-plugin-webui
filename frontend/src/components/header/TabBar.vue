@@ -35,7 +35,7 @@ const operation = (route: RouteItem) => {
       v-for="i in store.viewHistory"
       role="tab"
       :class="{
-        'tab flex gap-2': true,
+        'tab flex gap-2 hover:bg-primary/[.2] transition': true,
         '[--tab-bg:oklch(var(--b2))] tab-active': isCurrentRoute(i.routeData.path)
       }"
       @click="operation(i)"
