@@ -1,6 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useNoneBotStore } from '@/stores'
+import CreateBotIndex from '@/components/Modals/CreateBot/CreateBotIndex.vue'
+
+const store = useNoneBotStore()
+
+const createBotModal = ref<InstanceType<typeof CreateBotIndex> | null>()
+const getBotIsRunning = () => {
+  return store.bots.filter((bot) => bot.is_running).length
+}
+</script>
 
 <template>
+  <CreateBotIndex ref="createBotModal" />
+
   <div class="grid gap-4">
     <div class="grid gap-4 grid-cols-1 xl:grid-cols-3">
       <div class="col-span-2 card bg-primary/[.2]">
@@ -26,12 +39,12 @@
         <div class="stats stats-vertical lg:stats-horizontal">
           <div class="stat">
             <div class="stat-title">已有实例</div>
-            <div class="stat-value">31K</div>
+            <div class="stat-value">{{ store.bots.length }}</div>
           </div>
 
           <div class="stat">
             <div class="stat-title">正在运行</div>
-            <div class="stat-value">4,200</div>
+            <div class="stat-value">{{ getBotIsRunning() }}</div>
           </div>
         </div>
 
@@ -39,7 +52,10 @@
           <div class="card-body items-center">
             <p>实例操作</p>
             <div class="card-actions justify-center gap-8">
-              <button class="btn btn-md lg:btn-sm btn-primary font-normal text-white">
+              <button
+                class="btn btn-md lg:btn-sm btn-primary font-normal text-white"
+                @click="createBotModal?.openModal()"
+              >
                 创建实例
               </button>
               <button class="btn btn-md lg:btn-sm btn-primary font-normal btn-outline">
@@ -50,6 +66,7 @@
         </div>
       </div>
     </div>
+
     <div class="grid gap-4 grid-cols-3">
       <div class="stats shadow-md border border-base-200">
         <div class="stat">
