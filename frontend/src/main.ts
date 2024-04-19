@@ -17,3 +17,4 @@ app.mount('#app')
 OpenAPI.TOKEN = async () => {
   return localStorage.getItem('token') || ''
 }
+OpenAPI.BASE = localStorage.getItem('debugUrl') || ''

@@ -14,6 +14,7 @@ const login = () => {
   if (isDebug.value) {
     OpenAPI.BASE = `//${host.value}:${port.value}/api`
     localStorage.setItem('isDebug', '1')
+    localStorage.setItem('debugUrl', OpenAPI.BASE)
   }
 
   AuthService.authTokenV1AuthLoginPost({ token: token.value, mark: date.toISOString() })
