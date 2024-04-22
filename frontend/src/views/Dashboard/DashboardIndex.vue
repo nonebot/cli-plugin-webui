@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useNoneBotStore } from '@/stores'
 import CreateBotIndex from '@/components/Modals/CreateBot/CreateBotIndex.vue'
 
 const store = useNoneBotStore()
 
 const createBotModal = ref<InstanceType<typeof CreateBotIndex> | null>()
-const getBotIsRunning = () => {
-  return store.bots.filter((bot) => bot.is_running).length
-}
+
+const getBotIsRunning = computed(() => {
+  return store.getExtendedBotsList().filter((bot) => bot.is_running).length
+})
 </script>
 
 <template>
@@ -39,12 +40,12 @@ const getBotIsRunning = () => {
         <div class="stats stats-vertical lg:stats-horizontal">
           <div class="stat">
             <div class="stat-title">已有实例</div>
-            <div class="stat-value">{{ store.bots.length }}</div>
+            <div class="stat-value">{{ store.getExtendedBotsList().length }}</div>
           </div>
 
           <div class="stat">
             <div class="stat-title">正在运行</div>
-            <div class="stat-value">{{ getBotIsRunning() }}</div>
+            <div class="stat-value">{{ getBotIsRunning }}</div>
           </div>
         </div>
 
