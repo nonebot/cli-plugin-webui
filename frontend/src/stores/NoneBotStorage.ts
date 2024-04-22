@@ -1,9 +1,38 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { ProjectService } from '@/client/api'
 import type { NoneBotProjectMeta, Driver, Adapter } from '@/client/api'
 
+interface MetaWrapper extends NoneBotProjectMeta {
+  projectID: string
+}
+
 export const useNoneBotStore = defineStore('nonebotStore', () => {
-  const bots = ref<NoneBotProjectMeta[]>([])
+  const bots = ref<{ [key: string]: NoneBotProjectMeta }>({})
+  const selectedBot = ref<MetaWrapper>()
+
+  const selectedBotFromLocalStorage = localStorage.getItem('selectedBot')
+  if (selectedBotFromLocalStorage) {
+    selectedBot.value = JSON.parse(selectedBotFromLocalStorage)
+  }
+
+  const getExtendedBotsList = (): MetaWrapper[] => {
+    return Object.keys(bots.value).map((projectID) => ({
+      projectID,
+      ...bots.value[projectID]
+    }))
+  }
+
+  const selectBot = (bot: MetaWrapper) => {
+    selectedBot.value = bot
+    localStorage.setItem('selectedBot', JSON.stringify(bot))
+  }
+
+  const loadBots = async () => {
+    await ProjectService.listProjectV1ProjectListGet().then((res) => {
+      bots.value = res.detail
+    })
+  }
 
   const template = ref(''),
     useSrc = ref(false),
@@ -28,6 +57,7 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
 
   return {
     bots,
+    selectedBot,
     template,
     useSrc,
     name,
@@ -37,6 +67,9 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
     adapters,
     isInstalling,
     addNoneBotSuccess,
+    getExtendedBotsList,
+    selectBot,
+    loadBots,
     reset
   }
 })
