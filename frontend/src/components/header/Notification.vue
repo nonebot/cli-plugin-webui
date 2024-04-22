@@ -20,7 +20,7 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
     <template v-slot:drawer-title>消息列表</template>
 
     <template v-slot:drawer-body>
-      <div class="grid gap-2 h-full">
+      <div class="grid gap-2">
         <div class="flex items-center transition bg-base-200/50 hover:bg-base-200 rounded-lg p-4">
           <!-- icon -->
           <div class="shrink-0">

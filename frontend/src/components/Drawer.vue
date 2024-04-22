@@ -53,7 +53,7 @@ const hiddenDrawer = () => {
 
       <div class="flex flex-col justify-between overflow-y-scroll h-full">
         <!-- Drawer Body -->
-        <div class="px-6 py-4">
+        <div class="h-full px-6 py-4">
           <slot name="drawer-body"></slot>
         </div>
 
