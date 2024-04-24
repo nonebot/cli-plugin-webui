@@ -1,20 +1,4 @@
 import '@/assets/main.css'
+import { initWebUI } from '@/client/init'
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import router from '@/router'
-import { OpenAPI } from '@/client/api'
-
-import App from './App.vue'
-
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
-
-app.mount('#app')
-
-OpenAPI.TOKEN = async () => {
-  return localStorage.getItem('token') || ''
-}
-OpenAPI.BASE = localStorage.getItem('debugUrl') || ''
+initWebUI()
