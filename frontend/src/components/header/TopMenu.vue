@@ -1,11 +1,33 @@
 <script setup lang="ts">
+import router from '@/router'
+import { computed } from 'vue'
+import { useCustomStorage } from '@/stores'
 import Notification from '@/components/header/Notification.vue'
 import BotChoose from '@/components/header/BotChoose.vue'
 import Status from '@/components/header/Status.vue'
+import WebUISettings from '@/components/header/WebUISettings.vue'
 
-const toggleTheme = (theme: 'light' | 'dark') => {
-  document.documentElement.setAttribute('data-theme', theme)
+const store = useCustomStorage()
+
+interface RouteItem {
+  path: string
+  name: string
 }
+
+const getBreadcrumbs = computed(() => {
+  const path = router.currentRoute.value.path
+  const paths = path.split('/').filter((item) => item)
+  const routes: RouteItem[] = []
+  let routePath = ''
+  paths.forEach((item) => {
+    routePath += `/${item}`
+    routes.push({
+      path: routePath,
+      name: item
+    })
+  })
+  return routes
+})
 </script>
 
 <template>
@@ -13,8 +35,9 @@ const toggleTheme = (theme: 'light' | 'dark') => {
     <div class="h-full flex items-center">
       <div class="max-w-xs text-sm breadcrumbs">
         <ul>
-          <li>Long text 1</li>
-          <li>Long text 2</li>
+          <li v-for="(item, index) in getBreadcrumbs" :key="index">
+            <a class="hover:link" @click="router.push(item.path)">{{ item.name }}</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -25,12 +48,15 @@ const toggleTheme = (theme: 'light' | 'dark') => {
         <label class="swap swap-rotate">
           <input type="checkbox" />
 
-          <span class="swap-on fill-current material-symbols-outlined" @click="toggleTheme('dark')">
+          <span
+            class="swap-on fill-current material-symbols-outlined"
+            @click="store.toggleTheme('dark')"
+          >
             dark_mode
           </span>
           <span
             class="swap-off fill-current material-symbols-outlined"
-            @click="toggleTheme('light')"
+            @click="store.toggleTheme('light')"
           >
             light_mode
           </span>
@@ -41,9 +67,7 @@ const toggleTheme = (theme: 'light' | 'dark') => {
 
       <BotChoose />
 
-      <button class="btn btn-sm btn-ghost btn-square">
-        <span class="material-symbols-outlined"> tune </span>
-      </button>
+      <WebUISettings />
       <button class="btn btn-sm btn-ghost btn-square">
         <span class="material-symbols-outlined text-primary" @click="$router.push('/login')">
           logout
