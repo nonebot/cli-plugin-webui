@@ -30,6 +30,7 @@ def get_nonebot_project_toml(project_dir: str) -> ProjectTomlDetail:
         log.error("Get nonebot project toml failed.")
         log.error(err)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"其它未知错误：{err}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"其它未知错误：{err}",
         )
     return toml_data
