@@ -1,0 +1,196 @@
+<script setup lang="ts">
+import { generateURLForWebUI } from '@/client/utils'
+import Chart from '@/components/Chart.vue'
+import { useWebSocket } from '@vueuse/core'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import type { StatusInfo, ChartItem } from './types'
+import { useChartStorage } from '@/stores'
+import type { LoadingOptions } from '@/types'
+
+const store = useChartStorage()
+
+store.addDataType('systemData', {
+  diskReadSpeed: [0],
+  diskWriteSpeed: [0],
+  netSentSpeed: [0],
+  netRecvSpeed: [0]
+})
+
+store.addDataType('processData', {
+  cpuPercent: [0],
+  memPercent: [0]
+})
+
+store.addDataType('timeData', {
+  time: ['00:00:00']
+})
+
+const machineStatIsLoading = ref(true),
+  processStatIsLoading = ref(true)
+
+const { data, close, open } = useWebSocket<StatusInfo>(generateURLForWebUI('/v1/status/ws', true), {
+  immediate: false,
+  onConnected(ws) {
+    const token = localStorage.getItem('token') ?? ''
+    ws.send(token)
+  }
+})
+
+watch(
+  () => data.value,
+  (rawData) => {
+    if (!rawData) {
+      machineStatIsLoading.value = true
+      return
+    } else {
+      machineStatIsLoading.value = false
+    }
+
+    const data: StatusInfo = JSON.parse(rawData.toString())
+
+    const convertToMB = (v: number) => v / 1024 / 1024
+    const convertToKB = (v: number) => v / 1024
+
+    const date = new Date()
+
+    store.updateData(
+      'timeData',
+      'time',
+      `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    )
+
+    const diskSpeed = data.system.disk.speed
+    const netSpeed = data.system.net.speed
+
+    store.updateData('systemData', 'diskReadSpeed', convertToMB(diskSpeed[0]))
+    store.updateData('systemData', 'diskWriteSpeed', convertToMB(diskSpeed[1]))
+    store.updateData('systemData', 'netSentSpeed', convertToKB(netSpeed[0]))
+    store.updateData('systemData', 'netRecvSpeed', convertToKB(netSpeed[1]))
+
+    if (data.process && data.process.performance) {
+      store.updateData(
+        'processData',
+        'cpuPercent',
+        Number(data.process.performance.cpu.toFixed(3)) * 100
+      )
+      store.updateData(
+        'processData',
+        'memPercent',
+        Number(data.process.performance.mem.toFixed(3)) * 100
+      )
+      processStatIsLoading.value = false
+    } else {
+      processStatIsLoading.value = true
+    }
+  }
+)
+
+onMounted(() => {
+  open()
+})
+
+onUnmounted(() => {
+  close()
+})
+
+const loadingOptions: LoadingOptions = {
+  text: '等待数据传入...',
+  textColor: 'grey',
+  maskColor: 'rgba(255, 255, 255, 0)',
+  color: 'rgb(107 114 128)'
+}
+
+const chartItems: ChartItem[] = [
+  {
+    title: '机器硬盘情况',
+    subtitle: computed(() => {
+      const lastReadSpeed = store.dataRefs.systemData?.diskReadSpeed.slice(-1)[0]
+      const lastWriteSpeed = store.dataRefs.systemData?.diskWriteSpeed.slice(-1)[0]
+      return `读取: ${Number(lastReadSpeed).toFixed(3)} MB/s, 写入: ${Number(
+        lastWriteSpeed
+      ).toFixed(3)} MB/s`
+    }),
+    isLoading: machineStatIsLoading.value,
+    timeData: store.dataRefs.timeData?.time ?? [],
+    data: [
+      {
+        name: '读取',
+        data: store.dataRefs.systemData?.diskReadSpeed ?? []
+      },
+      {
+        name: '写入',
+        data: store.dataRefs.systemData?.diskWriteSpeed ?? []
+      }
+    ]
+  },
+  {
+    title: '机器网络情况',
+    subtitle: computed(() => {
+      const lastSentSpeed = store.dataRefs.systemData?.netSentSpeed.slice(-1)[0]
+      const lastRecvSpeed = store.dataRefs.systemData?.netRecvSpeed.slice(-1)[0]
+      return `发送: ${Number(lastSentSpeed).toFixed(3)} KB/s, 接收: ${Number(lastRecvSpeed).toFixed(
+        3
+      )} KB/s`
+    }),
+    isLoading: machineStatIsLoading.value,
+    timeData: store.dataRefs.timeData?.time ?? [],
+    data: [
+      {
+        name: '发送',
+        data: store.dataRefs.systemData?.netSentSpeed ?? []
+      },
+      {
+        name: '接收',
+        data: store.dataRefs.systemData?.netRecvSpeed ?? []
+      }
+    ]
+  },
+  {
+    title: '实例 CPU 使用率',
+    subtitle: computed(() => {
+      const lastCpuPercent = store.dataRefs.processData?.cpuPercent.slice(-1)[0]
+      return `当前: ${Number(lastCpuPercent).toFixed(3)}%`
+    }),
+    isLoading: processStatIsLoading.value,
+    timeData: store.dataRefs.timeData?.time ?? [],
+    data: [
+      {
+        name: 'CPU 使用率',
+        data: store.dataRefs.processData?.cpuPercent ?? []
+      }
+    ]
+  },
+  {
+    title: '实例内存使用率',
+    subtitle: computed(() => {
+      const lastMemPercent = store.dataRefs.processData?.memPercent.slice(-1)[0]
+      return `当前: ${Number(lastMemPercent).toFixed(3)}%`
+    }),
+    isLoading: processStatIsLoading.value,
+    timeData: store.dataRefs.timeData?.time ?? [],
+    data: [
+      {
+        name: '内存使用率',
+        data: store.dataRefs.processData?.memPercent ?? []
+      }
+    ]
+  }
+]
+</script>
+
+<template>
+  <div class="grid gap-4 grid-cols-2">
+    <div v-for="item in chartItems" class="p-6 bg-base-200 rounded-box h-56">
+      <div>{{ item.title }}</div>
+      <div class="relative flex grow items-center h-full">
+        <div class="absolute top-0 mt-2 mb-2 text-xs">{{ item.subtitle.value }}</div>
+        <Chart
+          :item-data="item.data"
+          :time-data="item.timeData"
+          :is-loading="item.isLoading"
+          :loading-options="loadingOptions"
+        />
+      </div>
+    </div>
+  </div>
+</template>

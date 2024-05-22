@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useNoneBotStore } from '@/stores'
 import CreateBotIndex from '@/components/Modals/CreateBot/CreateBotIndex.vue'
+import MachineStat from '@/views/Dashboard/MachineStat.vue'
 
 const store = useNoneBotStore()
 
@@ -17,7 +18,7 @@ const getBotIsRunning = computed(() => {
 
   <div class="grid gap-4">
     <div class="grid gap-4 grid-cols-1 xl:grid-cols-3">
-      <div class="col-span-2 card bg-primary/[.2]">
+      <div class="col-span-1 xl:col-span-2 card bg-primary/[.2]">
         <div class="card-body justify-center gap-4">
           <h2 class="card-title">欢迎 👋</h2>
           <div class="text-sm">
@@ -68,31 +69,6 @@ const getBotIsRunning = computed(() => {
       </div>
     </div>
 
-    <div class="grid gap-4 grid-cols-3">
-      <div class="stats shadow-md border border-base-200">
-        <div class="stat">
-          <div class="stat-title">Total Page Views</div>
-          <div class="stat-value">89,400</div>
-          <div class="stat-desc">21% more than last month</div>
-        </div>
-      </div>
-
-      <div class="stats shadow-md border border-base-200">
-        <div class="stat">
-          <div class="stat-title">Total Page Views</div>
-          <div class="stat-value">89,400</div>
-          <div class="stat-desc">21% more than last month</div>
-        </div>
-      </div>
-
-      <div class="stats shadow-md border border-base-200">
-        <div class="stat">
-          <div class="stat-title">Total Page Views</div>
-          <div class="stat-value">89,400</div>
-          <div class="stat-desc">21% more than last month</div>
-        </div>
-      </div>
-    </div>
-    <div></div>
+    <MachineStat />
   </div>
 </template>
