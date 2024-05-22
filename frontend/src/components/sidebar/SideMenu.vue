@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useViewHistoryRecorderStore } from '@/stores'
-import { defaultRoutes, type RouteItem } from '@/router/client'
+import { defaultRoutes, type NavItem } from '@/router/client'
 
 const route = useRoute()
 const store = useViewHistoryRecorderStore()
@@ -10,7 +10,7 @@ const getCurrentRoute = () => {
   return route.path
 }
 
-const recordView = (route: RouteItem) => {
+const recordView = (route: NavItem) => {
   if (store.viewHistory.some((i: any) => i.routeData.path === route.routeData.path)) {
     return
   }
@@ -20,13 +20,24 @@ const recordView = (route: RouteItem) => {
 
 <template>
   <ul class="h-full pt-8 px-4 menu rounded-box">
-    <li v-for="i in defaultRoutes" class="mb-2" @click="recordView(i)">
+    <li v-for="route in defaultRoutes" class="mb-2" @click="recordView(route)">
+      <details v-if="route.routeData.children">
+        <summary>
+          <span class="material-symbols-outlined">{{ route.googleIcon }}</span>
+          {{ route.name }}
+        </summary>
+        <ul>
+          <li v-for="childRoute in route.routeData.children" class="mb-2">
+            {{ childRoute.name }}
+          </li>
+        </ul>
+      </details>
       <RouterLink
-        :to="i.routeData.path"
-        :class="{ active: i.routeData.path === getCurrentRoute() }"
+        :to="route.routeData.path"
+        :class="{ active: route.routeData.path === getCurrentRoute() }"
       >
-        <span class="material-symbols-outlined">{{ i.googleIcon }}</span>
-        {{ i.name }}
+        <span class="material-symbols-outlined">{{ route.googleIcon }}</span>
+        {{ route.name }}
       </RouterLink>
     </li>
   </ul>
