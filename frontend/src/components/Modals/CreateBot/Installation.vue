@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ProjectService, type ProcessLog } from '@/client/api'
 import { useNoneBotStore } from '@/stores'
-import { useWebSocket, type UseWebSocketReturn } from '@vueuse/core'
-import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
+import { useWebSocket } from '@vueuse/core'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { generateURLForWebUI } from '@/client/utils'
 
 const IS_FINISHED = '✨ Done!',
