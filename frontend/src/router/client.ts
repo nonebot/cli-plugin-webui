@@ -1,17 +1,21 @@
-interface RouteRecordRawRebuild {
-  path: string
+interface RouteInfo {
   name: string
-  component: () => Promise<any>
+  path: string
 }
 
-export interface RouteItem {
+export interface RouteRecordRawRebuild extends RouteInfo {
+  component: () => Promise<any>
+  children?: RouteRecordRawRebuild[]
+}
+
+export interface NavItem {
   googleIcon?: string
   name: string
   routeData: RouteRecordRawRebuild
 }
 
 // WebUI default routes
-export const defaultRoutes: RouteItem[] = [
+export const defaultRoutes: NavItem[] = [
   {
     googleIcon: 'team_dashboard',
     name: '概览',
@@ -19,6 +23,15 @@ export const defaultRoutes: RouteItem[] = [
       path: '/dashboard',
       name: 'Dashboard',
       component: () => import('@/views/Dashboard/DashboardIndex.vue')
+    }
+  },
+  {
+    googleIcon: 'settings_applications',
+    name: '实例操作',
+    routeData: {
+      path: '/operation',
+      name: 'Operation',
+      component: () => import('@/views/Operation/OperationIndex.vue')
     }
   },
   {
