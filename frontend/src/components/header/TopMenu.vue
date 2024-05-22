@@ -31,7 +31,7 @@ const getBreadcrumbs = computed(() => {
 </script>
 
 <template>
-  <div class="h-16 px-4 xl:px-8 py-2 flex justify-between">
+  <div class="h-16 px-4 xl:px-8 py-2 flex justify-between bg-base-100">
     <div class="h-full flex items-center">
       <div class="max-w-xs text-sm breadcrumbs">
         <ul>
