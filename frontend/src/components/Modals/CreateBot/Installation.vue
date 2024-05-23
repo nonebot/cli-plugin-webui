@@ -89,7 +89,6 @@ const retry = () => {
 
 onUnmounted(() => {
   close()
-  logData.value = []
 })
 </script>
 
