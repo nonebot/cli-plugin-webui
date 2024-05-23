@@ -3,27 +3,23 @@ import { defineStore } from 'pinia'
 import { ProjectService } from '@/client/api'
 import type { NoneBotProjectMeta, Driver, Adapter } from '@/client/api'
 
-interface MetaWrapper extends NoneBotProjectMeta {
-  projectID: string
-}
-
 export const useNoneBotStore = defineStore('nonebotStore', () => {
   const bots = ref<{ [key: string]: NoneBotProjectMeta }>({})
-  const selectedBot = ref<MetaWrapper>()
+  const selectedBot = ref<NoneBotProjectMeta>()
 
   const selectedBotFromLocalStorage = localStorage.getItem('selectedBot')
   if (selectedBotFromLocalStorage) {
     selectedBot.value = JSON.parse(selectedBotFromLocalStorage)
   }
 
-  const getExtendedBotsList = (): MetaWrapper[] => {
+  const getExtendedBotsList = (): NoneBotProjectMeta[] => {
     return Object.keys(bots.value).map((projectID) => ({
       projectID,
       ...bots.value[projectID]
     }))
   }
 
-  const selectBot = (bot: MetaWrapper) => {
+  const selectBot = (bot: NoneBotProjectMeta) => {
     selectedBot.value = bot
     localStorage.setItem('selectedBot', JSON.stringify(bot))
   }

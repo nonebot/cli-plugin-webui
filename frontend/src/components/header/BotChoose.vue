@@ -36,11 +36,11 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
           </div>
           <div class="w-full">
             {{ bot.project_name }}
-            <div class="text-xs opacity-50">{{ bot.projectID }}</div>
+            <div class="text-xs opacity-50">{{ bot.project_id }}</div>
           </div>
           <div class="shrink-0 flex gap-2">
             <div
-              v-if="store.selectedBot?.projectID === bot.projectID"
+              v-if="store.selectedBot?.project_id === bot.project_id"
               class="badge bg-blue-400 text-white"
             >
               选择中
