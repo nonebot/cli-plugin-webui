@@ -4,10 +4,11 @@ import Chart from '@/components/Chart.vue'
 import { useWebSocket } from '@vueuse/core'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { StatusInfo, ChartItem } from './types'
-import { useChartStorage } from '@/stores'
+import { useChartStorage, useNoneBotStore } from '@/stores'
 import type { LoadingOptions } from '@/types'
 
-const store = useChartStorage()
+const store = useChartStorage(),
+  nonebotStore = useNoneBotStore()
 
 store.addDataType('systemData', {
   diskReadSpeed: [0],
@@ -28,13 +29,25 @@ store.addDataType('timeData', {
 const machineStatIsLoading = ref(true),
   processStatIsLoading = ref(true)
 
-const { data, close, open } = useWebSocket<StatusInfo>(generateURLForWebUI('/v1/status/ws', true), {
-  immediate: false,
-  onConnected(ws) {
-    const token = localStorage.getItem('token') ?? ''
-    ws.send(token)
+const { data, close, open, send } = useWebSocket<StatusInfo>(
+  generateURLForWebUI('/v1/status/ws', true),
+  {
+    immediate: false,
+    onConnected(ws) {
+      const token = localStorage.getItem('token') ?? ''
+      ws.send(token)
+
+      if (nonebotStore.selectedBot) {
+        ws.send(
+          JSON.stringify({
+            type: 'status',
+            project_id: nonebotStore.selectedBot.project_id
+          })
+        )
+      }
+    }
   }
-})
+)
 
 watch(
   () => data.value,
@@ -93,6 +106,14 @@ onUnmounted(() => {
   close()
 })
 
+watch(
+  () => nonebotStore.selectedBot,
+  (newValue) => {
+    if (!newValue) return
+    send(JSON.stringify({ type: 'status', project_id: newValue.project_id }))
+  }
+)
+
 const loadingOptions: LoadingOptions = {
   text: '等待数据传入...',
   textColor: 'grey',
@@ -110,7 +131,7 @@ const chartItems: ChartItem[] = [
         lastWriteSpeed
       ).toFixed(3)} MB/s`
     }),
-    isLoading: machineStatIsLoading.value,
+    isLoading: computed(() => machineStatIsLoading.value),
     timeData: store.dataRefs.timeData?.time ?? [],
     data: [
       {
@@ -132,7 +153,7 @@ const chartItems: ChartItem[] = [
         3
       )} KB/s`
     }),
-    isLoading: machineStatIsLoading.value,
+    isLoading: computed(() => machineStatIsLoading.value),
     timeData: store.dataRefs.timeData?.time ?? [],
     data: [
       {
@@ -151,7 +172,7 @@ const chartItems: ChartItem[] = [
       const lastCpuPercent = store.dataRefs.processData?.cpuPercent.slice(-1)[0]
       return `当前: ${Number(lastCpuPercent).toFixed(3)}%`
     }),
-    isLoading: processStatIsLoading.value,
+    isLoading: computed(() => processStatIsLoading.value),
     timeData: store.dataRefs.timeData?.time ?? [],
     data: [
       {
@@ -166,7 +187,7 @@ const chartItems: ChartItem[] = [
       const lastMemPercent = store.dataRefs.processData?.memPercent.slice(-1)[0]
       return `当前: ${Number(lastMemPercent).toFixed(3)}%`
     }),
-    isLoading: processStatIsLoading.value,
+    isLoading: computed(() => processStatIsLoading.value),
     timeData: store.dataRefs.timeData?.time ?? [],
     data: [
       {
@@ -187,7 +208,7 @@ const chartItems: ChartItem[] = [
         <Chart
           :item-data="item.data"
           :time-data="item.timeData"
-          :is-loading="item.isLoading"
+          :is-loading="item.isLoading?.value"
           :loading-options="loadingOptions"
         />
       </div>

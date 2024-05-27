@@ -69,7 +69,7 @@ type NumberOrStringArray = (string | number)[]
 export type ChartItem = {
   title: string
   subtitle: ComputedRef<string>
-  isLoading?: boolean
+  isLoading?: ComputedRef<boolean>
   loadingOptions?: LoadingOptions
   timeData: NumberOrStringArray
   data: {
