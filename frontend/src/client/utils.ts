@@ -28,3 +28,7 @@ export const generateURLForWebUI = (path: string, isWebsocket = false) => {
   const protocol = isWebsocket ? 'ws' : 'http'
   return `${protocol}://${base}${path}`
 }
+
+export const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
