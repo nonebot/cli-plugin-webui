@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProcessLog } from '@/client/api'
+import { ProcessService, type ProcessLog } from '@/client/api'
 import { generateURLForWebUI } from '@/client/utils'
 import { useNoneBotStore } from '@/stores'
 import { useWebSocket } from '@vueuse/core'
@@ -10,6 +10,24 @@ const store = useNoneBotStore()
 const logData = ref<ProcessLog[]>([]),
   logShowTable = ref<HTMLElement>(),
   currentBot = ref('')
+
+const getHistoryLogs = async () => {
+  if (!store.selectedBot) return
+
+  const getLogCount = 20
+
+  await ProcessService.getLogHistoryV1ProcessLogHistoryGet(
+    getLogCount,
+    store.selectedBot.project_id
+  ).then((res) => {
+    logData.value = res.detail
+    if (res.detail.length > 0) {
+      logData.value.push({
+        message: '已获取近期 20 条日志'
+      })
+    }
+  })
+}
 
 const { status, data, close, open, send } = useWebSocket<ProcessLog>(
   generateURLForWebUI('/v1/process/log/ws', true),
@@ -26,9 +44,10 @@ const { status, data, close, open, send } = useWebSocket<ProcessLog>(
     }
   }
 )
-onMounted(() => {
+onMounted(async () => {
   if (!store.selectedBot) return
   open()
+  await getHistoryLogs()
 })
 
 onUnmounted(() => {
@@ -108,11 +127,11 @@ const retry = () => {
             'bg-warning/50': item.level === 'WARNING'
           }"
         >
-          <th class="sticky left-0 right-0 text-gray-500 pl-0">
+          <th v-if="item.time" class="sticky left-0 right-0 text-gray-500 pl-0">
             {{ item.time }}
           </th>
-          <td class="flex">{{ item.level }}</td>
-          <td class="flex">{{ item.message }}</td>
+          <td v-if="item.level" class="flex">{{ item.level }}</td>
+          <td :class="{ flex: true, 'pl-0 text-success': !item.time }">{{ item.message }}</td>
         </tr>
       </tbody>
     </table>
