@@ -23,7 +23,7 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
     <template v-slot:drawer-title>实例选择</template>
 
     <template v-slot:drawer-body>
-      <div class="h-full grid gap-2">
+      <div class="grid gap-2">
         <div
           v-if="store.getExtendedBotsList().length"
           v-for="bot in store.getExtendedBotsList()"
