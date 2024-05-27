@@ -27,6 +27,7 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
   const loadBots = async () => {
     await ProjectService.listProjectV1ProjectListGet().then((res) => {
       bots.value = res.detail
+      selectedBot.value = selectedBot.value ? bots.value[selectedBot.value.project_id] : undefined
     })
   }
 
