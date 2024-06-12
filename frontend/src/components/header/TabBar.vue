@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router'
 import router from '@/router'
 import { useViewHistoryRecorderStore } from '@/stores'
-import type { RouteItem } from '@/router/client'
+import type { NavItem } from '@/router/client'
 import { ref } from 'vue'
 
 const route = useRoute()
@@ -13,7 +13,7 @@ const isCurrentRoute = (path: string) => {
   return path === route.path
 }
 
-const operation = (route: RouteItem) => {
+const operation = (route: NavItem) => {
   if (!isCloseTab.value) {
     router.push(route.routeData.path)
     return
