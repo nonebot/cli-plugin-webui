@@ -39,13 +39,16 @@ def install_nonebot_module(
             if module.module_name == driver.module_name:
                 raise ModuleIsExisted()
 
-    module_type = "driver"
-    if "~" not in module.module_name:
-        pattern = r"nonebot-(.*?)-"
-        _match = re.search(pattern, module.project_link)
-        if _match is None:
-            raise ModuleTypeNotFound()
-        module_type = _match.group(1)
+    if module.module_type == "module":
+        module_type = "driver"
+        if "~" not in module.module_name:
+            pattern = r"nonebot-(.*?)-"
+            _match = re.search(pattern, module.project_link)
+            if _match is None:
+                raise ModuleTypeNotFound()
+            module_type = _match.group(1)
+    else:
+        module_type = module.module_type
 
     log = LogStorage(Config.process_log_destroy_seconds)
     log_key = generate_complexity_string(8)
