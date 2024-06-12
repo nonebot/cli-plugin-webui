@@ -44,12 +44,26 @@ export const useCustomStorage = defineStore('customStorage', () => {
     document.documentElement.setAttribute('data-theme', theme)
   }
 
+  const isInstantSearch = ref(false)
+
+  data = localStorage.getItem('instantSearch')
+  if (data) {
+    isInstantSearch.value = data === '1'
+  }
+
+  const toggleInstantSearch = () => {
+    isInstantSearch.value = !isInstantSearch.value
+    localStorage.setItem('instantSearch', isInstantSearch.value ? '1' : '0')
+  }
+
   return {
     isDebug,
     toggleDebug,
     isThemeFollowSystem,
     toggleThemeFollowSystem,
     currentTheme,
-    toggleTheme
+    toggleTheme,
+    isInstantSearch,
+    toggleInstantSearch
   }
 })

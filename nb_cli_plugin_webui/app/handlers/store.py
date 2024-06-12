@@ -114,7 +114,7 @@ class ModuleStoreManager(Generic[_T]):
         self.visible_items = visible_items
 
         self.items: List[_T] = list()
-        self.page = int()
+        self.page = 1
         self.search_result: List[_T] = list()
 
     async def load_item(self) -> None:
@@ -127,10 +127,9 @@ class ModuleStoreManager(Generic[_T]):
             return self.items
 
     def get_max_page(self, *, is_search: bool = False) -> int:
-        if is_search:
-            return math.ceil(len(self.search_result) / self.visible_items)
-        else:
-            return math.ceil(len(self.items) / self.visible_items)
+        return math.ceil(
+            len(self.search_result if is_search else self.items) / self.visible_items
+        )
 
     def generate_page(
         self,
@@ -143,11 +142,11 @@ class ModuleStoreManager(Generic[_T]):
         max_page = self.get_max_page(is_search=is_search)
         if self.page > max_page:
             self.page = max_page
-        elif self.page < 0:
-            self.page = 0
+        elif self.page < 1:
+            self.page = 1
 
         def generate_page_items(items: List[_T]) -> List[_T]:
-            a = self.page * self.visible_items
+            a = (self.page - 1) * self.visible_items
             b = a + self.visible_items
             return items[a:b]
 
@@ -194,6 +193,7 @@ class ModuleStoreManager(Generic[_T]):
                 result.append(item)
 
         data = result[:]
+        # 部分需要整顿成例如 downloaded:yes / no
         for tag in tags:
             if tag.label == "official":
                 for item in data:
@@ -204,15 +204,26 @@ class ModuleStoreManager(Generic[_T]):
                     if isinstance(item, Plugin) and not item.valid:
                         safe_list_remove(result, item)
             elif tag.label == "latest":
-                for item in data:
-                    if isinstance(item, Plugin):
-                        latest_time = (
-                            datetime.now(timezone(timedelta(hours=8)))
-                            - timedelta(weeks=1)
-                        ).timestamp()
-                        update_time = parser.parse(item.time).timestamp()
-                        if update_time < latest_time:
-                            safe_list_remove(result, item)
+                if tag.text == "week":
+                    for item in data:
+                        if isinstance(item, Plugin):
+                            latest_time = (
+                                datetime.now(timezone(timedelta(hours=8)))
+                                - timedelta(weeks=1)
+                            ).timestamp()
+                            update_time = parser.parse(item.time).timestamp()
+                            if update_time < latest_time:
+                                safe_list_remove(result, item)
+                elif tag.text == "month":
+                    for item in data:
+                        if isinstance(item, Plugin):
+                            latest_time = (
+                                datetime.now(timezone(timedelta(hours=8)))
+                                - timedelta(weeks=4)
+                            ).timestamp()
+                            update_time = parser.parse(item.time).timestamp()
+                            if update_time < latest_time:
+                                safe_list_remove(result, item)
             elif tag.label == "downloaded":
                 item = safe_list_get(self.items, 0, str())
                 if isinstance(item, Plugin):

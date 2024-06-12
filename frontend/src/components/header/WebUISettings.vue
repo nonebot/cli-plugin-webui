@@ -43,6 +43,18 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>()
             />
           </label>
         </div>
+
+        <div class="form-control">
+          <label class="label cursor-pointer">
+            <span class="label-text">是否即时搜索</span>
+            <input
+              type="checkbox"
+              class="toggle"
+              :checked="store.isInstantSearch"
+              @click="store.toggleInstantSearch()"
+            />
+          </label>
+        </div>
       </div>
     </template>
   </Drawer>
