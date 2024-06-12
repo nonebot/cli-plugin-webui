@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from '@/router'
 import { useNoneBotStore } from '@/stores'
 import { computed, ref, type ComputedRef } from 'vue'
 
@@ -49,7 +50,7 @@ const openModal = (t: string) => {
     <div class="modal-box rounded-lg flex flex-col gap-4">
       <h3 class="font-semibold text-lg">{{ detailShowModalTitle }}详细</h3>
 
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <div
           v-if="detailShowModalContent.length > 0"
           v-for="d in detailShowModalContent"
@@ -62,7 +63,12 @@ const openModal = (t: string) => {
 
       <div class="flex justify-between">
         <div class="flex items-center gap-2">
-          <button class="btn btn-sm btn-primary font-normal text-white">管理</button>
+          <button
+            class="btn btn-sm btn-primary font-normal text-white"
+            @click="router.push('/store'), detailShowModal?.close()"
+          >
+            管理
+          </button>
         </div>
 
         <div class="flex items-center gap-2">
