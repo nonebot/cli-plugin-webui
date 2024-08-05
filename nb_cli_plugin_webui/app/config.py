@@ -31,9 +31,9 @@ class SecretStrJSONEncoder(json.JSONEncoder):
 
 class AppConfig(BaseModel):
     base_dir: str = Field(
-        default_factory=lambda: str(Path.cwd() / "/projects")
-        if "WEBUI_BUILD" in os.environ
-        else str(),
+        default_factory=lambda: (
+            str(Path.cwd() / "/projects") if "WEBUI_BUILD" in os.environ else str()
+        ),
         description="基础目录，创建实例将由此开始",
     )
     host: str = Field(default="localhost", description="主机名")
@@ -44,7 +44,9 @@ class AppConfig(BaseModel):
     log_level: str = Field(default="INFO", description="日志等级")
     log_is_store: bool = Field(default=False, description="是否存储日志")
 
-    secret_key: SecretStr = Field(default=SecretStr(str()), description="验证密钥的密钥")
+    secret_key: SecretStr = Field(
+        default=SecretStr(str()), description="验证密钥的密钥"
+    )
     hashed_token: str = Field(default=str(), description="哈希后的 token")
     salt: SecretStr = Field(default=SecretStr(str()), description="盐值")
 
@@ -57,7 +59,9 @@ class AppConfig(BaseModel):
         default=5 * 60, description="进程单条日志销毁时间（秒）"
     )
 
-    extension_store_visible_items: int = Field(default=12, description="扩展商店每页显示数量")
+    extension_store_visible_items: int = Field(
+        default=12, description="扩展商店每页显示数量"
+    )
 
     def to_json(self) -> str:
         return json.dumps(self.dict(), cls=SecretStrJSONEncoder)

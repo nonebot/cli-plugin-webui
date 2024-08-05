@@ -57,7 +57,8 @@ async def delete_file(path: str) -> FileResponse:
         log.error(f"Delete file failed: {err}")
         log.exception(err)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"删除文件失败 {err=}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"删除文件失败 {err=}",
         )
 
     result = list_file(working_dir.parent, Path(Config.base_dir))
