@@ -7,5 +7,15 @@ export type ModuleConfigFather = {
   title: string
   description: string
   name: string
+  module_type: ModuleConfigFather.module_type
   properties: Array<ModuleConfigChild>
+}
+export namespace ModuleConfigFather {
+  export enum module_type {
+    PLUGIN = 'plugin',
+    ADAPTER = 'adapter',
+    DRIVER = 'driver',
+    PROJECT = 'project',
+    TOML = 'toml'
+  }
 }

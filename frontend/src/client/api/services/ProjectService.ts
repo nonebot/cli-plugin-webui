@@ -110,7 +110,7 @@ export class ProjectService {
   }
   /**
    *  Get Project Meta Config
-   * - 获取 NoneBot 实例配置信息
+   * - 获取 NoneBot 实例在 .toml 中的配置信息
    * @param projectId
    * @returns ModuleConfigResponse Successful Response
    * @throws ApiError
@@ -131,7 +131,7 @@ export class ProjectService {
   }
   /**
    *  Get Project Nonebot Config
-   * - 获取 NoneBot 实例中 NoneBot 配置信息
+   * - 获取 NoneBot 实例配置信息
    * @param projectId
    * @returns ModuleConfigResponse Successful Response
    * @throws ApiError
@@ -157,12 +157,12 @@ export class ProjectService {
    * @returns ModuleConfigResponse Successful Response
    * @throws ApiError
    */
-  public static getProjectNonebotPluginConfigV1ProjectConfigNonebotPluginsDetailGet(
+  public static getProjectNonebotPluginConfigV1ProjectConfigNonebotPluginDetailGet(
     projectId: string
   ): CancelablePromise<ModuleConfigResponse> {
     return __request(OpenAPI, {
       method: 'GET',
-      url: '/v1/project/config/nonebot/plugins/detail',
+      url: '/v1/project/config/nonebot/plugin/detail',
       query: {
         project_id: projectId
       },
@@ -174,6 +174,8 @@ export class ProjectService {
   /**
    *  Update Project Config
    * - 根据模块类型及环境更新配置信息
+   * - 说明:
+   * * `module_type` 仅作 WebUI 更新自身存储的实例信息，不会影响实例本体
    * @param moduleType
    * @param projectId
    * @param requestBody
@@ -181,7 +183,7 @@ export class ProjectService {
    * @throws ApiError
    */
   public static updateProjectConfigV1ProjectConfigUpdatePost(
-    moduleType: string,
+    moduleType: 'plugin' | 'adapter' | 'driver' | 'project' | 'toml',
     projectId: string,
     requestBody: ModuleConfigUpdateRequest
   ): CancelablePromise<GenericResponse_str_> {

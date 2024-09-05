@@ -7,8 +7,9 @@ export type ModuleConfigChild = {
   description: string
   name: string
   default?: any
-  item_type: string
+  conf_type: string
   enum: Array<any>
   configured?: any
+  is_secret: boolean
   latest_change?: string
 }

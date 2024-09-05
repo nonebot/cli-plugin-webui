@@ -144,7 +144,7 @@ const finishCreate = () => {
         <button
           v-else
           class="btn btn-sm btn-primary font-normal text-white"
-          @click="createBotModal?.close"
+          @click="finishCreate()"
         >
           完成
         </button>

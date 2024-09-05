@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type ModuleConfigUpdateRequest = {
   env: string
-  key_type: string
+  conf_type: string
   k: string
   v?: any
 }

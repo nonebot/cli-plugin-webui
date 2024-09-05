@@ -83,7 +83,7 @@ export class StoreService {
    * @throws ApiError
    */
   public static getNonebotStoreItemsV1StoreNonebotListGet(
-    moduleType: 'plugin' | 'adapter' | 'driver',
+    moduleType: 'plugin' | 'adapter' | 'driver' | 'project' | 'toml',
     page: number,
     isSearch: boolean = false,
     showAll: boolean = false,

@@ -12,6 +12,8 @@ export namespace SearchRequest {
   export enum module_type {
     PLUGIN = 'plugin',
     ADAPTER = 'adapter',
-    DRIVER = 'driver'
+    DRIVER = 'driver',
+    PROJECT = 'project',
+    TOML = 'toml'
   }
 }

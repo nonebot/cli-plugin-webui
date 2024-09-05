@@ -1,10 +1,11 @@
 import ast
 import json
-from typing import List
 from pathlib import Path
+from typing import Any, Dict, List
 
 from fastapi import Depends, APIRouter, HTTPException, status
 
+from nb_cli_plugin_webui.app.constants import MODULE_TYPE
 from nb_cli_plugin_webui.app.logging import logger as log
 from nb_cli_plugin_webui.app.schemas import NoneBotProjectMeta
 from nb_cli_plugin_webui.app.handlers import (
@@ -103,7 +104,7 @@ async def _get_project_meta_config(
     project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
 ) -> ModuleConfigResponse:
     """
-    - 获取 NoneBot 实例配置信息
+    - 获取 NoneBot 实例在 .toml 中的配置信息
     """
     project_meta = project.read()
     config_props = NoneBotProjectMeta.schema()["properties"]
@@ -113,15 +114,16 @@ async def _get_project_meta_config(
             continue
 
         prop_detail = config_props[prop]
-        item_type = prop_detail.get("type", "string")
+        conf_type = prop_detail.get("type", "string")
 
         detail = ModuleConfigChild(
             title=prop_detail["title"],
             description=str(),
             name=prop,
             default=str(),
-            item_type=item_type,
+            conf_type=conf_type,
             enum=prop_detail.get("enum", list()),
+            is_secret=prop_detail.get("writeOnly", False),
             configured=getattr(project_meta, prop),
         )
         cache_list.append(detail)
@@ -130,6 +132,7 @@ async def _get_project_meta_config(
         title="Project Config",
         description="",
         name="project-meta",
+        module_type="toml",
         properties=cache_list,
     )
 
@@ -141,7 +144,7 @@ async def _get_project_nonebot_config(
     project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
 ) -> ModuleConfigResponse:
     """
-    - 获取 NoneBot 实例中 NoneBot 配置信息
+    - 获取 NoneBot 实例配置信息
     """
     project_meta = project.read()
     try:
@@ -166,15 +169,16 @@ async def _get_project_nonebot_config(
             if type(default_param) in {list, set}
             else default_param
         )
-        item_type = prop_detail.get("type", "string")
+        conf_type = prop_detail.get("type", "string")
 
         detail = ModuleConfigChild(
             title=prop_detail["title"],
             description=prop_detail.get("description", str()),
             name=prop,
             default=default_item,
-            item_type=item_type,
-            enum=list(),
+            conf_type=conf_type,
+            enum=prop_detail.get("enum", list()),
+            is_secret=prop_detail.get("writeOnly", False),
             configured=prop_detail.get("configured", str()),
         )
         cache_list.append(detail)
@@ -183,13 +187,14 @@ async def _get_project_nonebot_config(
         title="NoneBot Config",
         description=config_detail.get("description", str()),
         name="nonebot-config",
+        module_type="project",
         properties=cache_list,
     )
 
     return ModuleConfigResponse(detail=[result])
 
 
-@router.get("/nonebot/plugins/detail", response_model=ModuleConfigResponse)
+@router.get("/nonebot/plugin/detail", response_model=ModuleConfigResponse)
 async def _get_project_nonebot_plugin_config(
     project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
 ) -> ModuleConfigResponse:
@@ -208,8 +213,8 @@ async def _get_project_nonebot_plugin_config(
         cache_list: List[ModuleConfigChild] = list()
         for prop in props:
             prop_detail = props[prop]
-            item_type = prop_detail.get("type", "string")
-            if item_type == "object":
+            conf_type = prop_detail.get("type", "string")
+            if conf_type == "object":
                 configured = str(prop_detail.get("configured", str()))
                 default_param = configured
             else:
@@ -224,7 +229,7 @@ async def _get_project_nonebot_plugin_config(
 
             enum = list()
             items = prop_detail.get("items")
-            if items and item_type == "array":
+            if items and conf_type == "array":
                 enum = items.get("enum", list())
 
             detail = ModuleConfigChild(
@@ -232,9 +237,10 @@ async def _get_project_nonebot_plugin_config(
                 description=prop_detail.get("description", str()),
                 name=prop,
                 default=default_value,
-                item_type=item_type,
+                conf_type=conf_type,
                 enum=enum,
                 configured=configured,
+                is_secret=prop_detail.get("writeOnly", False),
                 latest_change=prop_detail.get("latest_change", str()),
             )
             cache_list.append(detail)
@@ -243,6 +249,7 @@ async def _get_project_nonebot_plugin_config(
             title=plugin.module_name,
             description=plugin.desc,
             name=plugin.module_name,
+            module_type="plugin",
             properties=cache_list,
         )
         result.append(plugin_detail)
@@ -252,33 +259,46 @@ async def _get_project_nonebot_plugin_config(
 
 @router.post("/update", response_model=GenericResponse[str])
 async def _update_project_config(
-    module_type: str,
+    module_type: MODULE_TYPE,
     data: ModuleConfigUpdateRequest,
     project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
 ) -> GenericResponse[str]:
     """
     - 根据模块类型及环境更新配置信息
+    - 说明:
+        * `module_type` 仅作 WebUI 更新自身存储的实例信息，不会影响实例本体
     """
+
+    # TODO: 修复modify_config 中接受的 value 类型判断不准确。module_type 需重新考虑
 
     project_meta = project.read()
     target_config = data.k.split(":")[-1]
 
-    if module_type == "project":
-        if data.key_type == "boolean":
+    if module_type == "toml":
+        if data.conf_type == "boolean":
             setattr(data, "v", bool(data.v))
+
         project.modify_meta(target_config, data.v)
+
+        toml_data = project.get_toml_data()
+        table: Dict[str, Any] = toml_data.setdefault("tool", {}).setdefault(
+            "nonebot", {}
+        )
+        table[data.k] = data.v
+        project.write_toml_data(toml_data)
+
         return GenericResponse(detail="success")
 
     def modify_config():
         data.v = str(data.v)
-        if data.key_type in {"object", "array", "boolean"}:
+        if data.conf_type in {"object", "array", "boolean"}:
             data.v = ast.literal_eval(data.v)
             v = json.dumps(data.v)
         else:
             v = data.v
         project.write_to_env(data.env, target_config, v)
 
-        if module_type == "nonebot_plugin":
+        if module_type == "plugin":
             plugins = project_meta.plugins
             for plugin in plugins:
                 config_detail = plugin.config_detail

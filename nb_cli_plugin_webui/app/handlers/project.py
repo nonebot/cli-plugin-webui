@@ -1,11 +1,14 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
+import tomlkit
 from nb_cli.config import ConfigManager
 from dotenv import set_key, dotenv_values
+from tomlkit.toml_document import TOMLDocument
 from pydantic import BaseModel, ValidationError
 from nb_cli.exceptions import ProjectNotFoundError
 from nb_cli.config import SimpleInfo as CliSimpleInfo
+from nb_cli.config.parser import CONFIG_FILE_ENCODING
 
 from nb_cli_plugin_webui.app.utils.storage import get_data_file
 from nb_cli_plugin_webui.app.schemas import Plugin, ModuleInfo, NoneBotProjectMeta
@@ -15,6 +18,7 @@ from .plugin import get_nonebot_plugin_list, get_nonebot_plugin_config_detail
 
 PROJECTS_DATA_FILE_NAME = "projects.json"
 PROJECTS_DATA_PATH = get_data_file(PROJECTS_DATA_FILE_NAME)
+PROJECTS_DATA_ENCODING = "utf-8"
 
 
 class NoneBotProjectList(BaseModel):
@@ -33,6 +37,7 @@ class NoneBotProjectManager:
     def __init__(self, *, project_id: str) -> None:
         self.project_id = project_id
 
+        # TODO: 需考虑的错误处理
         try:
             self.read()
         except Exception:
@@ -70,6 +75,16 @@ class NoneBotProjectManager:
         )
 
         return info
+
+    def get_toml_data(self) -> TOMLDocument:
+        return tomlkit.parse(
+            self.config_manager.config_file.read_text(encoding=CONFIG_FILE_ENCODING)
+        )
+
+    def write_toml_data(self, data: TOMLDocument) -> None:
+        self.config_manager.config_file.write_text(
+            tomlkit.dumps(data), encoding=CONFIG_FILE_ENCODING
+        )
 
     async def add_project(
         self,
