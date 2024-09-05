@@ -59,7 +59,7 @@ export const useNavStorage = defineStore('navStorage', () => {
   const addRouteItemToNav = (navItemName: string, routeItem: RouteRecordRawRebuild) => {
     checkRouteItem(routeItem)
 
-    for (let nav in navItems.value) {
+    for (const nav in navItems.value) {
       const data = navItems.value[nav]
       if (data.name !== navItemName) {
         continue
