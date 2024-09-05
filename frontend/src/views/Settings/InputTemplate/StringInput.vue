@@ -35,7 +35,11 @@ const update = async () => {
     <input
       :type="data.is_secret && inVisible ? 'password' : 'text'"
       v-model="inputValue"
-      v-if="data.default.length <= 15 && data.conf_type !== 'object' && !data.is_secret"
+      v-if="
+        ((data.default && data.default.length) || 0) <= 15 &&
+        data.conf_type !== 'object' &&
+        !data.is_secret
+      "
       class="input input-sm !bg-base-100"
       :disabled="!inEditing"
       @blur="update()"
