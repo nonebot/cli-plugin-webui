@@ -95,26 +95,26 @@ const isFinished = async () => {
 }
 
 const getUpdateTime = computed(() => {
-  if ('time' in props.data) {
-    const time = new Date(props.data.time)
-    const now = new Date()
-    const diff = now.getTime() - time.getTime()
-    const diffHours = diff / (1000 * 60 * 60)
-    const diffDays = diff / (1000 * 60 * 60 * 24)
-    const diffMonths = diff / (1000 * 60 * 60 * 24 * 30)
-    const diffYears = diff / (1000 * 60 * 60 * 24 * 365)
+  if (!('time' in props.data)) return 'ignore'
 
-    if (diffYears >= 1) {
-      return `${Math.floor(diffYears)}年前`
-    } else if (diffMonths >= 1) {
-      return `${Math.floor(diffMonths)}个月前`
-    } else if (diffDays >= 1) {
-      return `${Math.floor(diffDays)}天前`
-    } else if (diffHours >= 1) {
-      return `${Math.floor(diffHours)}小时前`
-    } else {
-      return '刚刚'
-    }
+  const time = new Date(props.data.time)
+  const now = new Date()
+  const diff = now.getTime() - time.getTime()
+  const diffHours = diff / (1000 * 60 * 60)
+  const diffDays = diff / (1000 * 60 * 60 * 24)
+  const diffMonths = diff / (1000 * 60 * 60 * 24 * 30)
+  const diffYears = diff / (1000 * 60 * 60 * 24 * 365)
+
+  if (diffYears >= 1) {
+    return `${Math.floor(diffYears)}年前`
+  } else if (diffMonths >= 1) {
+    return `${Math.floor(diffMonths)}个月前`
+  } else if (diffDays >= 1) {
+    return `${Math.floor(diffDays)}天前`
+  } else if (diffHours >= 1) {
+    return `${Math.floor(diffHours)}小时前`
+  } else {
+    return '刚刚'
   }
 })
 </script>
