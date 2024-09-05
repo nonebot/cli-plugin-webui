@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 from datetime import datetime, timedelta
 
 import jwt
@@ -28,7 +28,7 @@ def create_access_for_header(detail: str, secret_key: str) -> str:
     )
 
 
-def verify_and_read_jwt(token: str, secret_key: str) -> str:
+def verify_and_read_jwt(token: str, secret_key: str) -> Any:
     try:
         return jwt.decode(token, secret_key, algorithms=[ALGORITHM])
     except jwt.ExpiredSignatureError as err:

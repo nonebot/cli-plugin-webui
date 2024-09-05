@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { GenericResponse_str_ } from '../models/GenericResponse_str_'
 import type { LoginRequest } from '../models/LoginRequest'
+import type { VerifyRequest } from '../models/VerifyRequest'
 import type { CancelablePromise } from '../core/CancelablePromise'
 import { OpenAPI } from '../core/OpenAPI'
 import { request as __request } from '../core/request'
@@ -21,6 +22,26 @@ export class AuthService {
     return __request(OpenAPI, {
       method: 'POST',
       url: '/v1/auth/login',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        422: `Validation Error`
+      }
+    })
+  }
+  /**
+   * Verify Token
+   * - 验证 JWT 密钥是否可用
+   * @param requestBody
+   * @returns GenericResponse_str_ Successful Response
+   * @throws ApiError
+   */
+  public static verifyTokenV1AuthVerifyPost(
+    requestBody: VerifyRequest
+  ): CancelablePromise<GenericResponse_str_> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/v1/auth/verify',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
