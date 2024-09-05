@@ -20,14 +20,14 @@ const recordView = (route: NavItem) => {
 
 <template>
   <ul class="h-full pt-8 px-4 menu rounded-box">
-    <li v-for="route in defaultRoutes" class="mb-2" @click="recordView(route)">
+    <li v-for="route in defaultRoutes" :key="route.name" class="mb-2" @click="recordView(route)">
       <details v-if="route.routeData.children">
         <summary>
           <span class="material-symbols-outlined">{{ route.googleIcon }}</span>
           {{ route.name }}
         </summary>
         <ul>
-          <li v-for="childRoute in route.routeData.children" class="mb-2">
+          <li v-for="childRoute in route.routeData.children" :key="childRoute.name" class="mb-2">
             {{ childRoute.name }}
           </li>
         </ul>

@@ -18,7 +18,7 @@ const props = defineProps<{ data: ModuleConfigFather }>()
     </div>
 
     <!-- config area -->
-    <div v-for="i in props.data.properties" class="flex flex-col gap-1">
+    <div v-for="i in props.data.properties" :key="i.name" class="flex flex-col gap-1">
       <!-- config desc -->
       <div class="flex items-center gap-1">
         <div class="text-opacity-80 text-base-content font-medium">

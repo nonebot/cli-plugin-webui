@@ -10,20 +10,20 @@ const store = useNoneBotStore()
 
 const currentPage = ref(0),
   maxPage = ref(0),
-  data = ref<T[]>([]) as Ref<T[]>,
+  rawData = ref<T[]>([]) as Ref<T[]>,
   showData = ref<T[]>([]) as Ref<T[]>
 
 watch(
   () => props.data,
   (value) => {
-    data.value = value
-    maxPage.value = Math.ceil(data.value.length / 12) - 1
+    rawData.value = value
+    maxPage.value = Math.ceil(rawData.value.length / 12) - 1
     updateData(currentPage.value)
   }
 )
 
 const updateData = (page: number) => {
-  showData.value = data.value.slice(page * 12, (page + 1) * 12)
+  showData.value = rawData.value.slice(page * 12, (page + 1) * 12)
 }
 
 const itemIsExisted = (data: T): number => {
@@ -80,7 +80,11 @@ const updateItem = (data: T) => {
         v-if="props.data.length"
         class="overflow-auto max-h-96 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
       >
-        <div v-for="item in showData" class="bg-base-100 rounded-lg p-4 flex justify-between">
+        <div
+          v-for="item in showData"
+          :key="item.name"
+          class="bg-base-100 rounded-lg p-4 flex justify-between"
+        >
           <div>
             <div class="text-semibold flex items-center gap-1">
               <a
@@ -117,8 +121,9 @@ const updateItem = (data: T) => {
       <div class="shrink-0">当前选择:</div>
       <div class="flex items-center flex-wrap gap-2">
         <div
-          role="button"
           v-for="item in (store as any)[`${props.dataType.toLowerCase()}s`]"
+          :key="item.name"
+          role="button"
           class="badge badge-lg !bg-base-100"
           @click="updateItem(item)"
         >

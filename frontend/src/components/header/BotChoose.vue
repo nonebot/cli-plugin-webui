@@ -23,10 +23,10 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
     <template v-slot:drawer-title>实例选择</template>
 
     <template v-slot:drawer-body>
-      <div class="grid gap-2">
+      <div v-if="store.getExtendedBotsList().length" class="grid gap-2">
         <div
-          v-if="store.getExtendedBotsList().length"
           v-for="bot in store.getExtendedBotsList()"
+          :key="bot.project_id"
           role="button"
           class="flex items-center justify-between gap-4 transition bg-base-200/50 hover:bg-base-200 rounded-lg p-4"
           @click="store.selectBot(bot)"
@@ -48,20 +48,20 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
             <div v-if="bot.is_running" class="badge badge-success text-white">运行中</div>
           </div>
         </div>
-        <div v-else class="flex justify-center items-center">
-          <div class="flex flex-col items-center gap-4">
-            暂无实例
-            <div class="flex gap-4">
-              <button
-                class="btn btn-md lg:btn-sm btn-primary font-normal text-white"
-                @click="createBotModal?.openModal()"
-              >
-                创建一个
-              </button>
-              <button class="btn btn-md lg:btn-sm btn-outline btn-primary font-normal">
-                添加一个
-              </button>
-            </div>
+      </div>
+      <div v-else class="flex justify-center items-center">
+        <div class="flex flex-col items-center gap-4">
+          暂无实例
+          <div class="flex gap-4">
+            <button
+              class="btn btn-md lg:btn-sm btn-primary font-normal text-white"
+              @click="createBotModal?.openModal()"
+            >
+              创建一个
+            </button>
+            <button class="btn btn-md lg:btn-sm btn-outline btn-primary font-normal">
+              添加一个
+            </button>
           </div>
         </div>
       </div>

@@ -51,14 +51,10 @@ const openModal = (t: string) => {
       <h3 class="font-semibold text-lg">{{ detailShowModalTitle }}详细</h3>
 
       <div class="flex flex-wrap gap-2">
-        <div
-          v-if="detailShowModalContent.length > 0"
-          v-for="d in detailShowModalContent"
-          class="badge badge-ghost"
-        >
+        <div v-for="d in detailShowModalContent" :key="d" class="badge badge-ghost">
           {{ d }}
         </div>
-        <div v-else>暂无数据</div>
+        <div v-if="!detailShowModalContent.length">暂无数据</div>
       </div>
 
       <div class="flex justify-between">
@@ -105,7 +101,7 @@ const openModal = (t: string) => {
     <div class="w-full p-6 bg-base-200 rounded-box flex items-center justify-center">
       <table class="table">
         <tbody>
-          <tr v-for="item in items">
+          <tr v-for="item in items" :key="item.title">
             <th class="pl-0">{{ item.title }}</th>
             <td>
               <div class="badge">{{ item.details.value.length }} 个</div>

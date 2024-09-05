@@ -27,6 +27,7 @@ const options: OptionItem[] = [
     <div class="flex flex-col items-center gap-4">
       <button
         v-for="i in options"
+        :key="i.text"
         :class="{
           'w-1/2 xl:w-1/3 btn btn-primary font-normal text-white': true,
           'btn-outline': store.template !== i.value

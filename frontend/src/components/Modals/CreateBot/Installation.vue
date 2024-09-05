@@ -122,7 +122,9 @@ onUnmounted(() => {
               <td class="font-semibold">驱动器</td>
               <td>
                 <div class="flex items-center gap-2">
-                  <div v-for="driver in store.drivers" class="badge">{{ driver.name }}</div>
+                  <div v-for="driver in store.drivers" class="badge" :key="driver.name">
+                    {{ driver.name }}
+                  </div>
                 </div>
               </td>
             </tr>
@@ -130,7 +132,9 @@ onUnmounted(() => {
               <td class="font-semibold">适配器</td>
               <td>
                 <div class="flex items-center gap-2">
-                  <div v-for="adapter in store.adapters" class="badge">{{ adapter.name }}</div>
+                  <div v-for="adapter in store.adapters" class="badge" :key="adapter.name">
+                    {{ adapter.name }}
+                  </div>
                 </div>
               </td>
             </tr>
@@ -142,6 +146,7 @@ onUnmounted(() => {
         <tbody ref="logShowArea">
           <tr
             v-for="item in getLogData"
+            :key="item.time"
             :class="{
               'flex font-mono': true,
               'bg-error/50': item.level === 'ERROR',

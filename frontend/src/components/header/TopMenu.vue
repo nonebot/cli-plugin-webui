@@ -35,7 +35,7 @@ const getBreadcrumbs = computed(() => {
     <div class="h-full flex items-center">
       <div class="max-w-xs text-sm breadcrumbs">
         <ul>
-          <li v-for="(item, index) in getBreadcrumbs" :key="index">
+          <li v-for="item in getBreadcrumbs" :key="item.name">
             <a class="hover:link" @click="router.push(item.path)">{{ item.name }}</a>
           </li>
         </ul>

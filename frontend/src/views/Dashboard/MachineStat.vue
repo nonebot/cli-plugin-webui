@@ -201,7 +201,7 @@ const chartItems: ChartItem[] = [
 
 <template>
   <div class="grid gap-4 grid-cols-2">
-    <div v-for="item in chartItems" class="p-6 bg-base-200 rounded-box h-56">
+    <div v-for="item in chartItems" :key="item.title" class="p-6 bg-base-200 rounded-box h-56">
       <div>{{ item.title }}</div>
       <div class="relative flex grow items-center h-full">
         <div class="absolute top-0 mt-2 mb-2 text-xs">{{ item.subtitle.value }}</div>

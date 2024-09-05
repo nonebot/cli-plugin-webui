@@ -45,7 +45,7 @@ const mirrors: MirrorItem[] = [
         <span class="label-text">请选择:</span>
       </div>
       <select class="select select-bordered" v-model="store.pythonMirror">
-        <option v-for="mirror in mirrors" :value="mirror.url">
+        <option v-for="mirror in mirrors" :value="mirror.url" :key="mirror.name">
           {{ mirror.abbr }} - {{ mirror.name }}
         </option>
       </select>

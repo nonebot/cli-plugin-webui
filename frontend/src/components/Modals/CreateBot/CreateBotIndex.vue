@@ -90,6 +90,7 @@ const finishCreate = () => {
         <ul class="steps w-full xl:w-3/4 gap-4">
           <li
             v-for="(step, index) in steps"
+            :key="step.title"
             :role="step.pass() && !store.isInstalling && !store.addNoneBotSuccess ? 'button' : ''"
             :data-content="index < createStep ? '✓' : index + 1"
             :class="{
@@ -115,7 +116,7 @@ const finishCreate = () => {
       </div>
 
       <div class="overflow-hidden h-full w-full">
-        <div v-for="(step, index) in steps">
+        <div v-for="(step, index) in steps" :key="step.title">
           <component v-if="index === createStep" :is="step?.component"></component>
         </div>
       </div>

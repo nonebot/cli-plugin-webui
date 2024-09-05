@@ -98,6 +98,7 @@ watch(
           <tbody>
             <tr
               v-for="log in logData"
+              :key="log.message"
               :class="{
                 'flex font-mono': true,
                 'bg-error/50': log.level === 'ERROR',

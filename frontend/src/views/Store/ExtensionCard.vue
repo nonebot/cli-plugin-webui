@@ -195,6 +195,7 @@ const getUpdateTime = computed(() => {
           <div class="flex flex-wrap items-center gap-2">
             <div
               v-for="tag in props.data.tags"
+              :key="tag.label"
               class="tooltip badge rounded-md text-white font-mono"
               :style="`color: ${tag.color}`"
               :data-tip="tag.label"
@@ -329,6 +330,7 @@ const getUpdateTime = computed(() => {
     <div class="flex flex-wrap items-center gap-2">
       <div
         v-for="tag in props.data.tags"
+        :key="tag.label"
         role="button"
         class="tooltip badge rounded-md text-white font-mono"
         :style="`color: ${tag.color}`"

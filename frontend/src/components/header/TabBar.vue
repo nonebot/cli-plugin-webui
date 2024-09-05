@@ -33,6 +33,7 @@ const operation = (route: NavItem) => {
   <div role="tablist" class="tabs tabs-lifted justify-start bg-base-100">
     <a
       v-for="i in store.viewHistory"
+      :key="i.name"
       role="tab"
       :class="{
         'tab flex gap-2 hover:bg-primary/[.2] transition': true,

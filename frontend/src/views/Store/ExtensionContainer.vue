@@ -18,8 +18,9 @@ const store = useSearchStore()
       <span class="loading loading-spinner loading-md text-primary"></span>
     </div>
     <div
-      :class="{ 'blur-sm pointer-events-none': store.isRequesting }"
       v-for="data in store.storeData"
+      :key="data.name"
+      :class="{ 'blur-sm pointer-events-none': store.isRequesting }"
     >
       <ExtensionCard :data="data" />
     </div>

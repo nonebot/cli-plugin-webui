@@ -62,6 +62,7 @@ watch(
 
       <button
         v-for="page in pages"
+        :key="page"
         :class="{
           'btn btn-sm shadow-none': true,
           'btn-primary text-white': Number(page) === store.nowPage

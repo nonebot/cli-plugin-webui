@@ -73,7 +73,7 @@ const selectFolder = (path: string, isFolder: boolean) => {
             <li @click="updateFileList('', true)">
               <a>(Base Dir) /</a>
             </li>
-            <li v-for="(item, index) in currentPath.split('/')">
+            <li v-for="(item, index) in currentPath.split('/')" :key="item">
               <a
                 @click="
                   updateFileList(
@@ -103,8 +103,8 @@ const selectFolder = (path: string, isFolder: boolean) => {
             </thead>
             <tbody>
               <tr
-                v-if="fileList.length"
                 v-for="file in fileList"
+                :key="file.name"
                 role="button"
                 class="transition hover:bg-base-300"
                 @click="selectFolder(file.path, file.is_dir)"
@@ -136,7 +136,7 @@ const selectFolder = (path: string, isFolder: boolean) => {
                   </label>
                 </td>
               </tr>
-              <tr v-else>
+              <tr v-if="!fileList.length">
                 <td colspan="4" class="text-center">暂无数据</td>
               </tr>
             </tbody>
@@ -159,7 +159,7 @@ const selectFolder = (path: string, isFolder: boolean) => {
         </div>
 
         <div class="flex gap-4">
-          <button class="btn btn-sm" @click="folderSelectModal?.close">取消</button>
+          <button class="btn btn-sm" @click="folderSelectModal?.close()">取消</button>
           <button
             :class="{ 'btn btn-sm btn-primary text-white': true, 'btn-disabled': !selectedFolder }"
             @click="folderSelectModal?.close(), emit('selectFolder', selectedFolder)"

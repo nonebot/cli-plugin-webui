@@ -111,8 +111,9 @@ const filterItems: filterItem[] = [
       <div class="p-2 pl-4 bg-base-200 rounded-box w-full lg:w-3/4 flex items-center gap-2">
         <div class="w-full flex flex-wrap items-center gap-1">
           <div
-            role="button"
             v-for="tag in store.searchTags"
+            :key="tag.label"
+            role="button"
             class="badge badge-primary"
             @click="store.removeTag(tag)"
           >
@@ -144,6 +145,7 @@ const filterItems: filterItem[] = [
       <div role="tablist" class="tabs tabs-boxed">
         <a
           v-for="m in moduleItems"
+          :key="m.tip"
           role="tab"
           :class="{ tab: true, 'tab-active': store.viewModule === m.label }"
           @click="store.selectModule(m.label, nonebotStore.selectedBot?.project_id!)"
@@ -163,8 +165,9 @@ const filterItems: filterItem[] = [
           <div tabindex="0" class="dropdown-content z-[1] bg-base-200 rounded-lg">
             <ul class="menu menu-sm w-36 gap-y-0.5">
               <li
-                role="button"
                 v-for="filter in filterItems"
+                :key="filter.tip"
+                role="button"
                 @click="store.updateTag({ label: filter.label, text: filter.text })"
               >
                 <a

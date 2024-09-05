@@ -121,6 +121,7 @@ const retry = () => {
       <tbody>
         <tr
           v-for="item in logData"
+          :key="item.message"
           :class="{
             'flex font-mono': true,
             'bg-error/50': item.level === 'ERROR',

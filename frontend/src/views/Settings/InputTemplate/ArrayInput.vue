@@ -71,7 +71,7 @@ const cancel = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="i in data.configured" class="transition-colors hover:bg-base-300">
+          <tr v-for="i in data.configured" :key="i" class="transition-colors hover:bg-base-300">
             <td>{{ i }}</td>
             <td>
               <button class="btn btn-xs btn-square btn-ghost" @click="removeItem(i)">

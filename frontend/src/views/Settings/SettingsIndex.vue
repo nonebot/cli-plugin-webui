@@ -43,7 +43,7 @@ getConfig()
 
 <template>
   <div class="flex flex-col gap-4">
-    <div v-for="i in configData" class="w-full">
+    <div v-for="i in configData" :key="i.title" class="w-full">
       <SettingCard :data="i" />
     </div>
   </div>
