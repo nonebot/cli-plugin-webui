@@ -193,6 +193,8 @@ class NoneBotProjectManager:
         self.store(data)
 
     def add_builtin_plugin(self, plugin: str) -> None:
+        self.config_manager.add_builtin_plugin(plugin)
+
         data = self.read()
         data.builtin_plugins.append(plugin)
         self.store(data)
