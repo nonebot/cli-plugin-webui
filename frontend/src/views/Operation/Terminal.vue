@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ProcessService, type ProcessLog } from '@/client/api'
 import { generateURLForWebUI } from '@/client/utils'
-import { useNoneBotStore } from '@/stores'
+import { useCustomStorage, useNoneBotStore } from '@/stores'
+import { useToastStore } from '@/stores/ToastStorage'
 import { useWebSocket } from '@vueuse/core'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 const store = useNoneBotStore()
+const customStore = useCustomStorage()
+const toast = useToastStore()
 
 const logData = ref<ProcessLog[]>([]),
   logShowTable = ref<HTMLElement>(),
@@ -19,14 +22,24 @@ const getHistoryLogs = async () => {
   await ProcessService.getLogHistoryV1ProcessLogHistoryGet(
     getLogCount,
     store.selectedBot.project_id
-  ).then((res) => {
-    logData.value = res.detail
-    if (res.detail.length > 0) {
-      logData.value.push({
-        message: '已获取近期 20 条日志'
-      })
-    }
-  })
+  )
+    .then((res) => {
+      logData.value = res.detail
+      if (res.detail.length > 0) {
+        logData.value.push({
+          message: '已获取近期 20 条日志'
+        })
+      }
+    })
+    .catch((err) => {
+      let detail = ''
+      if (err.body) {
+        detail = err.body.detail
+      } else {
+        detail = err
+      }
+      toast.add('error', `获取日志失败, 原因：${detail}`, '', 5000)
+    })
 }
 
 const { status, data, close, open, send } = useWebSocket<ProcessLog>(
@@ -41,6 +54,14 @@ const { status, data, close, open, send } = useWebSocket<ProcessLog>(
         send(JSON.stringify({ type: 'log', log_key: store.selectedBot?.project_id }))
         currentBot.value = store.selectedBot?.project_id
       }
+
+      if (customStore.isDebug) {
+        toast.add('success', 'Debug: WebSocket 连接成功', 'views/Operation/Terminal.vue', 5000)
+      }
+    },
+    onDisconnected() {
+      if (!customStore.isDebug) return
+      toast.add('error', 'Debug: WebSocket 连接断开', 'views/Operation/Terminal.vue', 5000)
     }
   }
 )

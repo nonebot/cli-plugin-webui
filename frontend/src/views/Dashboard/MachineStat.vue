@@ -4,25 +4,28 @@ import Chart from '@/components/Chart.vue'
 import { useWebSocket } from '@vueuse/core'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { StatusInfo, ChartItem } from './types'
-import { useChartStorage, useNoneBotStore } from '@/stores'
+import { useChartStorage, useCustomStorage, useNoneBotStore } from '@/stores'
 import type { LoadingOptions } from '@/types'
+import { useToastStore } from '@/stores/ToastStorage'
 
-const store = useChartStorage(),
+const store = useCustomStorage(),
+  chartStore = useChartStorage(),
   nonebotStore = useNoneBotStore()
+const toast = useToastStore()
 
-store.addDataType('systemData', {
+chartStore.addDataType('systemData', {
   diskReadSpeed: [0],
   diskWriteSpeed: [0],
   netSentSpeed: [0],
   netRecvSpeed: [0]
 })
 
-store.addDataType('processData', {
+chartStore.addDataType('processData', {
   cpuPercent: [0],
   memPercent: [0]
 })
 
-store.addDataType('timeData', {
+chartStore.addDataType('timeData', {
   time: ['00:00:00']
 })
 
@@ -45,6 +48,14 @@ const { data, close, open, send } = useWebSocket<StatusInfo>(
           })
         )
       }
+
+      if (store.isDebug) {
+        toast.add('success', 'Debug: WebSocket 连接成功', 'views/Dashboard/MachineStat.vue', 5000)
+      }
+    },
+    onDisconnected() {
+      if (!store.isDebug) return
+      toast.add('error', 'Debug: WebSocket 连接断开', 'views/Dashboard/MachineStat.vue', 5000)
     }
   }
 )
@@ -66,7 +77,7 @@ watch(
 
     const date = new Date()
 
-    store.updateData(
+    chartStore.updateData(
       'timeData',
       'time',
       `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
@@ -75,18 +86,18 @@ watch(
     const diskSpeed = data.system.disk.speed
     const netSpeed = data.system.net.speed
 
-    store.updateData('systemData', 'diskReadSpeed', convertToMB(diskSpeed[0]))
-    store.updateData('systemData', 'diskWriteSpeed', convertToMB(diskSpeed[1]))
-    store.updateData('systemData', 'netSentSpeed', convertToKB(netSpeed[0]))
-    store.updateData('systemData', 'netRecvSpeed', convertToKB(netSpeed[1]))
+    chartStore.updateData('systemData', 'diskReadSpeed', convertToMB(diskSpeed[0]))
+    chartStore.updateData('systemData', 'diskWriteSpeed', convertToMB(diskSpeed[1]))
+    chartStore.updateData('systemData', 'netSentSpeed', convertToKB(netSpeed[0]))
+    chartStore.updateData('systemData', 'netRecvSpeed', convertToKB(netSpeed[1]))
 
     if (data.process && data.process.performance) {
-      store.updateData(
+      chartStore.updateData(
         'processData',
         'cpuPercent',
         Number(data.process.performance.cpu.toFixed(3)) * 100
       )
-      store.updateData(
+      chartStore.updateData(
         'processData',
         'memPercent',
         Number(data.process.performance.mem.toFixed(3)) * 100
@@ -125,74 +136,74 @@ const chartItems: ChartItem[] = [
   {
     title: '机器硬盘情况',
     subtitle: computed(() => {
-      const lastReadSpeed = store.dataRefs.systemData?.diskReadSpeed.slice(-1)[0]
-      const lastWriteSpeed = store.dataRefs.systemData?.diskWriteSpeed.slice(-1)[0]
+      const lastReadSpeed = chartStore.dataRefs.systemData?.diskReadSpeed.slice(-1)[0]
+      const lastWriteSpeed = chartStore.dataRefs.systemData?.diskWriteSpeed.slice(-1)[0]
       return `读取: ${Number(lastReadSpeed).toFixed(3)} MB/s, 写入: ${Number(
         lastWriteSpeed
       ).toFixed(3)} MB/s`
     }),
     isLoading: computed(() => machineStatIsLoading.value),
-    timeData: store.dataRefs.timeData?.time ?? [],
+    timeData: chartStore.dataRefs.timeData?.time ?? [],
     data: [
       {
         name: '读取',
-        data: store.dataRefs.systemData?.diskReadSpeed ?? []
+        data: chartStore.dataRefs.systemData?.diskReadSpeed ?? []
       },
       {
         name: '写入',
-        data: store.dataRefs.systemData?.diskWriteSpeed ?? []
+        data: chartStore.dataRefs.systemData?.diskWriteSpeed ?? []
       }
     ]
   },
   {
     title: '机器网络情况',
     subtitle: computed(() => {
-      const lastSentSpeed = store.dataRefs.systemData?.netSentSpeed.slice(-1)[0]
-      const lastRecvSpeed = store.dataRefs.systemData?.netRecvSpeed.slice(-1)[0]
+      const lastSentSpeed = chartStore.dataRefs.systemData?.netSentSpeed.slice(-1)[0]
+      const lastRecvSpeed = chartStore.dataRefs.systemData?.netRecvSpeed.slice(-1)[0]
       return `发送: ${Number(lastSentSpeed).toFixed(3)} KB/s, 接收: ${Number(lastRecvSpeed).toFixed(
         3
       )} KB/s`
     }),
     isLoading: computed(() => machineStatIsLoading.value),
-    timeData: store.dataRefs.timeData?.time ?? [],
+    timeData: chartStore.dataRefs.timeData?.time ?? [],
     data: [
       {
         name: '发送',
-        data: store.dataRefs.systemData?.netSentSpeed ?? []
+        data: chartStore.dataRefs.systemData?.netSentSpeed ?? []
       },
       {
         name: '接收',
-        data: store.dataRefs.systemData?.netRecvSpeed ?? []
+        data: chartStore.dataRefs.systemData?.netRecvSpeed ?? []
       }
     ]
   },
   {
     title: '实例 CPU 使用率',
     subtitle: computed(() => {
-      const lastCpuPercent = store.dataRefs.processData?.cpuPercent.slice(-1)[0]
+      const lastCpuPercent = chartStore.dataRefs.processData?.cpuPercent.slice(-1)[0]
       return `当前: ${Number(lastCpuPercent).toFixed(3)}%`
     }),
     isLoading: computed(() => processStatIsLoading.value),
-    timeData: store.dataRefs.timeData?.time ?? [],
+    timeData: chartStore.dataRefs.timeData?.time ?? [],
     data: [
       {
         name: 'CPU 使用率',
-        data: store.dataRefs.processData?.cpuPercent ?? []
+        data: chartStore.dataRefs.processData?.cpuPercent ?? []
       }
     ]
   },
   {
     title: '实例内存使用率',
     subtitle: computed(() => {
-      const lastMemPercent = store.dataRefs.processData?.memPercent.slice(-1)[0]
+      const lastMemPercent = chartStore.dataRefs.processData?.memPercent.slice(-1)[0]
       return `当前: ${Number(lastMemPercent).toFixed(3)}%`
     }),
     isLoading: computed(() => processStatIsLoading.value),
-    timeData: store.dataRefs.timeData?.time ?? [],
+    timeData: chartStore.dataRefs.timeData?.time ?? [],
     data: [
       {
         name: '内存使用率',
-        data: store.dataRefs.processData?.memPercent ?? []
+        data: chartStore.dataRefs.processData?.memPercent ?? []
       }
     ]
   }

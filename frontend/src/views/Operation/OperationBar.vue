@@ -2,10 +2,13 @@
 import { ProcessService, ProjectService } from '@/client/api'
 import { sleep } from '@/client/utils'
 import { useNoneBotStore } from '@/stores'
+import { useToastStore } from '@/stores/ToastStorage'
 import { ref } from 'vue'
 
-const store = useNoneBotStore(),
-  deleteConfirmModal = ref<HTMLDialogElement>()
+const store = useNoneBotStore()
+const toast = useToastStore()
+
+const deleteConfirmModal = ref<HTMLDialogElement>()
 
 const oLock = ref(false)
 
@@ -16,6 +19,16 @@ const runBot = async () => {
   await ProcessService.runProcessV1ProcessRunPost(store.selectedBot?.project_id)
     .then(async () => {
       await store.loadBots()
+      toast.add('success', `${store.selectedBot?.project_name} 已启动`, '', 5000)
+    })
+    .catch((err) => {
+      let detail = ''
+      if (err.body) {
+        detail = err.body.detail
+      } else {
+        detail = err
+      }
+      toast.add('error', `启动失败, 原因：${detail}`, '', 5000)
     })
     .finally(() => {
       oLock.value = false
@@ -29,6 +42,16 @@ const stopBot = async () => {
   await ProcessService.stopProcessV1ProcessStopPost(store.selectedBot?.project_id)
     .then(async () => {
       await store.loadBots()
+      toast.add('success', `${store.selectedBot?.project_name} 已停止`, '', 5000)
+    })
+    .catch((err) => {
+      let detail = ''
+      if (err.body) {
+        detail = err.body.detail
+      } else {
+        detail = err
+      }
+      toast.add('error', `停止失败, 原因：${detail}`, '', 5000)
     })
     .finally(() => {
       oLock.value = false
@@ -55,7 +78,7 @@ const restartBot = async () => {
   }
 
   if (attempts >= maxAttempts) {
-    console.error('Failed to restart bot')
+    toast.add('error', '重启失败', '', 5000)
   } else {
     await runBot()
   }
@@ -73,6 +96,17 @@ const deleteBot = async (fully: boolean = false) => {
 
       const firstBot = Object.values(store.bots)[0]
       store.selectBot(firstBot)
+
+      toast.add('success', `${store.selectedBot?.project_name} 已删除`, '', 5000)
+    })
+    .catch((err) => {
+      let detail = ''
+      if (err.body) {
+        detail = err.body.detail
+      } else {
+        detail = err
+      }
+      toast.add('error', `删除失败, 原因：${detail}`, '', 5000)
     })
     .finally(() => {
       oLock.value = false

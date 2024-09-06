@@ -1,7 +1,9 @@
 import { ModuleConfigFather, ProjectService } from '@/client/api'
 import { useNoneBotStore } from '@/stores'
+import { useToastStore } from '@/stores/ToastStorage'
 
 const store = useNoneBotStore()
+const toast = useToastStore()
 
 export const updateConfig = async (
   moduleType: ModuleConfigFather.module_type,
@@ -11,7 +13,7 @@ export const updateConfig = async (
   v: any
 ) => {
   if (!store.selectedBot) {
-    // TODO: 补全提醒
+    toast.add('warning', '未选择实例', '', 5000)
     return
   }
 
@@ -24,7 +26,17 @@ export const updateConfig = async (
       k: k,
       v: v
     }
-  ).then(() => {
-    // 添加完成后应提示
-  })
+  )
+    .then(() => {
+      toast.add('success', '更新成功', '', 5000)
+    })
+    .catch((err) => {
+      let detail = ''
+      if (err.body) {
+        detail = err.body.detail
+      } else {
+        detail = err
+      }
+      toast.add('error', `更新失败, 原因：${detail}`, '', 5000)
+    })
 }
