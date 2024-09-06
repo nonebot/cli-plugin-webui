@@ -7,52 +7,6 @@ import { useToastStore } from '@/stores/ToastStorage'
 const store = useToastStore()
 
 const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
-const timers = ref<{ [key: string]: ReturnType<typeof setInterval> }>({})
-
-const time = (timestamp: number) => {
-  const now = Date.now()
-  const diff = now - timestamp
-
-  const seconds = Math.floor(diff / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  let text = ''
-  if (days > 0) {
-    text = `${days}d${hours % 24}h${minutes % 60}m`
-  } else if (hours > 0) {
-    text = `${hours}h${minutes % 60}m`
-  } else if (minutes > 0) {
-    text = `${minutes}m`
-  }
-
-  return !text ? 'recently' : `${text} ago`
-}
-
-watch(
-  () => store.toasts.length,
-  () => {
-    store.toasts.forEach((toast) => {
-      if (!timers.value[toast.id]) {
-        timers.value[toast.id] = setInterval(() => {
-          store.remove(toast.id)
-        }, 1000)
-      }
-    })
-
-    Object.keys(timers.value).forEach((timer) => {
-      if (!store.toasts.find((toast) => toast.id === timer)) {
-        clearInterval(timers.value[timer])
-        delete timers.value[timer]
-      }
-    })
-  }
-)
-
-onUnmounted(() => {
-  Object.values(timers.value).forEach((timer) => clearInterval(timer))
-})
 </script>
 
 <template>
@@ -115,11 +69,8 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <div v-if="toast.from || toast.time" class="flex items-center justify-between">
-            <div class="text-xs text-base-content/50">
-              {{ toast.from ? `From: ${toast.from}` : '' }}
-            </div>
-            <div class="text-xs text-base-content/50">{{ time(toast.time) }}</div>
+          <div v-if="toast.from" class="text-xs text-base-content/50">
+            {{ toast.from ? `From: ${toast.from}` : '' }}
           </div>
         </div>
       </div>

@@ -9,7 +9,6 @@ export interface ToastItem {
   id: string
   type: ToastType
   message: string
-  time: number
   from?: string
   timer?: ReturnType<typeof setTimeout>
 }
@@ -30,7 +29,7 @@ export const useToastStore = defineStore('toastStore', () => {
       id: crypto.randomUUID(),
       type,
       message,
-      time: Date.now()
+      from: from
     }
 
     if (exp) {
