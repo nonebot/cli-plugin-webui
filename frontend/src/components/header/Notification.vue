@@ -73,7 +73,7 @@ onUnmounted(() => {
     <template v-slot:drawer-title>消息列表</template>
 
     <template v-slot:drawer-body>
-      <div class="grid gap-2">
+      <div v-if="store.toasts.length" class="grid gap-2">
         <div
           v-for="toast in store.toasts"
           :key="toast.id"
@@ -123,10 +123,11 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+      <div v-else class="text-center">暂无消息</div>
     </template>
 
     <template v-slot:drawer-footer>
-      <div>
+      <div v-if="store.toasts.length">
         <div class="bg-base-content/10 h-px"></div>
         <div class="flex justify-center items-center p-2">
           <button class="btn btn-ghost">清除所有</button>
