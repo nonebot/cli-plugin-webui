@@ -19,9 +19,12 @@ import { computed, ref } from 'vue'
 import { useSearchStore } from './client'
 import { useNoneBotStore } from '@/stores'
 import LogView from '@/components/Modals/Global/LogView.vue'
+import { useToastStore } from '@/stores/ToastStorage'
 
 const store = useSearchStore(),
   nonebotStore = useNoneBotStore()
+
+const toast = useToastStore()
 
 const props = defineProps<{
   data: T
@@ -60,10 +63,20 @@ const installModule = async (module: T) => {
     // TODO: 因后端实现需借助 module_type 以区分传入的类型, 而其所需类型为私有类型, 无法直接引用。待修复
     // @ts-ignore
     { ...module, module_type: moduleType }
-  ).then((res) => {
-    installLogKey.value = res.detail
-    logViewModal.value?.openModal()
-  })
+  )
+    .then((res) => {
+      installLogKey.value = res.detail
+      logViewModal.value?.openModal()
+    })
+    .catch((err) => {
+      let detail = ''
+      if (err.body) {
+        detail = err.body.detail
+      } else {
+        detail = err
+      }
+      toast.add('error', `提交安装失败, 原因：${detail}`, '', 5000)
+    })
 }
 
 const uninstallModule = async (module: T) => {
@@ -78,12 +91,21 @@ const uninstallModule = async (module: T) => {
 
     // @ts-ignore
     { ...module, module_type: moduleType }
-  ).then(() => {
-    extensionUninstallConfirmModal.value?.close()
-    store.updateData(nonebotStore.selectedBot!.project_id, false)
-  })
-
-  // TODO: 失败通知
+  )
+    .then(() => {
+      extensionUninstallConfirmModal.value?.close()
+      store.updateData(nonebotStore.selectedBot!.project_id, false)
+      toast.add('success', '卸载成功', '', 5000)
+    })
+    .catch((err) => {
+      let detail = ''
+      if (err.body) {
+        detail = err.body.detail
+      } else {
+        detail = err
+      }
+      toast.add('error', `卸载失败, 原因：${detail}`, '', 5000)
+    })
 }
 
 const isRetry = () => {

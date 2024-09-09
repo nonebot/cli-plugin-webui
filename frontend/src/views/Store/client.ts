@@ -6,8 +6,11 @@ import {
   SearchRequest,
   StoreService
 } from '@/client/api'
+import { useToastStore } from '@/stores/ToastStorage'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+
+const toast = useToastStore()
 
 export const useSearchStore = defineStore('searchStore', () => {
   const searchInput = ref(''),
@@ -62,6 +65,15 @@ export const useSearchStore = defineStore('searchStore', () => {
         totalPage.value = res.total_page
         totalItem.value = res.total_item
       })
+      .catch((err) => {
+        let detail = ''
+        if (err.body) {
+          detail = err.body.detail
+        } else {
+          detail = err
+        }
+        toast.add('error', `获取商店数据失败, 原因：${detail}`, '', 5000)
+      })
       .finally(() => {
         isRequesting.value = false
       })
@@ -97,6 +109,15 @@ export const useSearchStore = defineStore('searchStore', () => {
         storeData.value = res.detail
         totalPage.value = res.total_page
         totalItem.value = res.total_item
+      })
+      .catch((err) => {
+        let detail = ''
+        if (err.body) {
+          detail = err.body.detail
+        } else {
+          detail = err
+        }
+        toast.add('error', `搜索失败, 原因：${detail}`, '', 5000)
       })
       .finally(() => {
         isRequesting.value = false
