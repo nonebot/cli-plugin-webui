@@ -81,7 +81,7 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
       <div v-if="store.toasts.length">
         <div class="bg-base-content/10 h-px"></div>
         <div class="flex justify-center items-center p-2">
-          <button class="btn btn-ghost">清除所有</button>
+          <button class="btn btn-ghost" @click="store.clear()">清除所有</button>
         </div>
       </div>
     </template>

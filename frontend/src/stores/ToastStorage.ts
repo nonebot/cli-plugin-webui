@@ -57,10 +57,16 @@ export const useToastStore = defineStore('toastStore', () => {
     }
   }
 
+  const clear = () => {
+    toasts.value = []
+    visibleToasts.value = []
+  }
+
   return {
     toasts,
     visibleToasts,
     add,
-    remove
+    remove,
+    clear
   }
 })
