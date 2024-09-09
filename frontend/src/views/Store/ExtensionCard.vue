@@ -92,9 +92,9 @@ const uninstallModule = async (module: T) => {
     // @ts-ignore
     { ...module, module_type: moduleType }
   )
-    .then(() => {
+    .then(async () => {
       extensionUninstallConfirmModal.value?.close()
-      store.updateData(nonebotStore.selectedBot!.project_id, false)
+      await store.updateData(nonebotStore.selectedBot!.project_id, false)
       toast.add('success', '卸载成功', '', 5000)
     })
     .catch((err) => {

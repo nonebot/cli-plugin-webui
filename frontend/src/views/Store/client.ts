@@ -79,10 +79,10 @@ export const useSearchStore = defineStore('searchStore', () => {
       })
   }
 
-  const selectModule = (module: SearchRequest.module_type, projectID: string) => {
+  const selectModule = async (module: SearchRequest.module_type, projectID: string) => {
     viewModule.value = module
     clear()
-    updateData(projectID, false)
+    await updateData(projectID, false)
   }
 
   const turnPage = async (page: number, projectID: string) => {
@@ -91,7 +91,7 @@ export const useSearchStore = defineStore('searchStore', () => {
     if (page >= totalPage.value) {
       nowPage.value = totalPage.value
     }
-    updateData(projectID, false)
+    await updateData(projectID, false)
   }
 
   const upDataBySearch = async (projectID: string) => {
