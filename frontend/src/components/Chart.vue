@@ -14,7 +14,7 @@ use([TooltipComponent, GridComponent, LineChart, CanvasRenderer])
 
 type EChartsOption = ComposeOption<TooltipComponentOption | GridComponentOption | LineSeriesOption>
 
-interface ChartItemData {
+type ChartItemData = {
   name?: string
   data: T
 }
