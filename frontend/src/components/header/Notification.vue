@@ -2,7 +2,7 @@
 import { onUnmounted, ref, watch } from 'vue'
 
 import Drawer from '@/components/Drawer.vue'
-import { useToastStore } from '@/stores/ToastStorage'
+import { useToastStore } from '@/stores'
 
 const store = useToastStore()
 

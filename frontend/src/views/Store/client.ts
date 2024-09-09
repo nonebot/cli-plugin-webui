@@ -6,7 +6,7 @@ import {
   SearchRequest,
   StoreService
 } from '@/client/api'
-import { useToastStore } from '@/stores/ToastStorage'
+import { useToastStore } from '@/stores'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ProjectService, type ModuleConfigFather } from '@/client/api'
 import SettingCard from './SettingCard.vue'
-import { useNoneBotStore } from '@/stores'
+import { useNoneBotStore, useToastStore } from '@/stores'
 import { ref } from 'vue'
-import { useToastStore } from '@/stores/ToastStorage'
 
 const store = useNoneBotStore()
 const toast = useToastStore()

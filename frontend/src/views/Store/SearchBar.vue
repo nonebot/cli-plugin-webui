@@ -2,11 +2,11 @@
 import { ref, watch } from 'vue'
 import { useSearchStore } from './client'
 import { SearchRequest, SearchTag } from '@/client/api'
-import { useCustomStorage, useNoneBotStore } from '@/stores'
+import { useCustomStore, useNoneBotStore } from '@/stores'
 
 const store = useSearchStore(),
   nonebotStore = useNoneBotStore(),
-  customStore = useCustomStorage()
+  customStore = useCustomStore()
 
 const searchInputElement = ref<HTMLInputElement>(),
   authorInput = ref(''),

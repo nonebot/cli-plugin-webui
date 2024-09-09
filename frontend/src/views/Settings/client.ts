@@ -1,6 +1,5 @@
 import { ModuleConfigFather, ProjectService } from '@/client/api'
-import { useNoneBotStore } from '@/stores'
-import { useToastStore } from '@/stores/ToastStorage'
+import { useNoneBotStore, useToastStore } from '@/stores'
 
 const store = useNoneBotStore()
 const toast = useToastStore()

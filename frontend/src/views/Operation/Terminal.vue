@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { ProcessService, type ProcessLog } from '@/client/api'
 import { generateURLForWebUI } from '@/client/utils'
-import { useCustomStorage, useNoneBotStore } from '@/stores'
-import { useToastStore } from '@/stores/ToastStorage'
+import { useCustomStore, useNoneBotStore, useToastStore } from '@/stores'
 import { useWebSocket } from '@vueuse/core'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 const store = useNoneBotStore()
-const customStore = useCustomStorage()
+const customStore = useCustomStore()
 const toast = useToastStore()
 
 const logData = ref<ProcessLog[]>([]),

@@ -17,9 +17,8 @@ import type { PypiInfo } from '@/views/Store/types'
 import { useFetch } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useSearchStore } from './client'
-import { useNoneBotStore } from '@/stores'
+import { useNoneBotStore, useToastStore } from '@/stores'
 import LogView from '@/components/Modals/Global/LogView.vue'
-import { useToastStore } from '@/stores/ToastStorage'
 
 const store = useSearchStore(),
   nonebotStore = useNoneBotStore()

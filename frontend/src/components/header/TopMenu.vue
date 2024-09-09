@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import router from '@/router'
 import { computed } from 'vue'
-import { useCustomStorage } from '@/stores'
+import { useCustomStore } from '@/stores'
 import Notification from '@/components/header/Notification.vue'
 import BotChoose from '@/components/header/BotChoose.vue'
 import Status from '@/components/header/Status.vue'
 import WebUISettings from '@/components/header/WebUISettings.vue'
 
-const store = useCustomStorage()
+const store = useCustomStore()
 
 interface RouteItem {
   path: string

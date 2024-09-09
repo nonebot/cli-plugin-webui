@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ProcessService, ProjectService } from '@/client/api'
 import { sleep } from '@/client/utils'
-import { useNoneBotStore } from '@/stores'
-import { useToastStore } from '@/stores/ToastStorage'
+import { useNoneBotStore, useToastStore } from '@/stores'
 import { ref } from 'vue'
 
 const store = useNoneBotStore()

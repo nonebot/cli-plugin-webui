@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useCustomStorage } from '@/stores'
+import { useCustomStore } from '@/stores'
 import Drawer from '@/components/Drawer.vue'
 
-const store = useCustomStorage()
+const store = useCustomStore()
 
 const drawerRef = ref<InstanceType<typeof Drawer> | null>()
 </script>

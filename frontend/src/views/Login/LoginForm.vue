@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { OpenAPI, AuthService } from '@/client/api'
 import router from '@/router'
-import { useToastStore } from '@/stores/ToastStorage'
+import { useToastStore } from '@/stores'
 
 const store = useToastStore()
 

@@ -9,7 +9,7 @@ type DataState<T extends DataTypeFields> = {
   [key: string]: T
 }
 
-export const useChartStorage = defineStore('chartStorage', () => {
+export const useChartStore = defineStore('chartStore', () => {
   const chartDataMaxLength = ref(100)
 
   const initArr = (defaultData: any = 0) =>

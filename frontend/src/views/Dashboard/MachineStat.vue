@@ -4,12 +4,11 @@ import Chart from '@/components/Chart.vue'
 import { useWebSocket } from '@vueuse/core'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { StatusInfo, ChartItem } from './types'
-import { useChartStorage, useCustomStorage, useNoneBotStore } from '@/stores'
+import { useChartStore, useCustomStore, useNoneBotStore, useToastStore } from '@/stores'
 import type { LoadingOptions } from '@/types'
-import { useToastStore } from '@/stores/ToastStorage'
 
-const store = useCustomStorage(),
-  chartStore = useChartStorage(),
+const store = useCustomStore(),
+  chartStore = useChartStore(),
   nonebotStore = useNoneBotStore()
 const toast = useToastStore()
 

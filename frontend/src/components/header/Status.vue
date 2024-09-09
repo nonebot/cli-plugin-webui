@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useNoneBotStore, useCustomStorage } from '@/stores'
+import { useNoneBotStore, useCustomStore } from '@/stores'
 
 const store = useNoneBotStore()
-const customStore = useCustomStorage()
+const customStore = useCustomStore()
 </script>
 
 <template>

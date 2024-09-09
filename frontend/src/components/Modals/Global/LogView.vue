@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { ProcessLog } from '@/client/api'
 import { generateURLForWebUI } from '@/client/utils'
-import { useCustomStorage } from '@/stores'
+import { useCustomStore } from '@/stores'
 import { useWebSocket } from '@vueuse/core'
 import { onUnmounted, ref, watch } from 'vue'
 
-const store = useCustomStorage()
+const store = useCustomStore()
 
 const props = defineProps<{
   logKey: string

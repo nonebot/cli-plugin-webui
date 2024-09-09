@@ -16,7 +16,7 @@ export interface NavItem {
   routeData?: RouteRecordRawRebuild[]
 }
 
-export const useNavStorage = defineStore('navStorage', () => {
+export const useNavStore = defineStore('navStore', () => {
   const navItems = ref<NavItem[]>([])
 
   const checkRouteItem = (routeItem: RouteRecordRawRebuild) => {

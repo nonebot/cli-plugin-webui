@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import Toast from './components/Toast.vue'
-import { useToastStore } from './stores/ToastStorage'
+import Toast from '@/components/Toast.vue'
+import { useToastStore } from '@/stores'
 
 const store = useToastStore()
 </script>

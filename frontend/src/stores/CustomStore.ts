@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const useCustomStorage = defineStore('customStorage', () => {
+export const useCustomStore = defineStore('customStore', () => {
   let data: string | null
 
   const isDebug = ref(false)
