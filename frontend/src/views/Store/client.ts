@@ -1,10 +1,11 @@
 import {
-  type SearchTag,
   type Adapter,
   type Driver,
   type nb_cli_plugin_webui__app__schemas__Plugin,
-  SearchRequest,
-  StoreService
+  StoreService,
+  ModuleType,
+  nb_cli_plugin_webui__app__constants__SearchTag,
+  type nb_cli_plugin_webui__app__schemas__SearchTag
 } from '@/client/api'
 import { useToastStore } from '@/stores'
 import { defineStore } from 'pinia'
@@ -14,12 +15,12 @@ const toast = useToastStore()
 
 export const useSearchStore = defineStore('searchStore', () => {
   const searchInput = ref(''),
-    searchTags = ref<SearchTag[]>([]),
+    searchTags = ref<nb_cli_plugin_webui__app__schemas__SearchTag[]>([]),
     storeData = ref<(nb_cli_plugin_webui__app__schemas__Plugin | Adapter | Driver)[]>([]),
     nowPage = ref(1),
     totalPage = ref(1),
     totalItem = ref(0),
-    viewModule = ref<SearchRequest.module_type>(SearchRequest.module_type.PLUGIN),
+    viewModule = ref<ModuleType>(ModuleType.PLUGIN),
     isRequesting = ref(false)
 
   const clear = () => {
@@ -31,18 +32,18 @@ export const useSearchStore = defineStore('searchStore', () => {
     totalItem.value = 0
   }
 
-  const isTagExisted = (tag: SearchTag) => {
+  const isTagExisted = (tag: nb_cli_plugin_webui__app__schemas__SearchTag) => {
     return searchTags.value.some((t) => t.label === tag.label && t.text === tag.text)
   }
 
-  const removeTag = (tag: SearchTag) => {
+  const removeTag = (tag: nb_cli_plugin_webui__app__schemas__SearchTag) => {
     const index = searchTags.value.findIndex((t) => t.label === tag.label && t.text === tag.text)
     if (index !== -1) {
       searchTags.value.splice(index, 1)
     }
   }
 
-  const updateTag = (tag: SearchTag) => {
+  const updateTag = (tag: nb_cli_plugin_webui__app__schemas__SearchTag) => {
     if (isTagExisted(tag)) {
       removeTag(tag)
     } else {
@@ -79,7 +80,7 @@ export const useSearchStore = defineStore('searchStore', () => {
       })
   }
 
-  const selectModule = async (module: SearchRequest.module_type, projectID: string) => {
+  const selectModule = async (module: ModuleType, projectID: string) => {
     viewModule.value = module
     clear()
     await updateData(projectID, false)

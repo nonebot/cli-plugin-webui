@@ -3,7 +3,7 @@ from typing import List, Generic, TypeVar, Optional
 from pydantic import BaseModel
 from pydantic.generics import GenericModel
 
-from .constants import SEARCH_TAGS
+from .constants import SearchTag as SearchTagEnum
 
 DataT = TypeVar("DataT")
 
@@ -77,5 +77,5 @@ class NoneBotProjectMeta(BaseModel):
 
 
 class SearchTag(BaseModel):
-    label: SEARCH_TAGS
+    label: SearchTagEnum
     text: str = str()

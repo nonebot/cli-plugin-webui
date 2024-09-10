@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { ModuleConfigChild, ModuleConfigFather } from '@/client/api'
+import type { ConfigType, ModuleConfigChild, ModuleType } from '@/client/api'
 import { updateConfig } from '../client'
 import { useNoneBotStore } from '@/stores'
 
 const store = useNoneBotStore()
 
-defineProps<{ moduleType: ModuleConfigFather.module_type; data: ModuleConfigChild }>()
+defineProps<{ moduleType: ModuleType | ConfigType; data: ModuleConfigChild }>()
 </script>
 
 <template>

@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { Body_search_nonebot_store_item_v1_store_nonebot_search_post } from '../models/Body_search_nonebot_store_item_v1_store_nonebot_search_post'
 import type { GenericResponse_str_ } from '../models/GenericResponse_str_'
+import type { ModuleType } from '../models/ModuleType'
 import type { nb_cli_plugin_webui__app__store__schemas__ModuleInfo } from '../models/nb_cli_plugin_webui__app__store__schemas__ModuleInfo'
 import type { nb_cli_plugin_webui__app__store__schemas__Plugin } from '../models/nb_cli_plugin_webui__app__store__schemas__Plugin'
 import type { StoreListResponse } from '../models/StoreListResponse'
@@ -83,7 +84,7 @@ export class StoreService {
    * @throws ApiError
    */
   public static getNonebotStoreItemsV1StoreNonebotListGet(
-    moduleType: 'plugin' | 'adapter' | 'driver' | 'project' | 'toml',
+    moduleType: ModuleType,
     page: number,
     isSearch: boolean = false,
     showAll: boolean = false,

@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { AddProjectData } from '../models/AddProjectData'
 import type { CheckProjectTomlResponse } from '../models/CheckProjectTomlResponse'
+import type { ConfigType } from '../models/ConfigType'
 import type { CreateProjectData } from '../models/CreateProjectData'
 import type { GenericResponse_List_str__ } from '../models/GenericResponse_List_str__'
 import type { GenericResponse_NoneBotProjectMeta_ } from '../models/GenericResponse_NoneBotProjectMeta_'
@@ -11,6 +12,7 @@ import type { GenericResponse_str_ } from '../models/GenericResponse_str_'
 import type { ListProjectResponse } from '../models/ListProjectResponse'
 import type { ModuleConfigResponse } from '../models/ModuleConfigResponse'
 import type { ModuleConfigUpdateRequest } from '../models/ModuleConfigUpdateRequest'
+import type { ModuleType } from '../models/ModuleType'
 import type { CancelablePromise } from '../core/CancelablePromise'
 import { OpenAPI } from '../core/OpenAPI'
 import { request as __request } from '../core/request'
@@ -183,7 +185,7 @@ export class ProjectService {
    * @throws ApiError
    */
   public static updateProjectConfigV1ProjectConfigUpdatePost(
-    moduleType: 'plugin' | 'adapter' | 'driver' | 'project' | 'toml',
+    moduleType: ModuleType | ConfigType,
     projectId: string,
     requestBody: ModuleConfigUpdateRequest
   ): CancelablePromise<GenericResponse_str_> {

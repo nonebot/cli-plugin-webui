@@ -1,11 +1,11 @@
-import { ModuleConfigFather, ProjectService } from '@/client/api'
+import { ConfigType, ModuleType, ProjectService } from '@/client/api'
 import { useNoneBotStore, useToastStore } from '@/stores'
 
 const store = useNoneBotStore()
 const toast = useToastStore()
 
 export const updateConfig = async (
-  moduleType: ModuleConfigFather.module_type,
+  moduleType: ModuleType | ConfigType,
   env: string,
   confType: string,
   k: string,

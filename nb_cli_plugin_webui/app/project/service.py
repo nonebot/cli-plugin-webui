@@ -8,6 +8,7 @@ from nb_cli.cli.commands.project import ProjectContext
 from nb_cli.handlers import create_project, create_virtualenv
 
 from nb_cli_plugin_webui.app.config import Config
+from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.store.dependencies import get_store_items
 from nb_cli_plugin_webui.app.schemas import ModuleInfo, NoneBotProjectMeta
 from nb_cli_plugin_webui.app.utils.string_utils import generate_complexity_string
@@ -137,8 +138,8 @@ async def add_nonebot_project(data: AddProjectData) -> str:
     if not project_dir.is_dir():
         raise ProjectDirIsNotDir()
 
-    store_plugin_data = get_store_items("plugin", is_search=False)
-    store_adapter_data = get_store_items("adapter", is_search=False)
+    store_plugin_data = get_store_items(ModuleType.plugin, is_search=False)
+    store_adapter_data = get_store_items(ModuleType.adapter, is_search=False)
 
     installed_plugins = list()
     for plugin in store_plugin_data:

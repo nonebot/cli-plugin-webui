@@ -1,4 +1,16 @@
-from typing import Literal
+from enum import Enum
 
-MODULE_TYPE = Literal["plugin", "adapter", "driver", "project", "toml"]
-SEARCH_TAGS = Literal["official", "valid", "latest", "downloaded", "author", "tag"]
+
+class ModuleType(str, Enum):
+    plugin = "plugin"
+    adapter = "adapter"
+    driver = "driver"
+
+
+class SearchTag(str, Enum):
+    official = "official"
+    valid = "valid"
+    latest = "latest"
+    downloaded = "downloaded"
+    author = "author"
+    tag = "tag"

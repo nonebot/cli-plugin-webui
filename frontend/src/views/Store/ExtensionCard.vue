@@ -8,7 +8,7 @@
   "
 >
 import {
-  SearchTag,
+  nb_cli_plugin_webui__app__constants__SearchTag,
   StoreService,
   type nb_cli_plugin_webui__app__schemas__ModuleInfo,
   type nb_cli_plugin_webui__app__schemas__Plugin
@@ -303,7 +303,9 @@ const getUpdateTime = computed(() => {
             v-if="props.data.is_official"
             class="tooltip flex font-normal"
             data-tip="官方验证"
-            @click="store.updateTag({ label: SearchTag.label.OFFICIAL })"
+            @click="
+              store.updateTag({ label: nb_cli_plugin_webui__app__constants__SearchTag.OFFICIAL })
+            "
           >
             <span class="material-symbols-outlined text-green-600"> verified </span>
           </div>
@@ -314,7 +316,9 @@ const getUpdateTime = computed(() => {
               v-if="isTestPassed(props.data)"
               class="tooltip flex font-normal"
               data-tip="测试通过"
-              @click="store.updateTag({ label: SearchTag.label.VALID })"
+              @click="
+                store.updateTag({ label: nb_cli_plugin_webui__app__constants__SearchTag.VALID })
+              "
             >
               <span class="material-symbols-outlined text-green-600"> check_circle </span>
             </div>
@@ -340,7 +344,12 @@ const getUpdateTime = computed(() => {
       <div
         role="button"
         class="text-sm opacity-70 hover:opacity-100 transition-all"
-        @click="store.updateTag({ label: SearchTag.label.AUTHOR, text: props.data.author })"
+        @click="
+          store.updateTag({
+            label: nb_cli_plugin_webui__app__constants__SearchTag.AUTHOR,
+            text: props.data.author
+          })
+        "
       >
         @{{ props.data.author }}
       </div>
@@ -356,7 +365,12 @@ const getUpdateTime = computed(() => {
         class="tooltip badge rounded-md text-white font-mono"
         :style="`color: ${tag.color}`"
         :data-tip="tag.label"
-        @click="store.updateTag({ label: SearchTag.label.TAG, text: tag.label })"
+        @click="
+          store.updateTag({
+            label: nb_cli_plugin_webui__app__constants__SearchTag.TAG,
+            text: tag.label
+          })
+        "
       >
         {{ tag.label }}
       </div>

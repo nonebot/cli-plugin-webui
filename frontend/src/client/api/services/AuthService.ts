@@ -31,7 +31,7 @@ export class AuthService {
   }
   /**
    * Verify Token
-   * - 验证 JWT 密钥是否可用
+   * - 验证 JWT 密钥是否可用, 返回到期时间戳
    * @param requestBody
    * @returns GenericResponse_str_ Successful Response
    * @throws ApiError

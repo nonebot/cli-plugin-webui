@@ -1,9 +1,18 @@
-from typing import Any, List
+from enum import Enum
+from typing import Any, List, Union
 
 from pydantic import BaseModel
 
-from nb_cli_plugin_webui.app.constants import MODULE_TYPE
 from nb_cli_plugin_webui.app.schemas import GenericResponse
+from nb_cli_plugin_webui.app.constants import ModuleType as BaseModuleType
+
+
+class ConfigType(str, Enum):
+    project = "project"
+    toml = "toml"
+
+
+ConfigModuleType = Union[BaseModuleType, ConfigType]
 
 
 class ModuleConfigSimpleInfo(BaseModel):
@@ -22,7 +31,7 @@ class ModuleConfigChild(ModuleConfigSimpleInfo):
 
 
 class ModuleConfigFather(ModuleConfigSimpleInfo):
-    module_type: MODULE_TYPE
+    module_type: ConfigModuleType
     properties: List[ModuleConfigChild]
 
 

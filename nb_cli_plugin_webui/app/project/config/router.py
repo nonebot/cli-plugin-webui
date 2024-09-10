@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 
 from fastapi import Depends, APIRouter, HTTPException, status
 
-from nb_cli_plugin_webui.app.constants import MODULE_TYPE
+from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.logging import logger as log
 from nb_cli_plugin_webui.app.schemas import NoneBotProjectMeta
 from nb_cli_plugin_webui.app.handlers import (
@@ -16,7 +16,9 @@ from nb_cli_plugin_webui.app.handlers import (
 from ..dependencies import get_nonebot_project_manager
 from .exceptions import EnvExists, EnvNotFound, ConfigNotFound, BaseEnvCannotBeDeleted
 from .schemas import (
+    ConfigType,
     GenericResponse,
+    ConfigModuleType,
     ModuleConfigChild,
     ModuleConfigFather,
     ModuleConfigResponse,
@@ -132,7 +134,7 @@ async def _get_project_meta_config(
         title="Project Config",
         description="",
         name="project-meta",
-        module_type="toml",
+        module_type=ConfigType.project,
         properties=cache_list,
     )
 
@@ -187,7 +189,7 @@ async def _get_project_nonebot_config(
         title="NoneBot Config",
         description=config_detail.get("description", str()),
         name="nonebot-config",
-        module_type="project",
+        module_type=ConfigType.project,
         properties=cache_list,
     )
 
@@ -249,7 +251,7 @@ async def _get_project_nonebot_plugin_config(
             title=plugin.module_name,
             description=plugin.desc,
             name=plugin.module_name,
-            module_type="plugin",
+            module_type=ModuleType.plugin,
             properties=cache_list,
         )
         result.append(plugin_detail)
@@ -259,7 +261,7 @@ async def _get_project_nonebot_plugin_config(
 
 @router.post("/update", response_model=GenericResponse[str])
 async def _update_project_config(
-    module_type: MODULE_TYPE,
+    module_type: ConfigModuleType,
     data: ModuleConfigUpdateRequest,
     project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
 ) -> GenericResponse[str]:

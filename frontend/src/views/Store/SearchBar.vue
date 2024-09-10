@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useSearchStore } from './client'
-import { SearchRequest, SearchTag } from '@/client/api'
+import { ModuleType, nb_cli_plugin_webui__app__constants__SearchTag } from '@/client/api'
 import { useCustomStore, useNoneBotStore } from '@/stores'
 
 const store = useSearchStore(),
@@ -26,7 +26,7 @@ const checkIsDelete = (e: KeyboardEvent) => {
 }
 
 const checkIsAddTag = (e: KeyboardEvent) => {
-  const addTag = (label: SearchTag.label, text: string) => {
+  const addTag = (label: nb_cli_plugin_webui__app__constants__SearchTag, text: string) => {
     e.preventDefault()
     store.searchTags.push({ label, text })
     store.searchInput = ''
@@ -37,14 +37,14 @@ const checkIsAddTag = (e: KeyboardEvent) => {
   if (e.key === ' ') {
     let input = store.searchInput
 
-    for (let tag in SearchTag.label) {
+    for (let tag in nb_cli_plugin_webui__app__constants__SearchTag) {
       tag = tag.toLowerCase()
       if (input.startsWith(`${tag}:`) && input.length > tag.length + 1) {
         if (noTextLabel.includes(tag)) {
           input = ''
         }
 
-        addTag(tag as SearchTag.label, input.slice(tag.length + 1))
+        addTag(tag as nb_cli_plugin_webui__app__constants__SearchTag, input.slice(tag.length + 1))
         return
       }
     }
@@ -80,28 +80,28 @@ const searchInputPlaceholder = () => {
 }
 
 type moduleItem = {
-  label: SearchRequest.module_type
+  label: ModuleType
   tip: string
 }
 
 const moduleItems: moduleItem[] = [
-  { label: SearchRequest.module_type.PLUGIN, tip: '插件' },
-  { label: SearchRequest.module_type.ADAPTER, tip: '适配器' },
-  { label: SearchRequest.module_type.DRIVER, tip: '驱动器' }
+  { label: ModuleType.PLUGIN, tip: '插件' },
+  { label: ModuleType.ADAPTER, tip: '适配器' },
+  { label: ModuleType.DRIVER, tip: '驱动器' }
 ]
 
 type filterItem = {
-  label: SearchTag.label
+  label: nb_cli_plugin_webui__app__constants__SearchTag
   text?: string
   tip: string
 }
 
 const filterItems: filterItem[] = [
-  { label: SearchTag.label.OFFICIAL, tip: '官方认证' },
-  { label: SearchTag.label.VALID, tip: '测试通过' },
-  { label: SearchTag.label.DOWNLOADED, tip: '已下载' },
-  { label: SearchTag.label.LATEST, text: 'week', tip: '最近一周' },
-  { label: SearchTag.label.LATEST, text: 'month', tip: '最近一月' }
+  { label: nb_cli_plugin_webui__app__constants__SearchTag.OFFICIAL, tip: '官方认证' },
+  { label: nb_cli_plugin_webui__app__constants__SearchTag.VALID, tip: '测试通过' },
+  { label: nb_cli_plugin_webui__app__constants__SearchTag.DOWNLOADED, tip: '已下载' },
+  { label: nb_cli_plugin_webui__app__constants__SearchTag.LATEST, text: 'week', tip: '最近一周' },
+  { label: nb_cli_plugin_webui__app__constants__SearchTag.LATEST, text: 'month', tip: '最近一月' }
 ]
 </script>
 
@@ -195,7 +195,10 @@ const filterItems: filterItem[] = [
               placeholder="请键入"
               class="input input-sm input-bordered"
               @keydown.enter="
-                store.updateTag({ label: SearchTag.label.AUTHOR, text: authorInput }),
+                store.updateTag({
+                  label: nb_cli_plugin_webui__app__constants__SearchTag.AUTHOR,
+                  text: authorInput
+                }),
                   (authorInput = '')
               "
             />
@@ -215,7 +218,11 @@ const filterItems: filterItem[] = [
               placeholder="请键入"
               class="input input-sm input-bordered"
               @keydown.enter="
-                store.updateTag({ label: SearchTag.label.TAG, text: labelInput }), (labelInput = '')
+                store.updateTag({
+                  label: nb_cli_plugin_webui__app__constants__SearchTag.TAG,
+                  text: labelInput
+                }),
+                  (labelInput = '')
               "
             />
           </div>

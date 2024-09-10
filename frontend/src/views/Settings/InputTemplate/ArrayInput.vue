@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ModuleConfigChild, ModuleConfigFather } from '@/client/api'
+import type { ConfigType, ModuleConfigChild, ModuleType } from '@/client/api'
 import { ref } from 'vue'
 import { updateConfig } from '../client'
 import { useNoneBotStore } from '@/stores'
@@ -7,7 +7,7 @@ import { useNoneBotStore } from '@/stores'
 const store = useNoneBotStore()
 
 const props = defineProps<{
-  moduleType: ModuleConfigFather.module_type
+  moduleType: ModuleType | ConfigType
   data: ModuleConfigChild
 }>()
 const data = props.data

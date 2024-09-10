@@ -18,7 +18,7 @@ from dateutil import parser
 
 from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui.app.config import Config
-from nb_cli_plugin_webui.app.constants import MODULE_TYPE
+from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.logging import logger as log
 from nb_cli_plugin_webui.app.utils.list_utils import safe_list_get, safe_list_remove
 from nb_cli_plugin_webui.app.schemas import (
@@ -35,19 +35,25 @@ VISIBLE_ITEMS = Config.extension_store_visible_items
 if TYPE_CHECKING:
 
     @overload
-    async def load_module_data(module_type: Literal["plugin"]) -> List[Plugin]:
+    async def load_module_data(
+        module_type: Literal[ModuleType.plugin],
+    ) -> List[Plugin]:
         ...
 
     @overload
-    async def load_module_data(module_type: Literal["adapter"]) -> List[Adapter]:
+    async def load_module_data(
+        module_type: Literal[ModuleType.adapter],
+    ) -> List[Adapter]:
         ...
 
     @overload
-    async def load_module_data(module_type: Literal["driver"]) -> List[Driver]:
+    async def load_module_data(
+        module_type: Literal[ModuleType.driver],
+    ) -> List[Driver]:
         ...
 
     async def load_module_data(
-        module_type: MODULE_TYPE,
+        module_type: ModuleType,
     ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
         ...
 
@@ -55,13 +61,13 @@ else:
 
     @cache(ttl="5m")
     async def load_module_data(
-        module_type: MODULE_TYPE,
+        module_type: ModuleType,
     ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
-        if module_type == "plugin":
+        if module_type == ModuleType.plugin:
             module_class = Plugin
-        elif module_type == "adapter":
+        elif module_type == ModuleType.adapter:
             module_class = Adapter
-        elif module_type == "driver":
+        elif module_type == ModuleType.driver:
             module_class = Driver
         else:
             raise ValueError(
@@ -107,7 +113,7 @@ class ModuleStoreManager(Generic[_T]):
     def __init__(
         self,
         *,
-        module_type: MODULE_TYPE,
+        module_type: ModuleType,
         visible_items: int = VISIBLE_ITEMS,
     ) -> None:
         self.module_type = module_type
@@ -268,6 +274,6 @@ class ModuleStoreManager(Generic[_T]):
         self.search_result = unique_base_models
 
 
-plugin_store_manager = ModuleStoreManager[Plugin](module_type="plugin")
-adapter_store_manager = ModuleStoreManager[Adapter](module_type="adapter")
-driver_store_manager = ModuleStoreManager[Driver](module_type="driver")
+plugin_store_manager = ModuleStoreManager[Plugin](module_type=ModuleType.plugin)
+adapter_store_manager = ModuleStoreManager[Adapter](module_type=ModuleType.adapter)
+driver_store_manager = ModuleStoreManager[Driver](module_type=ModuleType.driver)

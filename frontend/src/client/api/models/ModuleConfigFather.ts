@@ -2,20 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ConfigType } from './ConfigType'
 import type { ModuleConfigChild } from './ModuleConfigChild'
+import type { ModuleType } from './ModuleType'
 export type ModuleConfigFather = {
   title: string
   description: string
   name: string
-  module_type: ModuleConfigFather.module_type
+  module_type: ModuleType | ConfigType
   properties: Array<ModuleConfigChild>
-}
-export namespace ModuleConfigFather {
-  export enum module_type {
-    PLUGIN = 'plugin',
-    ADAPTER = 'adapter',
-    DRIVER = 'driver',
-    PROJECT = 'project',
-    TOML = 'toml'
-  }
 }

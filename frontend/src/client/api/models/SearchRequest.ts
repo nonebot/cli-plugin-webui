@@ -2,18 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { SearchTag } from './SearchTag'
+import type { ModuleType } from './ModuleType'
+import type { nb_cli_plugin_webui__app__schemas__SearchTag } from './nb_cli_plugin_webui__app__schemas__SearchTag'
 export type SearchRequest = {
-  module_type: SearchRequest.module_type
-  tags?: Array<SearchTag>
+  module_type: ModuleType
+  tags?: Array<nb_cli_plugin_webui__app__schemas__SearchTag>
   content: string
-}
-export namespace SearchRequest {
-  export enum module_type {
-    PLUGIN = 'plugin',
-    ADAPTER = 'adapter',
-    DRIVER = 'driver',
-    PROJECT = 'project',
-    TOML = 'toml'
-  }
 }
