@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 
 import Drawer from '@/components/Drawer.vue'
 import { useToastStore } from '@/stores'
@@ -80,9 +80,9 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
     <template v-slot:drawer-footer>
       <div v-if="store.toasts.length">
         <div class="bg-base-content/10 h-px"></div>
-        <div class="flex justify-center items-center p-2">
-          <button class="btn btn-ghost" @click="store.clear()">清除所有</button>
-        </div>
+        <button class="w-full rounded-none btn btn-lg btn-ghost" @click="store.clear()">
+          清除所有
+        </button>
       </div>
     </template>
   </Drawer>

@@ -51,15 +51,13 @@ const hiddenDrawer = () => {
 
       <div class="bg-base-content/10 h-px"></div>
 
-      <div class="flex flex-col justify-between overflow-y-scroll h-full">
+      <div class="flex flex-col overflow-y-scroll h-full px-6 py-4">
         <!-- Drawer Body -->
-        <div class="h-full px-6 py-4">
-          <slot name="drawer-body"></slot>
-        </div>
-
-        <!-- Drawer Footer -->
-        <slot name="drawer-footer"></slot>
+        <slot name="drawer-body"></slot>
       </div>
+
+      <!-- Drawer Footer -->
+      <slot name="drawer-footer"></slot>
     </div>
   </div>
 </template>
