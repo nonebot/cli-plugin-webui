@@ -8,39 +8,10 @@ import Status from '@/components/header/Status.vue'
 import WebUISettings from '@/components/header/WebUISettings.vue'
 
 const store = useCustomStore()
-
-interface RouteItem {
-  path: string
-  name: string
-}
-
-const getBreadcrumbs = computed(() => {
-  const path = router.currentRoute.value.path
-  const paths = path.split('/').filter((item) => item)
-  const routes: RouteItem[] = []
-  let routePath = ''
-  paths.forEach((item) => {
-    routePath += `/${item}`
-    routes.push({
-      path: routePath,
-      name: item
-    })
-  })
-  return routes
-})
 </script>
 
 <template>
-  <div class="h-16 px-4 xl:px-8 py-2 flex justify-between bg-base-100">
-    <div class="h-full flex items-center">
-      <div class="max-w-xs text-sm breadcrumbs">
-        <ul>
-          <li v-for="item in getBreadcrumbs" :key="item.name">
-            <a class="hover:link" @click="router.push(item.path)">{{ item.name }}</a>
-          </li>
-        </ul>
-      </div>
-    </div>
+  <div class="h-16 px-4 xl:px-8 py-2 flex justify-end bg-base-100">
     <div class="h-full flex justify-end items-center gap-4">
       <Status />
 
