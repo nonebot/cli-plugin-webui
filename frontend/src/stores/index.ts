@@ -1,6 +1,5 @@
 export { useViewHistoryRecorderStore } from './viewHistoryRecorder'
 export { useNoneBotStore } from './NoneBotStore'
 export { useCustomStore } from './CustomStore'
-export { useNavStore } from './NavStore'
 export { useChartStore } from './ChartStore'
 export { useToastStore, type ToastItem } from './ToastStore'
