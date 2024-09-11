@@ -2,9 +2,10 @@
 import { ref } from 'vue'
 import { OpenAPI, AuthService } from '@/client/api'
 import router from '@/router'
-import { useToastStore } from '@/stores'
+import { useNoneBotStore, useToastStore } from '@/stores'
 
 const store = useToastStore()
+const nonebotStore = useNoneBotStore()
 
 const token = ref(''),
   isDebug = ref(false),
@@ -21,9 +22,10 @@ const login = () => {
   }
 
   AuthService.authTokenV1AuthLoginPost({ token: token.value, mark: date.toISOString() })
-    .then((res) => {
+    .then(async (res) => {
       localStorage.setItem('token', res.detail)
       router.push('/')
+      await nonebotStore.loadBots()
       store.add('success', '登录成功', '', 3000)
     })
     .catch((err) => {

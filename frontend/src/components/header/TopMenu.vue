@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import router from '@/router'
-import { computed } from 'vue'
-import { useCustomStore } from '@/stores'
+import { useCustomStore, useToastStore } from '@/stores'
 import Notification from '@/components/header/Notification.vue'
 import BotChoose from '@/components/header/BotChoose.vue'
 import Status from '@/components/header/Status.vue'
 import WebUISettings from '@/components/header/WebUISettings.vue'
 
 const store = useCustomStore()
+const toast = useToastStore()
+
+const logout = () => {
+  localStorage.clear()
+  router.push('/login')
+  toast.add('success', '已登出', '', 5000)
+}
 </script>
 
 <template>
@@ -40,9 +46,7 @@ const store = useCustomStore()
 
       <WebUISettings />
       <button class="btn btn-sm btn-ghost btn-square">
-        <span class="material-symbols-outlined text-primary" @click="$router.push('/login')">
-          logout
-        </span>
+        <span class="material-symbols-outlined text-primary" @click="logout()"> logout </span>
       </button>
     </div>
   </div>
