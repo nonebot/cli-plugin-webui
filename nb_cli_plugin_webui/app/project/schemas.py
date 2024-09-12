@@ -39,8 +39,3 @@ class AddProjectData(BaseModel):
 
 class ListProjectResponse(GenericResponse[Dict[str, NoneBotProjectMeta]]):
     pass
-
-
-class CheckProjectTomlResponse(GenericResponse[ProjectTomlDetail]):
-    msg: str
-    level: str

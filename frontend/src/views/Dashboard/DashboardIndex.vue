@@ -3,10 +3,12 @@ import { computed, ref } from 'vue'
 import { useNoneBotStore } from '@/stores'
 import CreateBotIndex from '@/components/Modals/CreateBot/CreateBotIndex.vue'
 import MachineStat from '@/views/Dashboard/MachineStat.vue'
+import AddBotIndex from '@/components/Modals/AddBot/AddBotIndex.vue'
 
 const store = useNoneBotStore()
 
 const createBotModal = ref<InstanceType<typeof CreateBotIndex> | null>()
+const addBotModal = ref<InstanceType<typeof AddBotIndex> | null>()
 
 const getBotIsRunning = computed(() => {
   return store.getExtendedBotsList().filter((bot) => bot.is_running).length
@@ -15,6 +17,7 @@ const getBotIsRunning = computed(() => {
 
 <template>
   <CreateBotIndex ref="createBotModal" />
+  <AddBotIndex ref="addBotModal" />
 
   <div class="grid gap-4">
     <div class="grid gap-4 grid-cols-1 xl:grid-cols-3">
@@ -60,7 +63,10 @@ const getBotIsRunning = computed(() => {
               >
                 创建实例
               </button>
-              <button class="btn btn-md lg:btn-sm btn-primary font-normal btn-outline">
+              <button
+                class="btn btn-md lg:btn-sm btn-primary font-normal btn-outline"
+                @click="addBotModal?.openModal()"
+              >
                 添加实例
               </button>
             </div>

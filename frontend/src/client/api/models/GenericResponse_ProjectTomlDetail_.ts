@@ -3,8 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ProjectTomlDetail } from './ProjectTomlDetail'
-export type CheckProjectTomlResponse = {
+export type GenericResponse_ProjectTomlDetail_ = {
   detail: ProjectTomlDetail
-  msg: string
-  level: string
 }

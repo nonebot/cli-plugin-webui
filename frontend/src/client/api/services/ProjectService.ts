@@ -3,11 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AddProjectData } from '../models/AddProjectData'
-import type { CheckProjectTomlResponse } from '../models/CheckProjectTomlResponse'
 import type { ConfigType } from '../models/ConfigType'
 import type { CreateProjectData } from '../models/CreateProjectData'
 import type { GenericResponse_List_str__ } from '../models/GenericResponse_List_str__'
 import type { GenericResponse_NoneBotProjectMeta_ } from '../models/GenericResponse_NoneBotProjectMeta_'
+import type { GenericResponse_ProjectTomlDetail_ } from '../models/GenericResponse_ProjectTomlDetail_'
 import type { GenericResponse_str_ } from '../models/GenericResponse_str_'
 import type { ListProjectResponse } from '../models/ListProjectResponse'
 import type { ModuleConfigResponse } from '../models/ModuleConfigResponse'
@@ -305,14 +305,13 @@ export class ProjectService {
   /**
    * Check Project Toml
    * - 检查 NoneBot 实例的 toml 文件并从中获取所需信息
-   * - 如返回报错信息, 则说明检查失败
    * @param projectDir
-   * @returns CheckProjectTomlResponse Successful Response
+   * @returns GenericResponse_ProjectTomlDetail_ Successful Response
    * @throws ApiError
    */
   public static checkProjectTomlV1ProjectCheckTomlPost(
     projectDir: string
-  ): CancelablePromise<CheckProjectTomlResponse> {
+  ): CancelablePromise<GenericResponse_ProjectTomlDetail_> {
     return __request(OpenAPI, {
       method: 'POST',
       url: '/v1/project/check_toml',
