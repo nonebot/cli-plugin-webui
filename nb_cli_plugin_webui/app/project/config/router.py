@@ -134,7 +134,7 @@ async def _get_project_meta_config(
         title="Project Config",
         description="",
         name="project-meta",
-        module_type=ConfigType.project,
+        module_type=ConfigType.toml,
         properties=cache_list,
     )
 
@@ -276,7 +276,7 @@ async def _update_project_config(
     project_meta = project.read()
     target_config = data.k.split(":")[-1]
 
-    if module_type == "toml":
+    if module_type == ConfigType.toml:
         if data.conf_type == "boolean":
             setattr(data, "v", bool(data.v))
 
@@ -300,7 +300,7 @@ async def _update_project_config(
             v = data.v
         project.write_to_env(data.env, target_config, v)
 
-        if module_type == "plugin":
+        if module_type == ModuleType.plugin:
             plugins = project_meta.plugins
             for plugin in plugins:
                 config_detail = plugin.config_detail
