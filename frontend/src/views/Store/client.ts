@@ -4,7 +4,6 @@ import {
   type nb_cli_plugin_webui__app__schemas__Plugin,
   StoreService,
   ModuleType,
-  nb_cli_plugin_webui__app__constants__SearchTag,
   type nb_cli_plugin_webui__app__schemas__SearchTag
 } from '@/client/api'
 import { useToastStore } from '@/stores'
@@ -13,7 +12,7 @@ import { ref } from 'vue'
 
 const toast = useToastStore()
 
-export const useSearchStore = defineStore('searchStore', () => {
+export const useSearchStore = defineStore('storeSearchStore', () => {
   const searchInput = ref(''),
     searchTags = ref<nb_cli_plugin_webui__app__schemas__SearchTag[]>([]),
     storeData = ref<(nb_cli_plugin_webui__app__schemas__Plugin | Adapter | Driver)[]>([]),
