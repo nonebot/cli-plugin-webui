@@ -45,7 +45,7 @@ export const initWebUI = async () => {
       )
     })
     .catch(() => {
-      localStorage.clxear()
+      localStorage.clear()
       router.push('/login')
       toast.add('warning', 'Token 已失效, 请重新登录', '', 5000)
       return
