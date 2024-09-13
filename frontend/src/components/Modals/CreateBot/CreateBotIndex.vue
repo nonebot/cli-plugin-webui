@@ -1,29 +1,21 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useNoneBotStore } from '@/stores'
-
+import { ref, watch } from 'vue'
 import TemplateSelect from './TemplateSelect.vue'
 import BotBasic from './BotBasic.vue'
 import MirrorSelect from './MirrorSelect.vue'
 import DriverSelect from './DriverSelect.vue'
 import AdapterSelect from './AdapterSelect.vue'
 import Installation from './Installation.vue'
+import { useCreateBotStore } from '.'
+
+const store = useCreateBotStore()
 
 const createBotModal = ref<HTMLDialogElement>()
 
 defineExpose({
-  openModal: () => {
-    createBotModal.value?.showModal()
-  },
-  closeModal: () => {
-    createBotModal.value?.close()
-  }
+  openModal: () => createBotModal.value?.showModal(),
+  closeModal: () => createBotModal.value?.close()
 })
-
-const store = useNoneBotStore()
-
-const createStep = ref(0),
-  warningMessage = ref('')
 
 interface StepItem {
   title: string
@@ -34,12 +26,12 @@ interface StepItem {
 const steps: StepItem[] = [
   {
     title: '模板选择',
-    pass: () => store.template !== '',
+    pass: () => true,
     component: TemplateSelect
   },
   {
     title: '基础信息',
-    pass: () => store.name !== '' && store.projectPath !== '',
+    pass: () => store.projectName !== '' && store.projectPath !== '',
     component: BotBasic
   },
   {
@@ -63,27 +55,10 @@ const steps: StepItem[] = [
     component: Installation
   }
 ]
-
-const nextStep = () => {
-  const check = steps[createStep.value].pass()
-  if (check) {
-    createStep.value++
-    warningMessage.value = ''
-  } else {
-    warningMessage.value = '请确认信息补充完整'
-  }
-}
-
-const finishCreate = () => {
-  store.reset()
-  createBotModal.value?.close()
-  createStep.value = 0
-  warningMessage.value = ''
-}
 </script>
 
 <template>
-  <dialog ref="createBotModal" class="modal" @close="finishCreate">
+  <dialog ref="createBotModal" class="modal" @close="store.reset()">
     <div class="overflow-hidden modal-box w-11/12 max-w-5xl rounded-xl flex flex-col gap-8">
       <h3 class="font-semibold text-lg">创建 NoneBot 实例</h3>
       <div class="w-full flex justify-center">
@@ -91,64 +66,34 @@ const finishCreate = () => {
           <li
             v-for="(step, index) in steps"
             :key="step.title"
-            :role="step.pass() && !store.isInstalling && !store.addNoneBotSuccess ? 'button' : ''"
-            :data-content="index < createStep ? '✓' : index + 1"
+            :role="
+              step.pass() && !store.isInstalling && !store.createBotSuccess ? 'button' : undefined
+            "
+            :data-content="index < store.step ? '✓' : index + 1"
             :class="{
               step: true,
-              'step-primary': index <= createStep
+              'step-primary': index <= store.step
             }"
             @click="
-              step.pass() && !store.isInstalling && !store.addNoneBotSuccess
-                ? (createStep = index)
+              step.pass() && !store.isInstalling && !store.createBotSuccess
+                ? (store.step = index)
                 : null
             "
           >
-            <div :class="{ 'opacity-20': index < createStep }">{{ step.title }}</div>
+            <div :class="{ 'opacity-20': index < store.step }">{{ step.title }}</div>
           </li>
         </ul>
       </div>
 
-      <div v-show="warningMessage.length" class="flex justify-center">
+      <div v-show="store.warningMessage" class="flex justify-center">
         <div role="alert" class="alert alert-warning w-full max-w-xs">
           <span class="material-symbols-outlined"> warning </span>
-          {{ warningMessage }}
+          {{ store.warningMessage }}
         </div>
       </div>
 
       <div class="overflow-hidden h-full w-full">
-        <div v-for="(step, index) in steps" :key="step.title">
-          <component v-if="index === createStep" :is="step?.component"></component>
-        </div>
-      </div>
-
-      <div class="flex justify-between">
-        <button
-          :class="{
-            'btn btn-sm btn-primary font-normal text-white': true,
-            'btn-disabled': !createStep || store.addNoneBotSuccess || store.isInstalling
-          }"
-          @click="createStep--, (warningMessage = '')"
-        >
-          上一步
-        </button>
-
-        <button
-          v-if="!store.addNoneBotSuccess"
-          :class="{
-            'btn btn-sm btn-primary font-normal text-white': true,
-            'btn-disabled': createStep >= steps.length - 1
-          }"
-          @click="nextStep"
-        >
-          下一步
-        </button>
-        <button
-          v-else
-          class="btn btn-sm btn-primary font-normal text-white"
-          @click="finishCreate()"
-        >
-          完成
-        </button>
+        <component :is="steps[store.step].component" />
       </div>
     </div>
   </dialog>
@@ -157,6 +102,6 @@ const finishCreate = () => {
 <style scoped>
 .steps .step-primary + .step-primary:before,
 .steps .step-primary:after {
-  color: white !important;
+  @apply !text-base-100;
 }
 </style>

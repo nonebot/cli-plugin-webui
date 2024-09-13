@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { ProjectService } from '@/client/api'
-import type { NoneBotProjectMeta, Driver, Adapter } from '@/client/api'
+import type { NoneBotProjectMeta } from '@/client/api'
 
 export const useNoneBotStore = defineStore('nonebotStore', () => {
   const bots = ref<{ [key: string]: NoneBotProjectMeta }>({})
@@ -32,43 +32,12 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
     })
   }
 
-  const template = ref(''),
-    useSrc = ref(false),
-    name = ref(''),
-    projectPath = ref(''),
-    pythonMirror = ref(''),
-    drivers = ref<Driver[]>([]),
-    adapters = ref<Adapter[]>([]),
-    isInstalling = ref(false),
-    addNoneBotSuccess = ref(false)
-
-  const reset = () => {
-    template.value = ''
-    name.value = ''
-    projectPath.value = ''
-    pythonMirror.value = ''
-    drivers.value = []
-    adapters.value = []
-    isInstalling.value = false
-    addNoneBotSuccess.value = false
-  }
-
   return {
     bots,
     selectedBot,
     enabledEnv,
-    template,
-    useSrc,
-    name,
-    projectPath,
-    pythonMirror,
-    drivers,
-    adapters,
-    isInstalling,
-    addNoneBotSuccess,
     getExtendedBotsList,
     selectBot,
-    loadBots,
-    reset
+    loadBots
   }
 })

@@ -1,34 +1,56 @@
 <script setup lang="ts">
 import { ProjectService, type ProcessLog } from '@/client/api'
-import { useNoneBotStore } from '@/stores'
 import { useWebSocket } from '@vueuse/core'
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { generateURLForWebUI } from '@/client/utils'
+import { useCreateBotStore } from '.'
+import { useNoneBotStore, useToastStore } from '@/stores'
 
 const IS_FINISHED = '✨ Done!',
   IS_FAILED = '❌ Failed!'
 
-const store = useNoneBotStore()
+const store = useCreateBotStore()
+const toast = useToastStore()
+const nonebotStore = useNoneBotStore()
 
-const logKey = ref(''),
-  isFinished = ref(false),
-  isFailed = ref(false),
-  logShowArea = ref<HTMLElement>(),
-  logData = ref<ProcessLog[]>([])
+const logKey = ref('')
+const isFailed = ref(false)
+const logContainer = ref<HTMLElement>()
+const logData = ref<ProcessLog[]>([])
 
-const doCreate = () => {
-  ProjectService.createProjectV1ProjectCreatePost({
+const createBot = async () => {
+  if (isFailed.value) {
+    isFailed.value = false
+    store.warningMessage = ''
+
+    logData.value = []
+    logData.value.push({
+      message: 'Retrying...'
+    })
+  }
+
+  await ProjectService.createProjectV1ProjectCreatePost({
     is_bootstrap: store.template === 'bootstrap',
     use_src: store.useSrc,
-    project_name: store.name,
+    project_name: store.projectName,
     project_dir: store.projectPath,
     mirror_url: store.pythonMirror,
     drivers: store.drivers,
     adapters: store.adapters
-  }).then((res) => {
-    logKey.value = res.detail
-    open()
   })
+    .then((res) => {
+      logKey.value = res.detail
+      open()
+    })
+    .catch((err) => {
+      store.warningMessage = err.body ? err.body.detail : err
+      isFailed.value = true
+    })
+}
+
+const finish = async () => {
+  await nonebotStore.loadBots()
+  toast.add('success', `创建实例 ${store.projectName} 成功`, '', 5000)
 }
 
 const { status, data, close, open } = useWebSocket<ProcessLog>(
@@ -54,8 +76,7 @@ watch(
 
     if (data.message === IS_FINISHED) {
       close()
-      isFinished.value = true
-      store.addNoneBotSuccess = true
+      store.createBotSuccess = true
     } else if (data.message === IS_FAILED) {
       close()
       isFailed.value = true
@@ -66,26 +87,11 @@ watch(
 watch(
   () => status.value,
   (status) => {
-    if (status === 'OPEN') {
-      store.isInstalling = true
-    } else if (status === 'CLOSED') {
-      store.isInstalling = false
-    }
+    store.isInstalling = status === 'OPEN'
   }
 )
 
 const getLogData = computed(() => [...logData.value].reverse())
-
-const retry = () => {
-  logData.value = []
-  logData.value.push({
-    message: 'Retrying...'
-  })
-
-  isFinished.value = false
-  isFailed.value = false
-  doCreate()
-}
 
 onUnmounted(() => {
   close()
@@ -93,60 +99,54 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="overflow-hidden bg-base-200 rounded-lg p-4">
-    <div class="flex flex-col gap-4">
-      <div v-if="!logKey">
-        <table class="table w-auto">
-          <tbody>
-            <tr>
-              <td class="font-semibold">实例名称</td>
-              <td>{{ store.name }}</td>
-            </tr>
-            <tr>
-              <td class="font-semibold">实例类型</td>
-              <td>{{ store.template === 'bootstrap' ? '初学者 / 普通用户' : '开发者' }}</td>
-            </tr>
-            <tr v-if="store.template === 'simple'">
-              <td class="font-semibold">实例插件加载位置</td>
-              <td>{{ store.useSrc ? '/src' : `/${store.name}` }}</td>
-            </tr>
-            <tr>
-              <td class="font-semibold">实例路径</td>
-              <td>(Base Dir)/{{ store.projectPath }}</td>
-            </tr>
-            <tr>
-              <td class="font-semibold">Python 镜像</td>
-              <td>{{ store.pythonMirror }}</td>
-            </tr>
-            <tr>
-              <td class="font-semibold">驱动器</td>
-              <td>
-                <div class="flex items-center gap-2">
-                  <div v-for="driver in store.drivers" class="badge" :key="driver.name">
-                    {{ driver.name }}
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="font-semibold">适配器</td>
-              <td>
-                <div class="flex items-center gap-2">
-                  <div v-for="adapter in store.adapters" class="badge" :key="adapter.name">
-                    {{ adapter.name }}
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="overflow-hidden flex flex-col gap-4">
+    <div class="bg-base-200 rounded-lg p-4">
+      <table v-if="!logKey" class="table table-sm w-full">
+        <tbody>
+          <tr>
+            <th class="font-semibold text-base">实例名称</th>
+            <td>{{ store.projectName }}</td>
+          </tr>
+          <tr>
+            <th class="font-semibold text-base">实例类型</th>
+            <td>{{ store.template === 'bootstrap' ? '初学者 / 普通用户' : '开发者' }}</td>
+          </tr>
+          <tr v-if="store.template === 'simple'">
+            <th class="font-semibold text-base">实例插件加载位置</th>
+            <td>{{ store.useSrc ? '/src' : `/${store.projectName}` }}</td>
+          </tr>
+          <tr>
+            <th class="font-semibold text-base">实例路径</th>
+            <td>(Base Dir)/{{ store.projectPath }}</td>
+          </tr>
+          <tr>
+            <th class="font-semibold text-base">Python 镜像</th>
+            <td>{{ store.pythonMirror }}</td>
+          </tr>
+          <tr>
+            <th class="font-semibold text-base">驱动器</th>
+            <td class="flex flex-wrap items-center gap-2">
+              <span v-for="driver in store.drivers" class="badge" :key="driver.name">
+                {{ driver.name }}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-semibold text-base">适配器</td>
+            <td class="flex flex-wrap items-center gap-2">
+              <span v-for="adapter in store.adapters" class="badge" :key="adapter.name">
+                {{ adapter.name }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <table v-else class="overflow-auto h-80 !flex table table-xs">
-        <tbody ref="logShowArea">
+        <tbody ref="logContainer">
           <tr
-            v-for="item in getLogData"
-            :key="item.time"
+            v-for="(item, index) in getLogData"
+            :key="index"
             :class="{
               'flex font-mono': true,
               'bg-error/50': item.level === 'ERROR',
@@ -159,14 +159,43 @@ onUnmounted(() => {
           </tr>
         </tbody>
       </table>
+    </div>
 
-      <div v-if="!logKey" class="bg-base-content/10 h-px"></div>
+    <div class="flex items-center justify-between">
+      <button
+        :class="{
+          'btn btn-sm btn-primary text-base-100': true,
+          'btn-disabled': store.isInstalling || store.createBotSuccess
+        }"
+        @click="store.step--"
+      >
+        上一步
+      </button>
 
-      <div class="flex justify-end gap-4">
-        <button v-if="isFailed" class="btn btn-sm btn-outline" @click="retry">重试</button>
+      <div class="flex items-center gap-2">
+        <form method="dialog">
+          <button
+            :class="{
+              'btn btn-sm': true,
+              'btn-disabled': store.isInstalling || store.createBotSuccess
+            }"
+          >
+            取消
+          </button>
+        </form>
 
-        <button v-if="!logKey" class="btn btn-sm btn-primary text-white" @click="doCreate">
-          确认并安装依赖
+        <form v-if="store.createBotSuccess" method="dialog">
+          <button class="btn btn-sm btn-primary text-base-100" @click="finish()">完成</button>
+        </form>
+        <button
+          v-else
+          :class="{
+            'btn btn-sm btn-primary text-base-100': true,
+            'btn-disabled': store.isInstalling
+          }"
+          @click="createBot()"
+        >
+          {{ isFailed ? '重试' : '安装' }}
         </button>
       </div>
     </div>

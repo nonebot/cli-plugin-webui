@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useNoneBotStore } from '@/stores'
+import { useCreateBotStore } from '.'
 
-const store = useNoneBotStore()
+const store = useCreateBotStore()
 
 interface MirrorItem {
   abbr: string
@@ -39,35 +39,52 @@ const mirrors: MirrorItem[] = [
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center">
-    <div class="form-control w-full max-w-xs">
-      <div class="label">
-        <span class="label-text">请选择:</span>
+  <div class="flex flex-col gap-8">
+    <div class="flex flex-col justify-center items-center">
+      <div class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">请选择:</span>
+        </div>
+        <select class="select select-bordered" v-model="store.pythonMirror">
+          <option v-for="mirror in mirrors" :value="mirror.url" :key="mirror.name">
+            {{ mirror.abbr }} - {{ mirror.name }}
+          </option>
+        </select>
       </div>
-      <select class="select select-bordered" v-model="store.pythonMirror">
-        <option v-for="mirror in mirrors" :value="mirror.url" :key="mirror.name">
-          {{ mirror.abbr }} - {{ mirror.name }}
-        </option>
-      </select>
+
+      <div class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">或自行填写:</span>
+        </div>
+        <input
+          type="text"
+          placeholder="请输入"
+          class="input input-bordered w-full max-w-xs"
+          v-model="store.pythonMirror"
+        />
+      </div>
+
+      <div role="alert" class="mt-4 alert w-full max-w-xs">
+        <span class="material-symbols-outlined text-info"> info </span>
+        <div>
+          更多镜像请前往:
+          <a class="link" target="_blank" href="https://help.mirrors.cernet.edu.cn/pypi/"
+            >MirrorZ</a
+          >
+        </div>
+      </div>
     </div>
 
-    <div class="form-control w-full max-w-xs">
-      <div class="label">
-        <span class="label-text">或自行填写:</span>
-      </div>
-      <input
-        type="text"
-        placeholder="请输入"
-        class="input input-bordered w-full max-w-xs"
-        v-model="store.pythonMirror"
-      />
-    </div>
-
-    <div role="alert" class="mt-4 alert w-full max-w-xs">
-      <span class="material-symbols-outlined text-info"> info </span>
-      <div>
-        更多镜像请前往:
-        <a class="link" target="_blank" href="https://help.mirrors.cernet.edu.cn/pypi/">MirrorZ</a>
+    <div class="flex justify-between items-center">
+      <div class="btn btn-sm btn-primary text-base-100" @click="store.step--">上一步</div>
+      <div
+        :class="{
+          'btn btn-sm btn-primary text-base-100': true,
+          'btn-disabled': !store.pythonMirror.length
+        }"
+        @click="store.step++"
+      >
+        下一步
       </div>
     </div>
   </div>

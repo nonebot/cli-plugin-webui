@@ -2,11 +2,11 @@
 import { type Driver, type Adapter, ModuleType } from '@/client/api'
 import { ref, watch, type Ref } from 'vue'
 import { limitContentShow } from '@/client/utils'
-import { useNoneBotStore } from '@/stores'
+import { useCreateBotStore } from '.'
 
 const props = defineProps<{ data: T[]; dataType: ModuleType }>()
 
-const store = useNoneBotStore()
+const store = useCreateBotStore()
 
 const currentPage = ref(0),
   maxPage = ref(0),
