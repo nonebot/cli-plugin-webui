@@ -13,7 +13,6 @@ export const useAddBotStore = defineStore('addBotStore', () => {
   const isInstalling = ref(false)
   const addBotSuccess = ref(false)
   const searchBotSuccess = ref(false)
-  const cancelAddBot = ref(false)
 
   const reset = () => {
     step.value = 0
@@ -29,11 +28,6 @@ export const useAddBotStore = defineStore('addBotStore', () => {
     searchBotSuccess.value = false
   }
 
-  const cancel = () => {
-    cancelAddBot.value = true
-    reset()
-  }
-
   return {
     step,
     warningMessage,
@@ -46,8 +40,6 @@ export const useAddBotStore = defineStore('addBotStore', () => {
     isInstalling,
     addBotSuccess,
     searchBotSuccess,
-    cancelAddBot,
-    cancel,
     reset
   }
 })

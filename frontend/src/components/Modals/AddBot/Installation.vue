@@ -49,9 +49,8 @@ const addBot = async () => {
     })
 }
 
-const finish = () => {
-  store.cancel()
-  nonebotStore.loadBots()
+const finish = async () => {
+  await nonebotStore.loadBots()
   toast.add('success', `添加实例 ${store.projectName} 成功`, '', 5000)
 }
 
@@ -192,20 +191,20 @@ onUnmounted(() => {
       </button>
 
       <div class="flex items-center gap-2">
-        <button
-          :class="{ 'btn btn-sm': true, 'btn-disabled': store.isInstalling || store.addBotSuccess }"
-          @click="store.cancel()"
-        >
-          取消
-        </button>
+        <form method="dialog">
+          <button
+            :class="{
+              'btn btn-sm': true,
+              'btn-disabled': store.isInstalling || store.addBotSuccess
+            }"
+          >
+            取消
+          </button>
+        </form>
 
-        <button
-          v-if="store.addBotSuccess"
-          class="btn btn-sm btn-primary text-base-100"
-          @click="finish()"
-        >
-          完成
-        </button>
+        <form v-if="store.addBotSuccess" method="dialog">
+          <button class="btn btn-sm btn-primary text-base-100" @click="finish()">完成</button>
+        </form>
         <button
           v-else
           :class="{

@@ -132,7 +132,10 @@ const search = async () => {
       <div class="w-full"></div>
 
       <div class="shrink-0 flex items-center gap-2">
-        <button class="btn btn-sm" @click="store.cancel()">取消</button>
+        <form method="dialog">
+          <button class="btn btn-sm">取消</button>
+        </form>
+
         <button
           :class="{
             'btn btn-sm btn-primary text-base-100': true,

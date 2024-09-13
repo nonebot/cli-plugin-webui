@@ -37,20 +37,10 @@ const steps: StepItem[] = [
     component: Installation
   }
 ]
-
-watch(
-  () => store.cancelAddBot,
-  (newValue) => {
-    if (newValue) {
-      addBotModal.value?.close()
-      store.cancelAddBot = false
-    }
-  }
-)
 </script>
 
 <template>
-  <dialog ref="addBotModal" class="modal">
+  <dialog ref="addBotModal" class="modal" @close="store.reset()">
     <div class="modal-box overflow-hidden w-11/12 max-w-5xl rounded-xl flex flex-col gap-8">
       <h3 class="font-semibold text-lg">添加 NoneBot 实例</h3>
       <div class="w-full flex justify-center">
@@ -83,9 +73,7 @@ watch(
       </div>
 
       <div class="overflow-hidden h-full w-full">
-        <div v-for="(step, index) in steps" :key="step.title">
-          <component :is="step.component" v-show="index === store.step" />
-        </div>
+        <component :is="steps[store.step].component" />
       </div>
     </div>
   </dialog>
@@ -94,6 +82,6 @@ watch(
 <style scoped>
 .steps .step-primary + .step-primary:before,
 .steps .step-primary:after {
-  color: white !important;
+  @apply !text-base-100;
 }
 </style>
