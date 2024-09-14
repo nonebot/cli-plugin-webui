@@ -6,7 +6,6 @@ import type { NoneBotProjectMeta } from '@/client/api'
 export const useNoneBotStore = defineStore('nonebotStore', () => {
   const bots = ref<{ [key: string]: NoneBotProjectMeta }>({})
   const selectedBot = ref<NoneBotProjectMeta>()
-  const enabledEnv = ref<string>('.env')
 
   const selectedBotFromLocalStorage = localStorage.getItem('selectedBot')
   if (selectedBotFromLocalStorage) {
@@ -35,7 +34,6 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
   return {
     bots,
     selectedBot,
-    enabledEnv,
     getExtendedBotsList,
     selectBot,
     loadBots

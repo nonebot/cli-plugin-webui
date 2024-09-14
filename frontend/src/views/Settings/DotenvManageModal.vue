@@ -42,8 +42,29 @@ const getDotenvList = async () => {
     })
 }
 
-const setDotenv = (env: string) => {
-  nonebotStore.enabledEnv = env
+const setEnv = async (env: string) => {
+  if (!nonebotStore.selectedBot) {
+    return
+  }
+
+  await ProjectService.useProjectEnvV1ProjectConfigEnvUsePost(
+    env,
+    nonebotStore.selectedBot.project_id
+  )
+    .then(() => {
+      if (nonebotStore.selectedBot) {
+        nonebotStore.selectedBot.use_env = env
+      }
+    })
+    .catch((err) => {
+      let detail = ''
+      if (err.body) {
+        detail = err.body.detail
+      } else {
+        detail = err
+      }
+      toast.add('error', `切换环境失败, 原因：${detail}`, '', 5000)
+    })
 }
 
 const addEnv = async () => {
@@ -88,7 +109,7 @@ const removeEnv = async (env: string) => {
   )
     .then(async () => {
       await getDotenvList()
-      nonebotStore.enabledEnv = dotenvList.value[0]
+      await setEnv(dotenvList.value[0])
     })
     .catch((err) => {
       let detail = ''
@@ -108,7 +129,7 @@ const cancel = () => {
 </script>
 
 <template>
-  <dialog ref="dotenvManageModal" class="modal">
+  <dialog ref="dotenvManageModal" class="modal" @close="cancel()">
     <div class="modal-box w-11/12 max-5-xl rounded-xl flex flex-col gap-4">
       <h3 class="font-semibold text-lg">Dotenv 管理</h3>
 
@@ -121,10 +142,10 @@ const cancel = () => {
         </thead>
         <tbody>
           <tr v-for="i in dotenvList" :key="i" class="transition-colors hover:bg-base-300">
-            <td role="btn" @click="setDotenv(i)">
+            <td role="btn" @click="setEnv(i)">
               {{ i }}
               <span
-                v-if="i === nonebotStore.enabledEnv"
+                v-if="i === nonebotStore.selectedBot?.use_env"
                 class="badge badge-primary badge-sm text-base-100"
               >
                 已选择
@@ -152,12 +173,9 @@ const cancel = () => {
           <button class="btn btn-sm btn-ghost" @click="cancel()">取消</button>
         </div>
 
-        <button
-          class="btn btn-sm btn-primary text-base-100"
-          @click="cancel(), dotenvManageModal?.close()"
-        >
-          完成
-        </button>
+        <form method="dialog">
+          <button class="btn btn-sm btn-primary text-base-100">完成</button>
+        </form>
       </div>
     </div>
   </dialog>

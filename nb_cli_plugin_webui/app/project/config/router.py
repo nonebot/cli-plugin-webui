@@ -1,3 +1,4 @@
+import re
 import ast
 import json
 from pathlib import Path
@@ -95,7 +96,16 @@ async def _use_project_env(
     project_dir = Path(project_meta.project_dir)
     for i in project_dir.iterdir():
         if env == i.name:
-            project.write_to_env(".env", "ENVIRONMENT", env.replace(".env", str()))
+            env_name = str()
+            _match = re.compile(r"(?<=\.env\.)[\w-]+")
+            search = _match.search(env)
+            if search:
+                env_name = search.group()
+
+            project.write_to_env(".env", "ENVIRONMENT", env_name)
+            project_meta.use_env = env
+            project.store(project_meta)
+
             return GenericResponse(detail="success")
 
     raise EnvNotFound()

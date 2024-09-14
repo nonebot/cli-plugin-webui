@@ -103,7 +103,7 @@ const moduleItems: moduleItem[] = [
       <button class="btn btn-sm btn-outline btn-primary" @click="dotenvManageModal?.openModal()">
         <div class="flex gap-1 items-center">
           <span class="material-symbols-outlined text-base"> menu </span>
-          当前环境：{{ nonebotStore.enabledEnv }}
+          当前环境：{{ nonebotStore.selectedBot?.use_env || '未知' }}
         </div>
       </button>
     </div>

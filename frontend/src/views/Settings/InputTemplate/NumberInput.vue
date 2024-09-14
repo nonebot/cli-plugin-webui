@@ -20,13 +20,7 @@ const update = async () => {
     return
   }
   const data = props.data
-  await updateConfig(
-    props.moduleType,
-    store.enabledEnv,
-    data.conf_type,
-    data.name,
-    inputValue.value
-  )
+  await updateConfig(props.moduleType, data.conf_type, data.name, inputValue.value)
 }
 
 watch(inputValue, (value) => {

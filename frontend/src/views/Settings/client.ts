@@ -10,7 +10,6 @@ export type ModuleConfigType = ModuleType | ConfigType | 'all'
 
 export const updateConfig = async (
   moduleType: ModuleType | ConfigType,
-  env: string,
   confType: string,
   k: string,
   v: any
@@ -24,7 +23,7 @@ export const updateConfig = async (
     moduleType,
     store.selectedBot.project_id,
     {
-      env: env,
+      env: store.selectedBot.use_env!,
       conf_type: confType,
       k: k,
       v: v

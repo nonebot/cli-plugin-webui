@@ -72,6 +72,7 @@ class NoneBotProjectMeta(BaseModel):
 
     is_running: bool = False
 
+    use_env: str = ".env"
     use_run_script: bool = False
     run_script_name: str = "bot.py"
 

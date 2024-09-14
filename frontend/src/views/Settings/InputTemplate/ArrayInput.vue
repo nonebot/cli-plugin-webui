@@ -24,9 +24,13 @@ const addItem = async () => {
     return
   }
 
+  if (!store.selectedBot) {
+    return
+  }
+
   data.configured.push(inputValue.value)
 
-  await updateConfig(props.moduleType, store.enabledEnv, data.conf_type, data.name, data.configured)
+  await updateConfig(props.moduleType, data.conf_type, data.name, data.configured)
     .then(() => {
       inputValue.value = ''
       isAddItem.value = false
@@ -39,17 +43,15 @@ const addItem = async () => {
 }
 
 const removeItem = async (rItem: string) => {
+  if (!store.selectedBot) {
+    return
+  }
+
   const index = findItem(rItem)
   if (index === -1) return
   data.configured.splice(index, 1)
 
-  await updateConfig(
-    props.moduleType,
-    store.enabledEnv,
-    data.conf_type,
-    data.name,
-    data.configured
-  ).catch(() => {
+  await updateConfig(props.moduleType, data.conf_type, data.name, data.configured).catch(() => {
     data.configured.push(rItem)
   })
 }

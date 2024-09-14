@@ -15,6 +15,7 @@ export type NoneBotProjectMeta = {
   plugin_dirs: Array<string>
   builtin_plugins: Array<string>
   is_running?: boolean
+  use_env?: string
   use_run_script?: boolean
   run_script_name?: string
 }

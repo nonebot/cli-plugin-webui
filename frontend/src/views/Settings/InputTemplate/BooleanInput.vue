@@ -15,13 +15,7 @@ defineProps<{ moduleType: ModuleType | ConfigType; data: ModuleConfigChild }>()
     :checked="data.configured"
     @click="
       async () => {
-        await updateConfig(
-          moduleType,
-          store.enabledEnv,
-          data.conf_type,
-          data.name,
-          !data.configured
-        ).then(() => {
+        await updateConfig(moduleType, data.conf_type, data.name, !data.configured).then(() => {
           data.configured! = !data.configured
         })
       }

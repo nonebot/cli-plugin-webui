@@ -56,7 +56,7 @@ const installModule = async (module: T) => {
   const moduleType = 'valid' in module ? 'plugin' : 'module'
 
   await StoreService.installNonebotModuleV1StoreNonebotInstallPost(
-    nonebotStore.enabledEnv,
+    nonebotStore.selectedBot.use_env!,
     nonebotStore.selectedBot?.project_id,
 
     // TODO: 因后端实现需借助 module_type 以区分传入的类型, 而其所需类型为私有类型, 无法直接引用。待修复
@@ -85,7 +85,7 @@ const uninstallModule = async (module: T) => {
   const moduleType = 'valid' in module ? 'plugin' : 'module'
 
   await StoreService.uninstallNonebotModuleV1StoreNonebotUninstallPost(
-    nonebotStore.enabledEnv,
+    nonebotStore.selectedBot.use_env!,
     nonebotStore.selectedBot.project_id,
 
     // @ts-ignore
