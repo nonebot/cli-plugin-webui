@@ -1,19 +1,31 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useStatusStore } from './StatusStore'
+
+const ID_OF_DEBUG_STATUS = crypto.randomUUID()
 
 export const useCustomStore = defineStore('customStore', () => {
   let data: string | null
+
+  const statusStore = useStatusStore()
 
   const isDebug = ref(false)
 
   data = localStorage.getItem('isDebug')
   if (data) {
     isDebug.value = data === '1'
+    if (isDebug.value) statusStore.update(ID_OF_DEBUG_STATUS, 'badge-warning', '开发模式')
   }
 
   const toggleDebug = () => {
     isDebug.value = !isDebug.value
     localStorage.setItem('isDebug', isDebug.value ? '1' : '0')
+
+    if (isDebug.value) {
+      statusStore.update(ID_OF_DEBUG_STATUS, 'badge-warning', '开发模式')
+    } else {
+      statusStore.deleteStatus(ID_OF_DEBUG_STATUS)
+    }
   }
 
   const isThemeFollowSystem = ref(true)
@@ -56,6 +68,18 @@ export const useCustomStore = defineStore('customStore', () => {
     localStorage.setItem('instantSearch', isInstantSearch.value ? '1' : '0')
   }
 
+  const menuMinify = ref(false)
+
+  const toggleMenuMinify = () => {
+    menuMinify.value = !menuMinify.value
+  }
+
+  const menuShow = ref(false)
+
+  const toggleMenuShow = () => {
+    menuShow.value = !menuShow.value
+  }
+
   return {
     isDebug,
     toggleDebug,
@@ -64,6 +88,10 @@ export const useCustomStore = defineStore('customStore', () => {
     currentTheme,
     toggleTheme,
     isInstantSearch,
-    toggleInstantSearch
+    toggleInstantSearch,
+    menuMinify,
+    toggleMenuMinify,
+    menuShow,
+    toggleMenuShow
   }
 })

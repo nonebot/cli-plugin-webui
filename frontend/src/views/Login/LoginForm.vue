@@ -40,8 +40,8 @@ const login = () => {
 
 <template>
   <div class="shrink-0 w-full">
-    <form class="flex justify-center flex-col" @submit.prevent="login">
-      <div class="flex justify-center gap-4 flex-col lg:flex-row">
+    <form class="flex justify-center flex-col gap-4 lg:gap-0" @submit.prevent="login">
+      <div class="flex justify-center gap-0 lg:gap-4 flex-col lg:flex-row">
         <label class="form-control">
           <input
             v-model="token"

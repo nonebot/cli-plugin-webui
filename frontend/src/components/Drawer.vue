@@ -4,7 +4,6 @@
 import { ref } from 'vue'
 
 const isShow = ref(false)
-
 defineExpose({
   showDrawer: () => {
     isShow.value = true
@@ -23,7 +22,7 @@ const hiddenDrawer = () => {
   <slot name="button"></slot>
 
   <div class="fixed z-50 top-0 left-0 flex h-full overflow-hidden">
-    <Transition>
+    <Transition class="invisible md:visible">
       <div
         v-show="isShow"
         role="button"
@@ -34,7 +33,8 @@ const hiddenDrawer = () => {
 
     <div
       :class="{
-        'fixed top-0 right-0 z-50 h-screen bg-base-100 shadow-2xl w-2/5 xl:w-1/4 transition shrink-0 flex flex-col': true,
+        'fixed top-0 right-0 z-50 h-screen bg-base-100 shadow-2xl transition shrink-0 flex flex-col': true,
+        'w-full md:w-2/5 xl:w-1/4 ': true,
         'translate-x-0 opacity-100': isShow,
         'translate-x-full opacity-0': !isShow
       }"

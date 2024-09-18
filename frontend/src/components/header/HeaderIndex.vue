@@ -4,7 +4,7 @@ import TabBar from '@/components/header/TabBar.vue'
 </script>
 
 <template>
-  <header class="fixed z-20 top-0 right-0 w-[calc(100vw-18rem)]">
+  <header class="top-0 right-0 w-full">
     <TopMenu />
 
     <TabBar />

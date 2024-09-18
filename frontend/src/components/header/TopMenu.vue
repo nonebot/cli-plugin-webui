@@ -17,7 +17,25 @@ const logout = () => {
 </script>
 
 <template>
-  <div class="h-16 px-4 xl:px-8 py-2 flex justify-end bg-base-100">
+  <div class="relative h-16 px-4 xl:px-8 py-2 flex justify-end items-center bg-base-100">
+    <button
+      :class="{
+        'z-20 absolute -left-5 size-10 flex items-center justify-center invisible lg:visible': true,
+        '-scale-100': store.menuMinify
+      }"
+      @click="store.toggleMenuMinify()"
+    >
+      <span class="material-symbols-outlined"> menu_open </span>
+    </button>
+    <button
+      class="visible lg:invisible relative size-10 flex items-center justify-center"
+      @click="store.toggleMenuShow()"
+    >
+      <span class="material-symbols-outlined"> menu </span>
+    </button>
+
+    <div class="w-full"></div>
+
     <div class="h-full flex justify-end items-center gap-4">
       <Status />
 

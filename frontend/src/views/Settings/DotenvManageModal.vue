@@ -42,31 +42,6 @@ const getDotenvList = async () => {
     })
 }
 
-const setEnv = async (env: string) => {
-  if (!nonebotStore.selectedBot) {
-    return
-  }
-
-  await ProjectService.useProjectEnvV1ProjectConfigEnvUsePost(
-    env,
-    nonebotStore.selectedBot.project_id
-  )
-    .then(() => {
-      if (nonebotStore.selectedBot) {
-        nonebotStore.selectedBot.use_env = env
-      }
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `切换环境失败, 原因：${detail}`, '', 5000)
-    })
-}
-
 const addEnv = async () => {
   if (!inputValue.value) {
     toast.add('warning', '请输入环境名称', '', 5000)
@@ -109,7 +84,7 @@ const removeEnv = async (env: string) => {
   )
     .then(async () => {
       await getDotenvList()
-      await setEnv(dotenvList.value[0])
+      await nonebotStore.updateEnv(dotenvList.value[0])
     })
     .catch((err) => {
       let detail = ''
@@ -142,7 +117,7 @@ const cancel = () => {
         </thead>
         <tbody>
           <tr v-for="i in dotenvList" :key="i" class="transition-colors hover:bg-base-300">
-            <td role="btn" @click="setEnv(i)">
+            <td role="btn" @click="nonebotStore.updateEnv(i)">
               {{ i }}
               <span
                 v-if="i === nonebotStore.selectedBot?.use_env"

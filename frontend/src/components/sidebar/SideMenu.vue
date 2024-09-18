@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { useViewHistoryRecorderStore } from '@/stores'
+import { useCustomStore, useViewHistoryRecorderStore } from '@/stores'
 import { defaultRoutes, type NavItem } from '@/router/client'
 
 const route = useRoute()
 const store = useViewHistoryRecorderStore()
+const customStore = useCustomStore()
 
 const getCurrentRoute = () => {
   return route.path
@@ -19,25 +20,18 @@ const recordView = (route: NavItem) => {
 </script>
 
 <template>
-  <ul class="h-full pt-8 px-4 menu rounded-box">
+  <ul class="h-full pt-8 px-0 menu rounded-box">
     <li v-for="route in defaultRoutes" :key="route.name" class="mb-2" @click="recordView(route)">
-      <details v-if="route.routeData.children">
-        <summary>
-          <span class="material-symbols-outlined">{{ route.googleIcon }}</span>
-          {{ route.name }}
-        </summary>
-        <ul>
-          <li v-for="childRoute in route.routeData.children" :key="childRoute.name" class="mb-2">
-            {{ childRoute.name }}
-          </li>
-        </ul>
-      </details>
       <RouterLink
         :to="route.routeData.path"
-        :class="{ active: route.routeData.path === getCurrentRoute() }"
+        :class="{
+          active: route.routeData.path === getCurrentRoute(),
+          'btn-block lg:btn-square flex items-center justify-start lg:justify-center':
+            customStore.menuMinify
+        }"
       >
         <span class="material-symbols-outlined">{{ route.googleIcon }}</span>
-        {{ route.name }}
+        <span :class="{ 'block lg:hidden': customStore.menuMinify }">{{ route.name }}</span>
       </RouterLink>
     </li>
   </ul>

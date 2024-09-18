@@ -36,7 +36,7 @@ const operation = (route: NavItem) => {
       :key="i.name"
       role="tab"
       :class="{
-        'tab flex gap-2 hover:bg-primary/[.2] transition': true,
+        'tab flex gap-2 hover:bg-primary/[.2] transition !border-b-0': true,
         '[--tab-bg:oklch(var(--b2))] tab-active': isCurrentRoute(i.routeData.path)
       }"
       @click="operation(i)"
@@ -52,9 +52,7 @@ const operation = (route: NavItem) => {
     </a>
     <div class="tab [--tab-border-color:transparent]"></div>
   </div>
-  <div
-    class="border-t border-base-300 -mt-[1px] bg-base-100 pointer-events-none sticky flex h-3 [mask-image:linear-gradient(#000000,transparent)]"
-  ></div>
+  <div class="border-t border-base-300"></div>
 </template>
 
 <style scoped>
