@@ -5,7 +5,6 @@ interface RouteInfo {
 
 export interface RouteRecordRawRebuild extends RouteInfo {
   component: () => Promise<any>
-  children?: RouteRecordRawRebuild[]
 }
 
 export interface NavItem {
