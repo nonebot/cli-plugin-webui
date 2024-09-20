@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import GetBotBasicInfo from './GetBotBasicInfo.vue'
 import MirrorSelect from './MirrorSelect.vue'
 import Installation from './Installation.vue'

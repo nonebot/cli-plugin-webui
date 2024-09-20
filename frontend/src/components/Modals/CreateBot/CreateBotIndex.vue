@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import TemplateSelect from './TemplateSelect.vue'
 import BotBasic from './BotBasic.vue'
 import MirrorSelect from './MirrorSelect.vue'
