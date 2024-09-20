@@ -7,7 +7,21 @@ import { ref } from 'vue'
 
 const route = useRoute()
 const store = useViewHistoryRecorderStore()
+
 const isCloseTab = ref(false)
+const draggedIndex = ref<number>()
+
+const onDragStart = (index: number) => {
+  draggedIndex.value = index
+}
+
+const onDragOver = (e: DragEvent) => {
+  e.preventDefault()
+}
+
+const onDragEnd = (index: number) => {
+  store.move(draggedIndex.value!, index)
+}
 
 const isCurrentRoute = (path: string) => {
   return path === route.path
@@ -30,26 +44,32 @@ const operation = (route: NavItem) => {
 </script>
 
 <template>
-  <div role="tablist" class="tabs tabs-lifted justify-start bg-base-100">
-    <a
-      v-for="i in store.viewHistory"
-      :key="i.name"
-      role="tab"
-      :class="{
-        'tab flex gap-2 hover:bg-primary/[.2] transition !border-b-0': true,
-        '[--tab-bg:oklch(var(--b2))] tab-active': isCurrentRoute(i.routeData.path)
-      }"
-      @click="operation(i)"
-    >
-      {{ i.name }}
-      <span
-        v-if="isCurrentRoute(i.routeData.path)"
-        class="text-base material-symbols-outlined"
-        @click="isCloseTab = true"
+  <div role="tablist" class="tabs tabs-lifted justify-start">
+    <TransitionGroup>
+      <a
+        v-for="(i, index) in store.viewHistory"
+        :key="i.name"
+        role="tab"
+        :class="{
+          'tab flex gap-2 hover:bg-primary/[.2] transition !border-b-0': true,
+          '[--tab-bg:oklch(var(--b2))] tab-active': isCurrentRoute(i.routeData.path)
+        }"
+        @click="operation(i)"
+        draggable="true"
+        @dragstart="onDragStart(index)"
+        @dragover="onDragOver"
+        @drop="onDragEnd(index)"
       >
-        close
-      </span>
-    </a>
+        {{ i.name }}
+        <span
+          v-if="isCurrentRoute(i.routeData.path)"
+          class="text-base material-symbols-outlined"
+          @click="isCloseTab = true"
+        >
+          close
+        </span>
+      </a>
+    </TransitionGroup>
     <div class="tab [--tab-border-color:transparent]"></div>
   </div>
   <div class="border-t border-base-300"></div>
