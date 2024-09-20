@@ -151,17 +151,20 @@ const selectFolder = (path: string, isFolder: boolean) => {
         </span>
       </div>
 
-      <div class="flex justify-between">
-        <div class="flex gap-4">
+      <div class="flex justify-between flex-col md:flex-row gap-4 md:gap-0">
+        <div class="flex gap-4 justify-between md:justify-start">
           <button class="btn btn-sm" @click="updateFileList(currentPath, true)">刷新</button>
           <button class="btn btn-sm" @click="newFolderModal?.showModal">新建文件夹</button>
           <button class="btn btn-sm" @click="selectFolder(currentPath, true)">选中当前目录</button>
         </div>
 
-        <div class="flex gap-4">
+        <div class="flex gap-4 justify-end">
           <button class="btn btn-sm" @click="folderSelectModal?.close()">取消</button>
           <button
-            :class="{ 'btn btn-sm btn-primary text-white': true, 'btn-disabled': !selectedFolder }"
+            :class="{
+              'btn btn-sm btn-primary text-base-100': true,
+              'btn-disabled': !selectedFolder
+            }"
             @click="folderSelectModal?.close(), emit('selectFolder', selectedFolder)"
           >
             确认
@@ -187,7 +190,7 @@ const selectFolder = (path: string, isFolder: boolean) => {
           取消
         </button>
         <button
-          :class="{ 'btn btn-sm btn-primary text-white': true, 'btn-disabled': !newFolderName }"
+          :class="{ 'btn btn-sm btn-primary text-base-100': true, 'btn-disabled': !newFolderName }"
           @click="createFolder(newFolderName, currentPath)"
         >
           确认

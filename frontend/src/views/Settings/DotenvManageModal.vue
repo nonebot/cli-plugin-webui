@@ -138,7 +138,7 @@ const cancel = () => {
         </tbody>
       </table>
 
-      <div class="flex items-center justify-between">
+      <div class="flex items-center flex-wrap justify-between gap-4 md:gap-0">
         <button v-if="!isAddEnv" class="btn btn-ghost btn-sm" @click="isAddEnv = true">
           + 添加
         </button>

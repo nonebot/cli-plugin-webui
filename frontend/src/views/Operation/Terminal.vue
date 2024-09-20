@@ -121,10 +121,13 @@ const retry = () => {
     <div class="font-semibold flex justify-between gap-4">
       <div class="flex items-center gap-4">
         实例输出
-        <div v-if="status === 'OPEN'" class="badge badge-sm badge-success font-normal text-white">
+        <div
+          v-if="status === 'OPEN'"
+          class="badge badge-sm badge-success font-normal text-base-100"
+        >
           已连接
         </div>
-        <div v-else class="badge badge-sm badge-error font-normal text-white">未连接</div>
+        <div v-else class="badge badge-sm badge-error font-normal text-base-100">未连接</div>
       </div>
 
       <div class="flex items-center gap-4">
@@ -148,11 +151,13 @@ const retry = () => {
             'bg-warning/50': item.level === 'WARNING'
           }"
         >
-          <th v-if="item.time" class="sticky left-0 right-0 text-gray-500 pl-0">
+          <th v-if="item.time" class="sticky left-0 right-0 text-gray-500 pl-0 bg-base-200">
             {{ item.time }}
           </th>
           <td v-if="item.level" class="flex">{{ item.level }}</td>
-          <td :class="{ flex: true, 'pl-0 text-success': !item.time }">{{ item.message }}</td>
+          <td :class="{ flex: true, 'pl-0 text-success': !item.time }">
+            {{ item.message }}
+          </td>
         </tr>
       </tbody>
     </table>

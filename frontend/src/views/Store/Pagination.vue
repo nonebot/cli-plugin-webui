@@ -44,7 +44,7 @@ watch(
 
 <template>
   <div class="flex justify-center">
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1 md:gap-2">
       <button
         :class="{
           'btn btn-sm shadow-none px-1': true,
@@ -65,7 +65,7 @@ watch(
         :key="page"
         :class="{
           'btn btn-sm shadow-none': true,
-          'btn-primary text-white': Number(page) === store.nowPage
+          'btn-primary text-base-100': Number(page) === store.nowPage
         }"
         @click="
           () => {

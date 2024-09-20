@@ -161,7 +161,9 @@ const getUpdateTime = computed(() => {
 
   <dialog ref="extensionCardModal" class="modal">
     <div class="modal-box rounded-lg flex flex-col gap-4">
-      <div class="flex items-center justify-between">
+      <div
+        class="flex items-center justify-start md:justify-between flex-wrap md:flex-row gap-2 md:gap-0"
+      >
         <div class="flex items-center gap-4">
           <div class="h-12 w-12 rounded-full overflow-hidden">
             <img :src="`https://github.com/${props.data.author}.png?size=100`" />
@@ -183,7 +185,7 @@ const getUpdateTime = computed(() => {
             v-if="isTestPassed(props.data)"
             :href="`https://registry.nonebot.dev/plugin/${props.data.project_link}:${props.data.module_name}`"
             target="_blank"
-            class="btn btn-sm btn-success text-white"
+            class="btn btn-sm btn-success text-base-100"
           >
             测试通过
           </a>
@@ -191,7 +193,7 @@ const getUpdateTime = computed(() => {
             v-else
             :href="`https://registry.nonebot.dev/plugin/${props.data.project_link}:${props.data.module_name}`"
             target="_blank"
-            class="btn btn-sm btn-error text-white"
+            class="btn btn-sm btn-error text-base-100"
           >
             测试未通过
           </a>
@@ -209,15 +211,15 @@ const getUpdateTime = computed(() => {
 
       <div class="bg-base-content/10 h-px"></div>
 
-      <div class="flex justify-between gap-2">
-        <div class="flex flex-col justify-between">
+      <div class="flex justify-between gap-4 flex-col md:flex-row">
+        <div class="flex flex-col justify-between gap-2">
           <div class="opacity-70 text-sm">{{ props.data.desc }}</div>
 
-          <div class="flex flex-wrap items-center gap-2">
+          <div v-if="props.data.tags?.length" class="flex flex-wrap items-center gap-1 md:gap-2">
             <div
               v-for="tag in props.data.tags"
               :key="tag.label"
-              class="tooltip badge rounded-md text-white font-mono"
+              class="tooltip badge rounded-md text-base-100 font-mono"
               :style="`color: ${tag.color}`"
               :data-tip="tag.label"
             >
@@ -226,8 +228,8 @@ const getUpdateTime = computed(() => {
           </div>
         </div>
 
-        <div v-if="pypiData" class="flex gap-2">
-          <div class="bg-base-content/10 w-px"></div>
+        <div v-if="pypiData" class="flex gap-4 md:gap-2 flex-col md:flex-row">
+          <div class="bg-base-content/10 w-full md:w-px h-px md:h-full"></div>
 
           <div class="flex flex-col">
             <div class="flex items-center gap-1 text-sm">
@@ -362,7 +364,7 @@ const getUpdateTime = computed(() => {
         v-for="tag in props.data.tags"
         :key="tag.label"
         role="button"
-        class="tooltip badge rounded-md text-white font-mono"
+        class="tooltip badge rounded-md text-base-100 font-mono"
         :style="`color: ${tag.color}`"
         :data-tip="tag.label"
         @click="

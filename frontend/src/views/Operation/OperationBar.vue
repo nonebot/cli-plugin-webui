@@ -129,23 +129,28 @@ const deleteBot = async (fully: boolean = false) => {
     </div>
   </dialog>
 
-  <div class="w-full p-6 bg-base-200 rounded-box flex items-center justify-between">
+  <div
+    class="w-full p-6 bg-base-200 rounded-box flex flex-col md:flex-row items-center justify-between gap-2 md:gap-0"
+  >
     <div class="flex items-center gap-4">
       <div class="text-lg font-semibold">{{ store.selectedBot?.project_name }}</div>
       <div class="flex items-center gap-2">
         <div class="badge badge-sm text-gray-500">{{ store.selectedBot?.project_id }}</div>
 
-        <div v-if="store.selectedBot?.is_running" class="badge badge-sm badge-success text-white">
+        <div
+          v-if="store.selectedBot?.is_running"
+          class="badge badge-sm badge-success text-base-100"
+        >
           运行中
         </div>
-        <div v-else class="badge badge-sm badge-error text-white">未运行</div>
+        <div v-else class="badge badge-sm badge-error text-base-100">未运行</div>
       </div>
     </div>
 
     <div class="flex gap-2">
       <button
         :class="{
-          'btn btn-sm btn-primary font-normal text-white': true,
+          'btn btn-sm btn-primary font-normal text-base-100': true,
           'btn-disabled': store.selectedBot?.is_running || oLock
         }"
         @click="runBot()"

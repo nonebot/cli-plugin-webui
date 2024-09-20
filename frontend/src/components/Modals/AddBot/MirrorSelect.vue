@@ -39,9 +39,9 @@ const mirrors: MirrorItem[] = [
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-8">
-    <div class="flex flex-col justify-center items-center">
-      <div class="form-control w-full max-w-xs">
+  <div class="flex flex-col items-center gap-4 md:gap-8">
+    <div class="flex flex-col justify-center items-center w-full max-w-xs">
+      <div class="form-control w-full">
         <div class="label">
           <span class="label-text">请选择:</span>
         </div>
@@ -50,16 +50,14 @@ const mirrors: MirrorItem[] = [
             {{ mirror.abbr }} - {{ mirror.name }}
           </option>
         </select>
-      </div>
 
-      <div class="form-control w-full max-w-xs">
         <div class="label">
           <span class="label-text">或自行填写:</span>
         </div>
         <input
           type="text"
           placeholder="请输入"
-          class="input input-bordered w-full max-w-xs"
+          class="input input-bordered"
           v-model="store.pythonMirror"
         />
       </div>

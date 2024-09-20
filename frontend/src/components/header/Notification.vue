@@ -16,7 +16,7 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
         <div class="indicator">
           <span
             v-if="store.toasts.length"
-            class="indicator-item badge badge-primary font-normal text-white"
+            class="indicator-item badge badge-primary font-normal text-base-100"
             >{{ store.toasts.length }}</span
           >
           <span class="material-symbols-outlined"> notifications </span>

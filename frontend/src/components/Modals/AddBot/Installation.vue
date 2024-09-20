@@ -98,8 +98,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="overflow-hidden flex flex-col gap-4">
-    <div class="bg-base-200 rounded-lg p-4">
+  <div class="flex flex-col gap-4">
+    <div class="overflow-auto bg-base-200 rounded-lg p-4">
       <table v-if="!logKey" class="table table-sm w-full">
         <tbody>
           <tr>
@@ -169,7 +169,7 @@ onUnmounted(() => {
               'bg-warning/50': log.level === 'WARNING'
             }"
           >
-            <th class="sticky left-0 right-0 text-gray-500">
+            <th class="sticky left-0 right-0 text-gray-500 bg-base-200">
               {{ log.time }}
             </th>
             <td class="flex">{{ log.level }}</td>

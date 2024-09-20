@@ -30,7 +30,7 @@ const options: OptionItem[] = [
           v-for="i in options"
           :key="i.text"
           :class="{
-            'w-1/2 xl:w-1/3 btn btn-primary font-normal text-white': true,
+            'w-full md:w-1/3 btn btn-primary font-normal text-base-100': true,
             'btn-outline': store.template !== i.value
           }"
           @click="store.template = i.value"

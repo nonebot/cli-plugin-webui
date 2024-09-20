@@ -41,7 +41,7 @@ const steps: StepItem[] = [
 
 <template>
   <dialog ref="addBotModal" class="modal" @close="store.reset()">
-    <div class="modal-box overflow-hidden w-11/12 max-w-5xl rounded-xl flex flex-col gap-8">
+    <div class="modal-box overflow-hidden w-11/12 max-w-5xl rounded-xl flex flex-col gap-4">
       <h3 class="font-semibold text-lg">添加 NoneBot 实例</h3>
       <div class="w-full flex justify-center">
         <ul class="steps w-full xl:w-3/4 gap-4">
@@ -72,7 +72,7 @@ const steps: StepItem[] = [
         </div>
       </div>
 
-      <div class="overflow-hidden h-full w-full">
+      <div class="overflow-auto h-full w-full">
         <component :is="steps[store.step].component" />
       </div>
     </div>

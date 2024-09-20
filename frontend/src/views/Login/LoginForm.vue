@@ -24,6 +24,7 @@ const login = () => {
   AuthService.authTokenV1AuthLoginPost({ token: token.value, mark: date.toISOString() })
     .then(async (res) => {
       localStorage.setItem('token', res.detail)
+      OpenAPI.TOKEN = async () => res.detail
       router.push('/')
       await nonebotStore.loadBots()
       store.add('success', '登录成功', '', 3000)
@@ -62,7 +63,7 @@ const login = () => {
         </label>
 
         <div class="form-control">
-          <button class="btn btn-primary text-white">
+          <button class="btn btn-primary text-base-100">
             开始使用 <span class="material-symbols-outlined"> chevron_right </span>
           </button>
         </div>

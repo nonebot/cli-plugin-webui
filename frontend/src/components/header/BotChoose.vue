@@ -41,11 +41,11 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
           <div class="shrink-0 flex gap-2">
             <div
               v-if="store.selectedBot?.project_id === bot.project_id"
-              class="badge bg-blue-400 text-white"
+              class="badge bg-blue-400 text-base-100"
             >
               选择中
             </div>
-            <div v-if="bot.is_running" class="badge badge-success text-white">运行中</div>
+            <div v-if="bot.is_running" class="badge badge-success text-base-100">运行中</div>
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
           暂无实例
           <div class="flex gap-4">
             <button
-              class="btn btn-md lg:btn-sm btn-primary font-normal text-white"
+              class="btn btn-md lg:btn-sm btn-primary font-normal text-base-100"
               @click="createBotModal?.openModal()"
             >
               创建一个

@@ -5,7 +5,7 @@ import Terminal from '@/views/Operation/Terminal.vue'
 </script>
 
 <template>
-  <div class="grid gap-4">
+  <div class="flex flex-col gap-4">
     <OperationBar />
 
     <BotDetails />

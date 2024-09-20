@@ -131,7 +131,7 @@ watch(
         </button>
         <button
           :class="{
-            'btn btn-sm btn-primary text-white': true,
+            'btn btn-sm btn-primary text-base-100': true,
             'btn-disabled': isFailed || isInstalling
           }"
           @click="emit('finished', true), logViewModal?.close()"

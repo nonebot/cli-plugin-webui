@@ -87,8 +87,10 @@ const moduleItems: moduleItem[] = [
     </div>
 
     <!-- Search filter -->
-    <div class="flex justify-between items-center">
-      <div role="tablist" class="tabs tabs-boxed">
+    <div
+      class="flex items-center justify-center md:justify-between flex-col md:flex-row gap-4 md:gap-0"
+    >
+      <div role="tablist" class="tabs tabs-boxed !flex md:grid flex-wrap">
         <a
           v-for="i in moduleItems"
           :key="i.text"

@@ -100,7 +100,7 @@ onUnmounted(() => {
 
 <template>
   <div class="overflow-hidden flex flex-col gap-4">
-    <div class="bg-base-200 rounded-lg p-4">
+    <div class="overflow-auto bg-base-200 rounded-lg p-4">
       <table v-if="!logKey" class="table table-sm w-full">
         <tbody>
           <tr>

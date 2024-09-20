@@ -7,7 +7,7 @@ import { RouterView } from 'vue-router'
 
 <template>
   <div class="relative h-screen flex">
-    <SidebarIndex />
+    <SidebarIndex class="shrink-0" />
     <div class="h-full w-full flex flex-col">
       <HeaderIndex />
       <div class="h-full w-full overflow-y-auto p-4 2xl:px-20">

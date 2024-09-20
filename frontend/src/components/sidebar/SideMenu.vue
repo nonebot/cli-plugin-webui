@@ -29,6 +29,7 @@ const recordView = (route: NavItem) => {
           'btn-block lg:btn-square flex items-center justify-start lg:justify-center':
             customStore.menuMinify
         }"
+        @click="customStore.toggleMenuShow()"
       >
         <span class="material-symbols-outlined">{{ route.googleIcon }}</span>
         <span :class="{ 'block lg:hidden': customStore.menuMinify }">{{ route.name }}</span>

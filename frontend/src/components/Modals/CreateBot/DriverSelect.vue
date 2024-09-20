@@ -16,7 +16,7 @@ StoreService.getNonebotStoreItemsV1StoreNonebotListGet(ModuleType.DRIVER, 0, fal
 </script>
 
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-4 md:gap-8">
     <ItemSelect :data="driverList" :data-type="ModuleType.DRIVER" />
 
     <div class="flex justify-between items-center">

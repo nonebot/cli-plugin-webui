@@ -141,7 +141,7 @@ const filterItems: filterItem[] = [
       </div>
     </div>
 
-    <div class="flex justify-between">
+    <div class="flex justify-center md:justify-between flex-wrap md:flex-row gap-4 md:gap-0">
       <div role="tablist" class="tabs tabs-boxed">
         <a
           v-for="m in moduleItems"

@@ -16,7 +16,7 @@ StoreService.getNonebotStoreItemsV1StoreNonebotListGet(ModuleType.ADAPTER, 0, fa
 </script>
 
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-4 md:gap-8">
     <ItemSelect :data="adapterList" :data-type="ModuleType.ADAPTER" />
 
     <div class="flex justify-between items-center">

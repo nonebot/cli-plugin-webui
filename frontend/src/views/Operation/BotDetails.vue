@@ -60,7 +60,7 @@ const openModal = (t: string) => {
       <div class="flex justify-between">
         <div class="flex items-center gap-2">
           <button
-            class="btn btn-sm btn-primary font-normal text-white"
+            class="btn btn-sm btn-primary font-normal text-base-100"
             @click="router.push('/store'), detailShowModal?.close()"
           >
             管理
@@ -75,30 +75,32 @@ const openModal = (t: string) => {
   </dialog>
 
   <div class="grid gap-4 grid-cols-1 xl:grid-cols-2">
-    <div class="w-full p-6 bg-base-200 rounded-box flex items-center justify-center">
-      <table class="table">
-        <tbody>
-          <tr>
-            <th class="pl-0">实例ID</th>
-            <td>{{ store.selectedBot?.project_id }}</td>
-          </tr>
-          <tr>
-            <th class="pl-0">实例名称</th>
-            <td>{{ store.selectedBot?.project_name }}</td>
-          </tr>
-          <tr>
-            <th class="pl-0">实例路径</th>
-            <td>{{ store.selectedBot?.project_dir }}</td>
-          </tr>
-          <tr>
-            <th class="pl-0">实例 Python 镜像</th>
-            <td>{{ store.selectedBot?.mirror_url }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="w-full p-6 bg-base-200 rounded-box">
+      <div class="overflow-x-auto">
+        <table class="table">
+          <tbody>
+            <tr>
+              <th class="pl-0">实例ID</th>
+              <td>{{ store.selectedBot?.project_id }}</td>
+            </tr>
+            <tr>
+              <th class="pl-0">实例名称</th>
+              <td>{{ store.selectedBot?.project_name }}</td>
+            </tr>
+            <tr>
+              <th class="pl-0">实例路径</th>
+              <td>{{ store.selectedBot?.project_dir }}</td>
+            </tr>
+            <tr>
+              <th class="pl-0">实例 Python 镜像</th>
+              <td>{{ store.selectedBot?.mirror_url }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="w-full p-6 bg-base-200 rounded-box flex items-center justify-center">
+    <div class="w-full p-6 bg-base-200 rounded-box">
       <table class="table">
         <tbody>
           <tr v-for="item in items" :key="item.title">

@@ -12,7 +12,7 @@ defineProps<{ pathMatched?: string }>()
         <h1 class="text-5xl">404 Not Found</h1>
         <p class="py-6">{{ pathMatched }}</p>
         <RouterLink to="/">
-          <button class="btn btn-primary text-white">返回主页</button>
+          <button class="btn btn-primary text-base-100">返回主页</button>
         </RouterLink>
       </div>
     </div>
