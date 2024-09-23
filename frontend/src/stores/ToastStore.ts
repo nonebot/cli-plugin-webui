@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
 
 const MAX_VISIBLE_TOASTS = 5
 
@@ -25,8 +26,9 @@ export const useToastStore = defineStore('toastStore', () => {
       }
     }
 
+    const id = uuidv4()
     const toast: ToastItem = {
-      id: crypto.randomUUID(),
+      id: id,
       type,
       message,
       from: from

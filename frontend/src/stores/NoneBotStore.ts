@@ -4,9 +4,10 @@ import { ProjectService } from '@/client/api'
 import type { NoneBotProjectMeta } from '@/client/api'
 import { useToastStore } from './ToastStore'
 import { useStatusStore } from './StatusStore'
+import { v4 as uuidv4 } from 'uuid'
 
-const ID_OF_ENV_STATUS = crypto.randomUUID()
-const ID_OF_BOT_STATUS = crypto.randomUUID()
+const ID_OF_ENV_STATUS = uuidv4()
+const ID_OF_BOT_STATUS = uuidv4()
 
 export const useNoneBotStore = defineStore('nonebotStore', () => {
   const bots = ref<{ [key: string]: NoneBotProjectMeta }>({})

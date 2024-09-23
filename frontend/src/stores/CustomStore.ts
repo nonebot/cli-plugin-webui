@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useStatusStore } from './StatusStore'
+import { v4 as uuidv4 } from 'uuid'
 
-const ID_OF_DEBUG_STATUS = crypto.randomUUID()
+const ID_OF_DEBUG_STATUS = uuidv4()
 
 export const useCustomStore = defineStore('customStore', () => {
   let data: string | null
