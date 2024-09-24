@@ -2,7 +2,7 @@ from typing import Union, Optional
 
 from fastapi import Body, Depends, APIRouter
 
-from nb_cli_plugin_webui.app.constants import MODULE_TYPE
+from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.schemas import GenericResponse
 from nb_cli_plugin_webui.app.handlers import NoneBotProjectManager
 from nb_cli_plugin_webui.app.project import get_nonebot_project_manager
@@ -11,7 +11,7 @@ from .utils import get_store_manager
 from .service import install_nonebot_module, uninstall_nonebot_module
 from .schemas import Plugin, ModuleInfo, SearchRequest, StoreListResponse
 
-router = APIRouter()
+router = APIRouter(tags=["store"])
 
 
 @router.post("/nonebot/install", response_model=GenericResponse[str])
@@ -42,7 +42,7 @@ async def _uninstall_nonebot_module(
 
 @router.get("/nonebot/list", response_model=StoreListResponse)
 async def _get_nonebot_store_items(
-    module_type: MODULE_TYPE,
+    module_type: ModuleType,
     page: int,
     is_search: bool = False,
     show_all: bool = False,

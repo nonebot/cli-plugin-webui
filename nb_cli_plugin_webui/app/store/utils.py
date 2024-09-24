@@ -1,6 +1,6 @@
 from typing import Union
 
-from nb_cli_plugin_webui.app.constants import MODULE_TYPE
+from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.schemas import Driver, Plugin, Adapter
 from nb_cli_plugin_webui.app.handlers import (
     ModuleStoreManager,
@@ -13,7 +13,7 @@ from .exception import ModuleTypeNotFound
 
 
 def get_store_manager(
-    module_type: MODULE_TYPE,
+    module_type: ModuleType,
 ) -> Union[
     ModuleStoreManager[Plugin], ModuleStoreManager[Adapter], ModuleStoreManager[Driver]
 ]:

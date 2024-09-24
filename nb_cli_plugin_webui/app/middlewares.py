@@ -1,6 +1,6 @@
 from typing import Callable, Awaitable
 
-from starlette.responses import JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi import Request, Response, status
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.security.utils import get_authorization_scheme_param
@@ -12,6 +12,7 @@ from .utils.security import jwt
 AUTH_ROUTES = ["/api"]
 PASS_PATHS = [
     "/api/v1/auth/login",
+    "/api/v1/auth/verify",
     "/api/docs",
     "/api/docs/openapi.json",
 ]

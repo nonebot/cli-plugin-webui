@@ -12,7 +12,7 @@ from nb_cli_plugin_webui.app.process.dependencies import get_process
 from . import utils
 from .schemas import StatusInfo, SystemInfo
 
-router = APIRouter()
+router = APIRouter(tags=["status"])
 
 
 @router.websocket("/ws")

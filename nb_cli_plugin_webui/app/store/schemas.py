@@ -3,7 +3,7 @@ from typing import List, Union, Literal
 from pydantic import BaseModel
 
 from nb_cli_plugin_webui.app.schemas import Driver
-from nb_cli_plugin_webui.app.constants import MODULE_TYPE
+from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.schemas import GenericResponse
 from nb_cli_plugin_webui.app.schemas import Adapter, SearchTag
 from nb_cli_plugin_webui.app.schemas import Plugin as BasePlugin
@@ -27,6 +27,6 @@ class StoreListResponse(
 
 
 class SearchRequest(BaseModel):
-    module_type: MODULE_TYPE
+    module_type: ModuleType
     tags: List[SearchTag] = list()
     content: str

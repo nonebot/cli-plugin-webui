@@ -18,7 +18,7 @@ from dateutil import parser
 
 from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui.app.config import Config
-from nb_cli_plugin_webui.app.constants import MODULE_TYPE
+from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.logging import logger as log
 from nb_cli_plugin_webui.app.utils.list_utils import safe_list_get, safe_list_remove
 from nb_cli_plugin_webui.app.schemas import (
@@ -35,19 +35,25 @@ VISIBLE_ITEMS = Config.extension_store_visible_items
 if TYPE_CHECKING:
 
     @overload
-    async def load_module_data(module_type: Literal["plugin"]) -> List[Plugin]:
+    async def load_module_data(
+        module_type: Literal[ModuleType.plugin],
+    ) -> List[Plugin]:
         ...
 
     @overload
-    async def load_module_data(module_type: Literal["adapter"]) -> List[Adapter]:
+    async def load_module_data(
+        module_type: Literal[ModuleType.adapter],
+    ) -> List[Adapter]:
         ...
 
     @overload
-    async def load_module_data(module_type: Literal["driver"]) -> List[Driver]:
+    async def load_module_data(
+        module_type: Literal[ModuleType.driver],
+    ) -> List[Driver]:
         ...
 
     async def load_module_data(
-        module_type: MODULE_TYPE,
+        module_type: ModuleType,
     ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
         ...
 
@@ -55,13 +61,13 @@ else:
 
     @cache(ttl="5m")
     async def load_module_data(
-        module_type: MODULE_TYPE,
+        module_type: ModuleType,
     ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
-        if module_type == "plugin":
+        if module_type == ModuleType.plugin:
             module_class = Plugin
-        elif module_type == "adapter":
+        elif module_type == ModuleType.adapter:
             module_class = Adapter
-        elif module_type == "driver":
+        elif module_type == ModuleType.driver:
             module_class = Driver
         else:
             raise ValueError(
@@ -107,14 +113,14 @@ class ModuleStoreManager(Generic[_T]):
     def __init__(
         self,
         *,
-        module_type: MODULE_TYPE,
+        module_type: ModuleType,
         visible_items: int = VISIBLE_ITEMS,
     ) -> None:
         self.module_type = module_type
         self.visible_items = visible_items
 
         self.items: List[_T] = list()
-        self.page = int()
+        self.page = 1
         self.search_result: List[_T] = list()
 
     async def load_item(self) -> None:
@@ -127,10 +133,9 @@ class ModuleStoreManager(Generic[_T]):
             return self.items
 
     def get_max_page(self, *, is_search: bool = False) -> int:
-        if is_search:
-            return math.ceil(len(self.search_result) / self.visible_items)
-        else:
-            return math.ceil(len(self.items) / self.visible_items)
+        return math.ceil(
+            len(self.search_result if is_search else self.items) / self.visible_items
+        )
 
     def generate_page(
         self,
@@ -143,11 +148,11 @@ class ModuleStoreManager(Generic[_T]):
         max_page = self.get_max_page(is_search=is_search)
         if self.page > max_page:
             self.page = max_page
-        elif self.page < 0:
-            self.page = 0
+        elif self.page < 1:
+            self.page = 1
 
         def generate_page_items(items: List[_T]) -> List[_T]:
-            a = self.page * self.visible_items
+            a = (self.page - 1) * self.visible_items
             b = a + self.visible_items
             return items[a:b]
 
@@ -194,6 +199,7 @@ class ModuleStoreManager(Generic[_T]):
                 result.append(item)
 
         data = result[:]
+        # 部分需要整顿成例如 downloaded:yes / no
         for tag in tags:
             if tag.label == "official":
                 for item in data:
@@ -204,15 +210,26 @@ class ModuleStoreManager(Generic[_T]):
                     if isinstance(item, Plugin) and not item.valid:
                         safe_list_remove(result, item)
             elif tag.label == "latest":
-                for item in data:
-                    if isinstance(item, Plugin):
-                        latest_time = (
-                            datetime.now(timezone(timedelta(hours=8)))
-                            - timedelta(weeks=1)
-                        ).timestamp()
-                        update_time = parser.parse(item.time).timestamp()
-                        if update_time < latest_time:
-                            safe_list_remove(result, item)
+                if tag.text == "week":
+                    for item in data:
+                        if isinstance(item, Plugin):
+                            latest_time = (
+                                datetime.now(timezone(timedelta(hours=8)))
+                                - timedelta(weeks=1)
+                            ).timestamp()
+                            update_time = parser.parse(item.time).timestamp()
+                            if update_time < latest_time:
+                                safe_list_remove(result, item)
+                elif tag.text == "month":
+                    for item in data:
+                        if isinstance(item, Plugin):
+                            latest_time = (
+                                datetime.now(timezone(timedelta(hours=8)))
+                                - timedelta(weeks=4)
+                            ).timestamp()
+                            update_time = parser.parse(item.time).timestamp()
+                            if update_time < latest_time:
+                                safe_list_remove(result, item)
             elif tag.label == "downloaded":
                 item = safe_list_get(self.items, 0, str())
                 if isinstance(item, Plugin):
@@ -257,6 +274,6 @@ class ModuleStoreManager(Generic[_T]):
         self.search_result = unique_base_models
 
 
-plugin_store_manager = ModuleStoreManager[Plugin](module_type="plugin")
-adapter_store_manager = ModuleStoreManager[Adapter](module_type="adapter")
-driver_store_manager = ModuleStoreManager[Driver](module_type="driver")
+plugin_store_manager = ModuleStoreManager[Plugin](module_type=ModuleType.plugin)
+adapter_store_manager = ModuleStoreManager[Adapter](module_type=ModuleType.adapter)
+driver_store_manager = ModuleStoreManager[Driver](module_type=ModuleType.driver)
