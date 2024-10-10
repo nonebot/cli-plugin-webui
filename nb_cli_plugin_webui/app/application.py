@@ -57,7 +57,7 @@ frontend.mount("/", StaticFiles(directory=STATIC_PATH, html=True), "NoneBot WebU
 
 
 api = FastAPI(
-    debug=Config.debug,
+    debug=bool(Config.debug),
     title="NoneBot CLI WebUI",
     description="WebUI for NoneBot CLI",
     version=version("nb_cli_plugin_webui"),

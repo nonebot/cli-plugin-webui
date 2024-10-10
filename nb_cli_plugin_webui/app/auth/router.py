@@ -17,7 +17,7 @@ async def auth_token(data: LoginRequest) -> GenericResponse[str]:
     """
     if not salt.verify_token(
         Config.salt.get_secret_value() + data.token,
-        Config.hashed_token,
+        Config.hashed_token.get_secret_value(),
     ):
         raise TokenInvalid()
 

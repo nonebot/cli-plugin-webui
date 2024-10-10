@@ -16,7 +16,7 @@ from .utils.string_utils import filling_str
 if TYPE_CHECKING:
     from loguru import Logger
 
-LOG_LEVEL = Config.log_level
+LOG_LEVEL = Config.log_level_str
 
 logger: "Logger" = loguru.logger
 

@@ -1,5 +1,6 @@
 import os
 import json
+from enum import Enum
 from typing import Any
 from pathlib import Path
 
@@ -18,34 +19,44 @@ from .utils.string_utils import (
     generate_complexity_string,
 )
 
-CONFIG_FILE_NAME = "config.json"
-CONFIG_FILE = get_config_file(CONFIG_FILE_NAME)
+CONFIG_FILE = "config.json"
+CONFIG_FILE_PATH = get_config_file(CONFIG_FILE)
 
 
-class SecretStrJSONEncoder(json.JSONEncoder):
+class LogLevels(Enum):
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+
+class SpecialTypeJSONEncoder(json.JSONEncoder):
     def default(self, o: Any) -> Any:
         if isinstance(o, SecretStr):
             return o.get_secret_value()
+        if isinstance(o, Enum):
+            return o.value
         return super().default(o)
 
 
 class AppConfig(BaseModel):
     base_dir: str = Field(
-        default_factory=lambda: str(Path.cwd() / "/projects")
-        if "WEBUI_BUILD" in os.environ
-        else str(),
+        default_factory=lambda: (
+            str(Path.cwd() / "/projects") if "WEBUI_BUILD" in os.environ else str()
+        ),
         description="基础目录，创建实例将由此开始",
     )
     host: str = Field(default="localhost", description="主机名")
     port: str = Field(default="12345", description="端口号")
-    debug: bool = Field(default=False, description="是否开启调试模式")
+    debug: int = Field(default=0, description="是否开启调试模式")
     enable_api_document: bool = Field(default=False, description="是否开启 API 文档")
 
-    log_level: str = Field(default="INFO", description="日志等级")
+    log_level: LogLevels = Field(default=LogLevels.INFO, description="日志等级")
     log_is_store: bool = Field(default=False, description="是否存储日志")
 
     secret_key: SecretStr = Field(default=SecretStr(str()), description="验证密钥的密钥")
-    hashed_token: str = Field(default=str(), description="哈希后的 token")
+    hashed_token: SecretStr = Field(default=SecretStr(str()), description="哈希后的 token")
     salt: SecretStr = Field(default=SecretStr(str()), description="盐值")
 
     allowed_origins: list = Field(
@@ -59,12 +70,18 @@ class AppConfig(BaseModel):
 
     extension_store_visible_items: int = Field(default=12, description="扩展商店每页显示数量")
 
+    @property
+    def log_level_str(self) -> str:
+        return self.log_level.value
+
     def to_json(self) -> str:
-        return json.dumps(self.dict(), cls=SecretStrJSONEncoder)
+        return json.dumps(self.dict(), cls=SpecialTypeJSONEncoder)
 
     def reset_token(self, token: str) -> None:
         self.salt = SecretStr(salt.gen_salt())
-        self.hashed_token = salt.get_token_hash(self.salt.get_secret_value() + token)
+        self.hashed_token = SecretStr(
+            salt.get_token_hash(self.salt.get_secret_value() + token)
+        )
 
     def check_necessary_config(self) -> bool:
         return bool(
@@ -79,6 +96,9 @@ class ConfigParser(AppConfig):
     def load(self, path: Path):
         new_conf = self.parse_file(path)
         self.__dict__.update(new_conf.__dict__)
+
+    def store(self, path: Path):
+        path.write_text(self.to_json(), encoding="utf-8")
 
 
 Config = ConfigParser()
@@ -129,16 +149,18 @@ async def generate_config():
         )
         while True:
             try:
-                if int(port) < 0 or int(port) > 65535:
+                if int(port) < 1024 or int(port) > 49151:
                     raise ValueError
                 break
             except ValueError:
-                click.secho(_("Port must be between 0 and 65535."))
+                click.secho(
+                    _("Port must be between 1024 and 49151. (Recommend: > 10000)")
+                )
                 port = await InputPrompt(_("Please enter port:")).prompt_async(
                     style=CLI_DEFAULT_STYLE
                 )
 
-        click.secho(_("Your webui url is:"))
+        click.secho(_("Your webui url will be:"))
         click.secho(f"http://{host}:{port}/", fg="green")
     else:
         click.secho(_("Your webui url will decide by nb-cli."))
@@ -191,6 +213,6 @@ async def generate_config():
             generate_complexity_string(32, use_digits=True, use_punctuation=True)
         ),
         salt=SecretStr(_salt),
-        hashed_token=hashed_token,
+        hashed_token=SecretStr(hashed_token),
     )
-    CONFIG_FILE.write_text(user_config.to_json(), encoding="utf-8")
+    CONFIG_FILE_PATH.write_text(user_config.to_json(), encoding="utf-8")
