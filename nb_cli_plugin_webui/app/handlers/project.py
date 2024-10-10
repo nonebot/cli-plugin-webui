@@ -16,13 +16,13 @@ from nb_cli_plugin_webui.app.schemas import Plugin, ModuleInfo, NoneBotProjectMe
 from .store import plugin_store_manager
 from .plugin import get_nonebot_plugin_list, get_nonebot_plugin_config_detail
 
-PROJECTS_DATA_FILE_NAME = "projects.json"
-PROJECTS_DATA_PATH = get_data_file(PROJECTS_DATA_FILE_NAME)
-PROJECTS_DATA_ENCODING = "utf-8"
+PROJECT_DATA_FILE = "project.json"
+PROJECT_DATA_PATH = get_data_file(PROJECT_DATA_FILE)
+PROJECT_DATA_ENCODING = "utf-8"
 
 
 class NoneBotProjectList(BaseModel):
-    projects: Dict[str, NoneBotProjectMeta]
+    __root__: Dict[str, NoneBotProjectMeta]
 
 
 class NoneBotProjectManager:
@@ -46,28 +46,32 @@ class NoneBotProjectManager:
     @classmethod
     def _load(cls) -> NoneBotProjectList:
         try:
-            return NoneBotProjectList.parse_file(PROJECTS_DATA_PATH, encoding="utf-8")
+            return NoneBotProjectList.parse_file(PROJECT_DATA_PATH, encoding="utf-8")
         except FileNotFoundError as err:
             raise err
         except ValidationError as err:
             raise err
 
     @classmethod
-    def get_projects(cls) -> Dict[str, NoneBotProjectMeta]:
-        return cls._load().projects
+    def get_project(cls) -> Dict[str, NoneBotProjectMeta]:
+        return cls._load().__root__
 
     def store(self, data: NoneBotProjectMeta) -> None:
-        if not PROJECTS_DATA_PATH.exists():
-            file = NoneBotProjectList(projects={self.project_id: data})
+        if not PROJECT_DATA_PATH.exists():
+            file = NoneBotProjectList(__root__={self.project_id: data})
         else:
             file = self._load()
-            file.projects[self.project_id] = data
+            file.__root__[self.project_id] = data
 
-        PROJECTS_DATA_PATH.write_text(file.json(), encoding="utf-8")
+        PROJECT_DATA_PATH.write_text(file.json(), encoding="utf-8")
 
     def read(self) -> NoneBotProjectMeta:
-        data = self._load()
-        info = data.projects.get(self.project_id)
+        try:
+            load = self._load()
+            data = load.__root__
+        except FileNotFoundError:
+            data = dict()
+        info = data.get(self.project_id)
         if info is None:
             raise ProjectNotFoundError
         self.config_manager = ConfigManager(
@@ -115,8 +119,8 @@ class NoneBotProjectManager:
 
     def remove_project(self) -> None:
         data = self._load()
-        data.projects.pop(self.project_id)
-        PROJECTS_DATA_PATH.write_text(data.json(), encoding="utf-8")
+        data.__root__.pop(self.project_id)
+        PROJECT_DATA_PATH.write_text(data.json(), encoding="utf-8")
 
     def modify_meta(self, k: str, v: Any) -> None:
         data = self.read()

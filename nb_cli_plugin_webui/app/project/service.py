@@ -236,21 +236,21 @@ async def add_nonebot_project(data: AddProjectData) -> str:
 
 def list_nonebot_project() -> Dict[str, NoneBotProjectMeta]:
     try:
-        projects = NoneBotProjectManager.get_projects()
+        project = NoneBotProjectManager.get_project()
     except Exception:
-        projects = dict()
+        project = dict()
 
-    if not projects:
-        return projects
+    if not project:
+        return project
 
     processes = ProcessManager.processes
     result: Dict[str, NoneBotProjectMeta] = dict()
-    for project_id in projects:
-        project = projects.get(project_id)
-        if project is None:
+    for project_id in project:
+        _project = project.get(project_id)
+        if _project is None:
             continue
 
-        if not Path(project.project_dir).exists():
+        if not Path(_project.project_dir).exists():
             npm = NoneBotProjectManager(project_id=project_id)
             npm.remove_project()
             continue
@@ -261,11 +261,11 @@ def list_nonebot_project() -> Dict[str, NoneBotProjectMeta]:
             if process is None:
                 continue
 
-            if project.project_id == process_id and process.process_is_running:
+            if _project.project_id == process_id and process.process_is_running:
                 is_running = True
                 break
 
-        project.is_running = is_running
-        result[project_id] = project
+        _project.is_running = is_running
+        result[project_id] = _project
 
     return result
