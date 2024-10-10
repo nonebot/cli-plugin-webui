@@ -42,9 +42,15 @@ black = "^23.1.0"
 nonemoji = "^0.1.2"
 pre-commit = "^3.1.0"
 flake8 = "^6.0.0"
+babel = "^2.16.0"
 
 [tool.poetry.plugins.nb]
 webui = "nb_cli_plugin_webui.plugin:install"
+
+[tool.poetry.scripts]
+init = "nb_cli_plugin_webui.scripts:init"
+update = "nb_cli_plugin_webui.scripts:update"
+compile = "nb_cli_plugin_webui.scripts:compile"
 
 [tool.black]
 line-length = 88

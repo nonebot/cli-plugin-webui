@@ -72,7 +72,9 @@ jobs:
         uses: ./.github/actions/setup-python
 
       - name: 🚧 Build package
-        run: poetry build
+        run: |
+          poetry run compile
+          poetry build
 
       - name: 📦️ Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
