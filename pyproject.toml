@@ -51,6 +51,7 @@ webui = "nb_cli_plugin_webui.plugin:install"
 init = "nb_cli_plugin_webui.scripts:init"
 update = "nb_cli_plugin_webui.scripts:update"
 compile = "nb_cli_plugin_webui.scripts:compile"
+generate = "nb_cli_plugin_webui.scripts:generate_openapi"
 
 [tool.black]
 line-length = 88
