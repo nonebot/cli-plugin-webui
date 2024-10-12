@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ConfigType, ModuleType } from '@/client/api'
+import { ConfigTypeSchema, ModuleTypeSchema } from '@/client/api'
 import { useCustomStore, useNoneBotStore } from '@/stores'
 import { ref, watch } from 'vue'
 import { useSettingsStore, type ModuleConfigType } from './client'
@@ -49,12 +49,12 @@ type moduleItem = {
   text: string
 }
 
-const configTypeItems = Object.values(ConfigType).map((type) => ({
+const configTypeItems = Object.values(ConfigTypeSchema.enum).map((type) => ({
   label: type,
   text: type.charAt(0).toUpperCase() + type.slice(1)
 }))
 
-const moduleItemFromEnum = Object.values(ModuleType).map((type) => ({
+const moduleItemFromEnum = Object.values(ModuleTypeSchema.enum).map((type) => ({
   label: type,
   text: type.charAt(0).toUpperCase() + type.slice(1)
 }))

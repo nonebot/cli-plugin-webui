@@ -8,7 +8,6 @@
   "
 >
 import {
-  nb_cli_plugin_webui__app__constants__SearchTag,
   StoreService,
   type nb_cli_plugin_webui__app__schemas__ModuleInfo,
   type nb_cli_plugin_webui__app__schemas__Plugin
@@ -55,27 +54,28 @@ const installModule = async (module: T) => {
 
   const moduleType = 'valid' in module ? 'plugin' : 'module'
 
-  await StoreService.installNonebotModuleV1StoreNonebotInstallPost(
-    nonebotStore.selectedBot.use_env!,
-    nonebotStore.selectedBot?.project_id,
+  const { data, error } = await StoreService.installNonebotModuleV1StoreNonebotInstallPost({
+    query: {
+      env: nonebotStore.selectedBot.use_env!,
+      project_id: nonebotStore.selectedBot.project_id
+    },
 
-    // TODO: 因后端实现需借助 module_type 以区分传入的类型, 而其所需类型为私有类型, 无法直接引用。待修复
+    // TODO: 正常 Module 同 Plugin 拓展数据冲突, 待修复
     // @ts-ignore
-    { ...module, module_type: moduleType }
-  )
-    .then((res) => {
-      installLogKey.value = res.detail
-      logViewModal.value?.openModal()
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `提交安装失败, 原因：${detail}`, '', 5000)
-    })
+    body: {
+      ...module,
+      module_type: moduleType
+    }
+  })
+
+  if (error) {
+    toast.add('error', `提交安装失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    installLogKey.value = data.detail
+    logViewModal.value?.openModal()
+  }
 }
 
 const uninstallModule = async (module: T) => {
@@ -84,27 +84,29 @@ const uninstallModule = async (module: T) => {
 
   const moduleType = 'valid' in module ? 'plugin' : 'module'
 
-  await StoreService.uninstallNonebotModuleV1StoreNonebotUninstallPost(
-    nonebotStore.selectedBot.use_env!,
-    nonebotStore.selectedBot.project_id,
+  const { data, error } = await StoreService.uninstallNonebotModuleV1StoreNonebotUninstallPost({
+    query: {
+      env: nonebotStore.selectedBot.use_env!,
+      project_id: nonebotStore.selectedBot.project_id
+    },
 
+    // TODO: 正常 Module 同 Plugin 拓展数据冲突, 待修复
     // @ts-ignore
-    { ...module, module_type: moduleType }
-  )
-    .then(async () => {
-      extensionUninstallConfirmModal.value?.close()
-      await store.updateData(nonebotStore.selectedBot!.project_id, false)
-      toast.add('success', '卸载成功', '', 5000)
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `卸载失败, 原因：${detail}`, '', 5000)
-    })
+    body: {
+      ...module,
+      module_type: moduleType
+    }
+  })
+
+  if (error) {
+    toast.add('error', `卸载失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    extensionUninstallConfirmModal.value?.close()
+    await store.updateData(nonebotStore.selectedBot.project_id, false)
+    toast.add('success', '卸载成功', '', 5000)
+  }
 }
 
 const isRetry = () => {
@@ -305,9 +307,7 @@ const getUpdateTime = computed(() => {
             v-if="props.data.is_official"
             class="tooltip flex font-normal"
             data-tip="官方验证"
-            @click="
-              store.updateTag({ label: nb_cli_plugin_webui__app__constants__SearchTag.OFFICIAL })
-            "
+            @click="store.updateTag({ label: 'official' })"
           >
             <span class="material-symbols-outlined text-green-600"> verified </span>
           </div>
@@ -318,9 +318,7 @@ const getUpdateTime = computed(() => {
               v-if="isTestPassed(props.data)"
               class="tooltip flex font-normal"
               data-tip="测试通过"
-              @click="
-                store.updateTag({ label: nb_cli_plugin_webui__app__constants__SearchTag.VALID })
-              "
+              @click="store.updateTag({ label: 'valid' })"
             >
               <span class="material-symbols-outlined text-green-600"> check_circle </span>
             </div>
@@ -348,7 +346,7 @@ const getUpdateTime = computed(() => {
         class="text-sm opacity-70 hover:opacity-100 transition-all"
         @click="
           store.updateTag({
-            label: nb_cli_plugin_webui__app__constants__SearchTag.AUTHOR,
+            label: 'author',
             text: props.data.author
           })
         "
@@ -369,7 +367,7 @@ const getUpdateTime = computed(() => {
         :data-tip="tag.label"
         @click="
           store.updateTag({
-            label: nb_cli_plugin_webui__app__constants__SearchTag.TAG,
+            label: 'tag',
             text: tag.label
           })
         "

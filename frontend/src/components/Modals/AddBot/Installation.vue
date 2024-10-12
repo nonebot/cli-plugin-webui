@@ -31,22 +31,26 @@ const addBot = async () => {
     })
   }
 
-  await ProjectService.addProjectV1ProjectAddPost({
-    project_name: store.projectName,
-    project_dir: store.projectPath,
-    mirror_url: store.pythonMirror,
-    adapters: store.adapters.map((obj) => obj.module_name) ?? [],
-    plugins: store.plugins,
-    plugin_dirs: store.pluginDirs
+  const { data, error } = await ProjectService.addProjectV1ProjectAddPost({
+    body: {
+      project_name: store.projectName,
+      project_dir: store.projectPath,
+      mirror_url: store.pythonMirror,
+      adapters: store.adapters.map((obj) => obj.module_name) ?? [],
+      plugins: store.plugins,
+      plugin_dirs: store.pluginDirs
+    }
   })
-    .then((res) => {
-      logKey.value = res.detail
-      open()
-    })
-    .catch((err) => {
-      store.warningMessage = err.body ? err.body.detail : err
-      isFailed.value = true
-    })
+
+  if (error) {
+    store.warningMessage = error.detail?.toString() ?? ''
+    isFailed.value = true
+  }
+
+  if (data) {
+    logKey.value = data.detail
+    open()
+  }
 }
 
 const finish = async () => {

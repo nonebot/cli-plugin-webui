@@ -3,7 +3,7 @@ import {
   type Driver,
   type nb_cli_plugin_webui__app__schemas__Plugin,
   StoreService,
-  ModuleType,
+  type ModuleType,
   type nb_cli_plugin_webui__app__schemas__SearchTag
 } from '@/client/api'
 import { useToastStore } from '@/stores'
@@ -19,7 +19,7 @@ export const useSearchStore = defineStore('storeSearchStore', () => {
     nowPage = ref(1),
     totalPage = ref(1),
     totalItem = ref(0),
-    viewModule = ref<ModuleType>(ModuleType.PLUGIN),
+    viewModule = ref<ModuleType>('plugin'),
     isRequesting = ref(false)
 
   const clear = () => {
@@ -53,30 +53,27 @@ export const useSearchStore = defineStore('storeSearchStore', () => {
   const updateData = async (projectID: string, isShowAll: boolean) => {
     isRequesting.value = true
     const isSearch = searchInput.value !== '' || searchTags.value.length > 0
-    await StoreService.getNonebotStoreItemsV1StoreNonebotListGet(
-      viewModule.value,
-      nowPage.value,
-      isSearch,
-      isShowAll,
-      projectID
-    )
-      .then((res) => {
-        storeData.value = res.detail
-        totalPage.value = res.total_page
-        totalItem.value = res.total_item
-      })
-      .catch((err) => {
-        let detail = ''
-        if (err.body) {
-          detail = err.body.detail
-        } else {
-          detail = err
-        }
-        toast.add('error', `获取商店数据失败, 原因：${detail}`, '', 5000)
-      })
-      .finally(() => {
-        isRequesting.value = false
-      })
+    const { data, error } = await StoreService.getNonebotStoreItemsV1StoreNonebotListGet({
+      query: {
+        module_type: viewModule.value,
+        page: nowPage.value,
+        is_search: isSearch,
+        show_all: isShowAll,
+        project_id: projectID
+      }
+    })
+
+    if (error) {
+      toast.add('error', `获取商店数据失败, 原因：${error.detail?.toString()}`, '', 5000)
+    }
+
+    if (data) {
+      storeData.value = data.detail
+      totalPage.value = data.total_page
+      totalItem.value = data.total_item
+    }
+
+    isRequesting.value = false
   }
 
   const selectModule = async (module: ModuleType, projectID: string) => {
@@ -96,32 +93,32 @@ export const useSearchStore = defineStore('storeSearchStore', () => {
 
   const upDataBySearch = async (projectID: string) => {
     isRequesting.value = true
-    await StoreService.searchNonebotStoreItemV1StoreNonebotSearchPost(projectID, {
-      data: {
-        module_type: viewModule.value,
-        tags: searchTags.value,
-        content: searchInput.value
+    const { data, error } = await StoreService.searchNonebotStoreItemV1StoreNonebotSearchPost({
+      query: {
+        project_id: projectID
+      },
+      body: {
+        data: {
+          module_type: viewModule.value,
+          tags: searchTags.value,
+          content: searchInput.value
+        }
       }
     })
-      .then((res) => {
-        nowPage.value = 1
 
-        storeData.value = res.detail
-        totalPage.value = res.total_page
-        totalItem.value = res.total_item
-      })
-      .catch((err) => {
-        let detail = ''
-        if (err.body) {
-          detail = err.body.detail
-        } else {
-          detail = err
-        }
-        toast.add('error', `搜索失败, 原因：${detail}`, '', 5000)
-      })
-      .finally(() => {
-        isRequesting.value = false
-      })
+    if (error) {
+      toast.add('error', `搜索失败, 原因：${error.detail?.toString()}`, '', 5000)
+    }
+
+    if (data) {
+      nowPage.value = 1
+
+      storeData.value = data.detail
+      totalPage.value = data.total_page
+      totalItem.value = data.total_item
+    }
+
+    isRequesting.value = false
   }
 
   return {

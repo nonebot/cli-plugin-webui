@@ -13,22 +13,27 @@ const search = async () => {
     return
   }
 
-  await ProjectService.checkProjectTomlV1ProjectCheckTomlPost(inputValue.value)
-    .then((res) => {
-      const detail = res.detail
-      store.projectName = detail.project_name
-      store.adapters = detail.adapters
-      store.plugins = detail.plugins
-      store.pluginDirs = detail.plugin_dirs
-      store.projectPath = inputValue.value
+  const { data, error } = await ProjectService.checkProjectTomlV1ProjectCheckTomlPost({
+    query: {
+      project_dir: inputValue.value
+    }
+  })
+  if (error) {
+    store.warningMessage = error.detail?.toString() ?? ''
+  }
 
-      store.searchBotSuccess = true
-      store.warningMessage = ''
-      inputValue.value = ''
-    })
-    .catch((err) => {
-      store.warningMessage = err.body ? err.body.detail : err
-    })
+  if (data) {
+    const detail = data.detail
+    store.projectName = detail.project_name
+    store.adapters = detail.adapters
+    store.plugins = detail.plugins
+    store.pluginDirs = detail.plugin_dirs
+    store.projectPath = inputValue.value
+
+    store.searchBotSuccess = true
+    store.warningMessage = ''
+    inputValue.value = ''
+  }
 }
 </script>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { OpenAPI, AuthService } from '@/client/api'
+import { client, AuthService } from '@/client/api'
 import router from '@/router'
 import { useNoneBotStore, useToastStore } from '@/stores'
 
@@ -14,28 +14,37 @@ const token = ref(''),
 
 const date = new Date()
 
-const login = () => {
+const login = async () => {
   if (isDebug.value) {
-    OpenAPI.BASE = `//${host.value}:${port.value}/api`
+    const baseUrl = `//${host.value}:${port.value}/api`
+    client.setConfig({
+      baseUrl: baseUrl
+    })
     localStorage.setItem('isDebug', '1')
-    localStorage.setItem('debugUrl', OpenAPI.BASE)
+    localStorage.setItem('debugUrl', baseUrl)
   }
 
-  AuthService.authTokenV1AuthLoginPost({ token: token.value, mark: date.toISOString() })
-    .then(async (res) => {
-      localStorage.setItem('token', res.detail)
-      OpenAPI.TOKEN = async () => res.detail
-      router.push('/')
-      await nonebotStore.loadBots()
-      store.add('success', '登录成功', '', 3000)
+  const { data, error } = await AuthService.authTokenV1AuthLoginPost({
+    body: {
+      token: token.value,
+      mark: date.toISOString()
+    }
+  })
+
+  if (error) {
+    store.add('error', `错误: ${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    localStorage.setItem('token', data.detail)
+    client.interceptors.request.use((request) => {
+      request.headers.set('Authorization', `Bearer ${data.detail}`)
+      return request
     })
-    .catch((err) => {
-      if (err.body) {
-        store.add('error', err.body.detail)
-        return
-      }
-      store.add('error', '无法连接到服务器', '', 5000)
-    })
+    router.push('/')
+    await nonebotStore.loadBots()
+    store.add('success', '登陆成功', '', 5000)
+  }
 }
 </script>
 

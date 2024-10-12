@@ -2,16 +2,18 @@
 import type { ConfigType, ModuleConfigChild, ModuleType } from '@/client/api'
 import { ref, watch } from 'vue'
 import { updateConfig } from '../client'
-import { useNoneBotStore } from '@/stores'
-
-const store = useNoneBotStore()
 
 const props = defineProps<{
   moduleType: ModuleType | ConfigType
   data: ModuleConfigChild
 }>()
 
-const inputValue = ref(props.data.configured),
+const data = props.data as Omit<ModuleConfigChild, 'configured' | 'default'> & {
+  configured: string
+  default: string
+}
+
+const inputValue = ref(data.configured),
   inEditing = ref(false),
   isNumber = ref(true)
 
@@ -19,12 +21,11 @@ const update = async () => {
   if (!inputValue.value) {
     return
   }
-  const data = props.data
   await updateConfig(props.moduleType, data.conf_type, data.name, inputValue.value)
 }
 
 watch(inputValue, (value) => {
-  isNumber.value = !isNaN(Number(value.trim())) && value.trim().length !== 0
+  isNumber.value = value !== undefined && value.trim().length !== 0 && !isNaN(Number(value.trim()))
 })
 </script>
 

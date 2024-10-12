@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import type { ConfigType, ModuleConfigChild, ModuleType } from '@/client/api'
 import { updateConfig } from '../client'
-import { useNoneBotStore } from '@/stores'
-
-const store = useNoneBotStore()
 
 defineProps<{ moduleType: ModuleType | ConfigType; data: ModuleConfigChild }>()
 </script>
@@ -12,7 +9,7 @@ defineProps<{ moduleType: ModuleType | ConfigType; data: ModuleConfigChild }>()
   <input
     type="checkbox"
     class="toggle toggle-sm"
-    :checked="data.configured"
+    :checked="data.configured as boolean"
     @click="
       async () => {
         await updateConfig(moduleType, data.conf_type, data.name, !data.configured).then(() => {

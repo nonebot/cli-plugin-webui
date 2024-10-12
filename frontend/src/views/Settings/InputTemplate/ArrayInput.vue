@@ -10,13 +10,15 @@ const props = defineProps<{
   moduleType: ModuleType | ConfigType
   data: ModuleConfigChild
 }>()
-const data = props.data
+const _data = props.data as Omit<ModuleConfigChild, 'configured'> & {
+  configured: string[]
+}
 
 const isAddItem = ref(false),
-  inputValue = ref()
+  inputValue = ref<string>()
 
 const findItem = (fItem: string) => {
-  return data.configured.findIndex((item: string) => item === fItem)
+  return _data.configured.findIndex((item: string) => item === fItem)
 }
 
 const addItem = async () => {
@@ -28,18 +30,20 @@ const addItem = async () => {
     return
   }
 
-  data.configured.push(inputValue.value)
+  _data.configured.push(inputValue.value)
 
-  await updateConfig(props.moduleType, data.conf_type, data.name, data.configured)
-    .then(() => {
-      inputValue.value = ''
-      isAddItem.value = false
-    })
-    .catch(() => {
-      const index = findItem(inputValue.value)
-      if (index === -1) return
-      data.configured.splice(index, 1)
-    })
+  const result = await updateConfig(props.moduleType, _data.conf_type, _data.name, _data.configured)
+
+  if (result?.error) {
+    const index = findItem(inputValue.value!)
+    if (index === -1) return
+    _data.configured.splice(index, 1)
+  }
+
+  if (result?.data) {
+    inputValue.value = ''
+    isAddItem.value = false
+  }
 }
 
 const removeItem = async (rItem: string) => {
@@ -49,10 +53,10 @@ const removeItem = async (rItem: string) => {
 
   const index = findItem(rItem)
   if (index === -1) return
-  data.configured.splice(index, 1)
+  _data.configured.splice(index, 1)
 
-  await updateConfig(props.moduleType, data.conf_type, data.name, data.configured).catch(() => {
-    data.configured.push(rItem)
+  await updateConfig(props.moduleType, _data.conf_type, _data.name, _data.configured).catch(() => {
+    _data.configured.push(rItem)
   })
 }
 

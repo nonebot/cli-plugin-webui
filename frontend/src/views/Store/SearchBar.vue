@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useSearchStore } from './client'
-import { ModuleType, nb_cli_plugin_webui__app__constants__SearchTag } from '@/client/api'
+import {
+  type ModuleType,
+  type nb_cli_plugin_webui__app__constants__SearchTag,
+  nb_cli_plugin_webui__app__constants__SearchTagSchema
+} from '@/client/api'
 import { useCustomStore, useNoneBotStore } from '@/stores'
 
 const store = useSearchStore(),
@@ -37,7 +41,7 @@ const checkIsAddTag = (e: KeyboardEvent) => {
   if (e.key === ' ') {
     let input = store.searchInput
 
-    for (let tag in nb_cli_plugin_webui__app__constants__SearchTag) {
+    for (let tag in nb_cli_plugin_webui__app__constants__SearchTagSchema.enum) {
       tag = tag.toLowerCase()
       if (input.startsWith(`${tag}:`) && input.length > tag.length + 1) {
         if (noTextLabel.includes(tag)) {
@@ -85,9 +89,9 @@ type moduleItem = {
 }
 
 const moduleItems: moduleItem[] = [
-  { label: ModuleType.PLUGIN, tip: '插件' },
-  { label: ModuleType.ADAPTER, tip: '适配器' },
-  { label: ModuleType.DRIVER, tip: '驱动器' }
+  { label: 'plugin', tip: '插件' },
+  { label: 'adapter', tip: '适配器' },
+  { label: 'driver', tip: '驱动器' }
 ]
 
 type filterItem = {
@@ -97,11 +101,11 @@ type filterItem = {
 }
 
 const filterItems: filterItem[] = [
-  { label: nb_cli_plugin_webui__app__constants__SearchTag.OFFICIAL, tip: '官方认证' },
-  { label: nb_cli_plugin_webui__app__constants__SearchTag.VALID, tip: '测试通过' },
-  { label: nb_cli_plugin_webui__app__constants__SearchTag.DOWNLOADED, tip: '已下载' },
-  { label: nb_cli_plugin_webui__app__constants__SearchTag.LATEST, text: 'week', tip: '最近一周' },
-  { label: nb_cli_plugin_webui__app__constants__SearchTag.LATEST, text: 'month', tip: '最近一月' }
+  { label: 'official', tip: '官方认证' },
+  { label: 'valid', tip: '测试通过' },
+  { label: 'downloaded', tip: '已下载' },
+  { label: 'latest', text: 'week', tip: '最近一周' },
+  { label: 'latest', text: 'month', tip: '最近一月' }
 ]
 </script>
 
@@ -196,7 +200,7 @@ const filterItems: filterItem[] = [
               class="input input-sm input-bordered"
               @keydown.enter="
                 store.updateTag({
-                  label: nb_cli_plugin_webui__app__constants__SearchTag.AUTHOR,
+                  label: 'author',
                   text: authorInput
                 }),
                   (authorInput = '')
@@ -219,7 +223,7 @@ const filterItems: filterItem[] = [
               class="input input-sm input-bordered"
               @keydown.enter="
                 store.updateTag({
-                  label: nb_cli_plugin_webui__app__constants__SearchTag.TAG,
+                  label: 'tag',
                   text: labelInput
                 }),
                   (labelInput = '')

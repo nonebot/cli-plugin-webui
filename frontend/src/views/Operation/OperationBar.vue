@@ -15,46 +15,44 @@ const runBot = async () => {
   if (!store.selectedBot) return
 
   oLock.value = true
-  await ProcessService.runProcessV1ProcessRunPost(store.selectedBot?.project_id)
-    .then(async () => {
-      await store.loadBots()
-      toast.add('success', `${store.selectedBot?.project_name} 已启动`, '', 5000)
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `启动失败, 原因：${detail}`, '', 5000)
-    })
-    .finally(() => {
-      oLock.value = false
-    })
+  const { data, error } = await ProcessService.runProcessV1ProcessRunPost({
+    query: {
+      project_id: store.selectedBot?.project_id
+    }
+  })
+
+  if (error) {
+    toast.add('error', `启动失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    await store.loadBots()
+    toast.add('success', `${store.selectedBot?.project_name} 已启动`, '', 5000)
+  }
+
+  oLock.value = false
 }
 
 const stopBot = async () => {
   if (!store.selectedBot) return
 
   oLock.value = true
-  await ProcessService.stopProcessV1ProcessStopPost(store.selectedBot?.project_id)
-    .then(async () => {
-      await store.loadBots()
-      toast.add('success', `${store.selectedBot?.project_name} 已停止`, '', 5000)
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `停止失败, 原因：${detail}`, '', 5000)
-    })
-    .finally(() => {
-      oLock.value = false
-    })
+  const { data, error } = await ProcessService.stopProcessV1ProcessStopPost({
+    query: {
+      project_id: store.selectedBot?.project_id
+    }
+  })
+
+  if (error) {
+    toast.add('error', `停止失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    await store.loadBots()
+    toast.add('success', `${store.selectedBot?.project_name} 已停止`, '', 5000)
+  }
+
+  oLock.value = false
 }
 
 const restartBot = async () => {
@@ -84,32 +82,28 @@ const restartBot = async () => {
   oLock.value = false
 }
 
-const deleteBot = async (fully: boolean = false) => {
+const deleteBot = async (isFully: boolean = false) => {
   if (!store.selectedBot) return
 
   oLock.value = true
 
-  await ProjectService.deleteProjectV1ProjectDeleteDelete(store.selectedBot.project_id, fully)
-    .then(async () => {
-      await store.loadBots()
+  const { data, error } = await ProjectService.deleteProjectV1ProjectDeleteDelete({
+    query: {
+      project_id: store.selectedBot.project_id,
+      delete_fully: isFully
+    }
+  })
 
-      const firstBot = Object.values(store.bots)[0]
-      store.selectBot(firstBot)
+  if (error) {
+    toast.add('error', `删除失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
 
-      toast.add('success', `${store.selectedBot?.project_name} 已删除`, '', 5000)
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `删除失败, 原因：${detail}`, '', 5000)
-    })
-    .finally(() => {
-      oLock.value = false
-    })
+  if (data) {
+    await store.loadBots()
+    store.selectBot(Object.values(store.bots)[0])
+  }
+
+  oLock.value = false
 }
 </script>
 

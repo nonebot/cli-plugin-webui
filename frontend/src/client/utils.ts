@@ -1,4 +1,4 @@
-import { OpenAPI } from './api'
+import { client } from './api'
 
 export const covertTimestampToDateString = (
   timestamp: string,
@@ -24,7 +24,7 @@ export const limitContentShow = (content: string, limit: number) => {
 }
 
 export const generateURLForWebUI = (path: string, isWebsocket = false) => {
-  const base = OpenAPI.BASE
+  const base = client.getConfig().baseUrl!
   const protocol = isWebsocket ? 'ws' : 'http'
   return `${protocol}://${base}${path}`
 }

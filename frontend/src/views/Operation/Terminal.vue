@@ -18,27 +18,26 @@ const getHistoryLogs = async () => {
 
   const getLogCount = 20
 
-  await ProcessService.getLogHistoryV1ProcessLogHistoryGet(
-    getLogCount,
-    store.selectedBot.project_id
-  )
-    .then((res) => {
-      logData.value = res.detail
-      if (res.detail.length > 0) {
-        logData.value.push({
-          message: '已获取近期 20 条日志'
-        })
-      }
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `获取日志失败, 原因：${detail}`, '', 5000)
-    })
+  const { data, error } = await ProcessService.getLogHistoryV1ProcessLogHistoryGet({
+    query: {
+      log_count: getLogCount,
+      log_id: store.selectedBot.project_id
+    }
+  })
+
+  if (error) {
+    toast.add('warning', '获取日志失败, 原因: ' + error.detail, '', 5000)
+  }
+
+  if (data) {
+    logData.value = data.detail
+    const dataLength = data.detail.length
+    if (dataLength > 0) {
+      logData.value.push({
+        message: `已获取近期 ${dataLength} 条日志`
+      })
+    }
+  }
 }
 
 const { status, data, close, open, send } = useWebSocket<ProcessLog>(

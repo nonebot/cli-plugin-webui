@@ -25,21 +25,19 @@ const getDotenvList = async () => {
     toast.add('warning', '未选择实例', '', 5000)
     return
   }
-  await ProjectService.getProjectEnvListV1ProjectConfigEnvListGet(
-    nonebotStore.selectedBot.project_id
-  )
-    .then((res) => {
-      dotenvList.value = res.detail
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `获取环境失败, 原因：${detail}`, '', 5000)
-    })
+  const { data, error } = await ProjectService.getProjectEnvListV1ProjectConfigEnvListGet({
+    query: {
+      project_id: nonebotStore.selectedBot.project_id
+    }
+  })
+
+  if (error) {
+    toast.add('error', `获取环境失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    dotenvList.value = data.detail
+  }
 }
 
 const addEnv = async () => {
@@ -53,23 +51,21 @@ const addEnv = async () => {
     return
   }
 
-  await ProjectService.createProjectEnvV1ProjectConfigEnvCreatePost(
-    inputValue.value,
-    nonebotStore.selectedBot.project_id
-  )
-    .then(() => {
-      dotenvList.value.push(inputValue.value)
-      cancel()
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `添加环境失败, 原因：${detail}`, '', 5000)
-    })
+  const { data, error } = await ProjectService.createProjectEnvV1ProjectConfigEnvCreatePost({
+    query: {
+      env: inputValue.value,
+      project_id: nonebotStore.selectedBot.project_id
+    }
+  })
+
+  if (error) {
+    toast.add('error', `添加环境失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    dotenvList.value.push(inputValue.value)
+    cancel()
+  }
 }
 
 const removeEnv = async (env: string) => {
@@ -78,23 +74,21 @@ const removeEnv = async (env: string) => {
     return
   }
 
-  await ProjectService.deleteProjectEnvV1ProjectConfigEnvDeleteDelete(
-    env,
-    nonebotStore.selectedBot.project_id
-  )
-    .then(async () => {
-      await getDotenvList()
-      await nonebotStore.updateEnv(dotenvList.value[0])
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `删除环境失败, 原因：${detail}`, '', 5000)
-    })
+  const { data, error } = await ProjectService.deleteProjectEnvV1ProjectConfigEnvDeleteDelete({
+    query: {
+      env: env,
+      project_id: nonebotStore.selectedBot.project_id
+    }
+  })
+
+  if (error) {
+    toast.add('error', `删除环境失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    await getDotenvList()
+    await nonebotStore.updateEnv(dotenvList.value[0])
+  }
 }
 
 const cancel = () => {

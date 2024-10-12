@@ -39,10 +39,11 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
   }
 
   const loadBots = async () => {
-    await ProjectService.listProjectV1ProjectListGet().then((res) => {
-      bots.value = res.detail
+    const { data } = await ProjectService.listProjectV1ProjectListGet()
+    if (data) {
+      bots.value = data.detail
       selectedBot.value = selectedBot.value ? bots.value[selectedBot.value.project_id] : undefined
-    })
+    }
   }
 
   const updateEnv = async (env: string) => {
@@ -50,27 +51,21 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
       return
     }
 
-    await ProjectService.useProjectEnvV1ProjectConfigEnvUsePost(env, selectedBot.value.project_id)
-      .then(() => {
-        if (!selectedBot.value) {
-          return
-        }
-        selectedBot.value.use_env = env
-        statusStore.update(
-          ID_OF_ENV_STATUS,
-          'badge-ghost',
-          `当前环境: ${selectedBot.value.use_env}`
-        )
-      })
-      .catch((err) => {
-        let detail = ''
-        if (err.body) {
-          detail = err.body.detail
-        } else {
-          detail = err
-        }
-        toast.add('error', `更新环境失败, 原因：${detail}`, '', 5000)
-      })
+    const { data, error } = await ProjectService.useProjectEnvV1ProjectConfigEnvUsePost({
+      query: {
+        env: env,
+        project_id: selectedBot.value.project_id
+      }
+    })
+
+    if (error) {
+      toast.add('error', `更新环节失败, 原因: ${error.detail?.toString()}`, '', 5000)
+    }
+
+    if (data && selectedBot.value) {
+      selectedBot.value.use_env = env
+      statusStore.update(ID_OF_BOT_STATUS, 'badge-ghost', `当前环境: ${selectedBot.value.use_env}`)
+    }
   }
 
   const data = localStorage.getItem('selectedBot')

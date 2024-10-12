@@ -10,10 +10,10 @@ const emit = defineEmits<{
 const folderSelectModal = ref<HTMLDialogElement>()
 
 defineExpose({
-  openModal: () => {
+  openModal: async () => {
     folderSelectModal.value?.showModal()
 
-    getFileList('')
+    await getFileList('.')
   },
   closeModal: () => {
     folderSelectModal.value?.close()
@@ -27,33 +27,51 @@ const fileList = ref<FileInfo[]>([]),
   currentPath = ref(''),
   selectedFolder = ref('')
 
-const getFileList = (path: string) => {
-  FileService.getFileListV1FileListGet(path).then((res) => {
-    fileList.value = res.detail
-  })
-}
-
-const createFolder = (folderName: string, path: string) => {
-  FileService.createFileV1FileCreatePost({ name: folderName, path: path, is_dir: true }).then(
-    (res) => {
-      fileList.value = res.detail
-      newFolderName.value = ''
-      newFolderModal.value?.close()
+const getFileList = async (path: string) => {
+  const { data } = await FileService.getFileListV1FileListGet({
+    query: {
+      path: path
     }
-  )
-}
-
-const deleteFolder = (path: string) => {
-  FileService.deleteFileV1FileDeleteDelete(path).then((res) => {
-    fileList.value = res.detail
   })
+
+  if (data) {
+    fileList.value = data.detail
+  }
 }
 
-const updateFileList = (path: string, isFolder: boolean) => {
+const createFolder = async (folderName: string, path: string) => {
+  const { data } = await FileService.createFileV1FileCreatePost({
+    body: {
+      name: folderName,
+      path: path,
+      is_dir: true
+    }
+  })
+
+  if (data) {
+    fileList.value = data.detail
+    newFolderName.value = ''
+    newFolderModal.value?.close()
+  }
+}
+
+const deleteFolder = async (path: string) => {
+  const { data } = await FileService.deleteFileV1FileDeleteDelete({
+    query: {
+      path: path
+    }
+  })
+
+  if (data) {
+    fileList.value = data.detail
+  }
+}
+
+const updateFileList = async (path: string, isFolder: boolean) => {
   if (!isFolder) return
 
   currentPath.value = path
-  getFileList(path)
+  await getFileList(path)
 }
 
 const selectFolder = (path: string, isFolder: boolean) => {

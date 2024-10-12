@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends Driver | Adapter">
-import { type Driver, type Adapter, ModuleType } from '@/client/api'
+import { type Driver, type Adapter, type ModuleType } from '@/client/api'
 import { ref, watch, type Ref } from 'vue'
 import { limitContentShow } from '@/client/utils'
 import { useCreateBotStore } from '.'
@@ -27,7 +27,7 @@ const updateData = (page: number) => {
 }
 
 const itemIsExisted = (data: T): number => {
-  if (props.dataType === ModuleType.DRIVER) {
+  if (props.dataType === 'driver') {
     return store.drivers.findIndex((item) => item.name === data.name)
   } else {
     return store.adapters.findIndex((item) => item.name === data.name)
@@ -37,13 +37,13 @@ const itemIsExisted = (data: T): number => {
 const updateItem = (data: T) => {
   const index = itemIsExisted(data)
   if (index === -1) {
-    if (props.dataType === ModuleType.DRIVER) {
+    if (props.dataType === 'driver') {
       store.drivers.push(data as Driver)
     } else {
       store.adapters.push(data as Adapter)
     }
   } else {
-    if (props.dataType === ModuleType.DRIVER) {
+    if (props.dataType === 'driver') {
       store.drivers.splice(index, 1)
     } else {
       store.adapters.splice(index, 1)

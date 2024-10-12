@@ -1,4 +1,11 @@
-import { ConfigType, ModuleType, ProjectService, type ModuleConfigFather } from '@/client/api'
+import {
+  type ConfigType,
+  type ModuleType,
+  type ModuleConfigFather,
+  ProjectService,
+  ConfigTypeSchema,
+  ModuleTypeSchema
+} from '@/client/api'
 import { useNoneBotStore, useToastStore } from '@/stores'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -19,28 +26,28 @@ export const updateConfig = async (
     return
   }
 
-  await ProjectService.updateProjectConfigV1ProjectConfigUpdatePost(
-    moduleType,
-    store.selectedBot.project_id,
-    {
+  const { data, error } = await ProjectService.updateProjectConfigV1ProjectConfigUpdatePost({
+    query: {
+      module_type: moduleType,
+      project_id: store.selectedBot.project_id
+    },
+    body: {
       env: store.selectedBot.use_env!,
       conf_type: confType,
       k: k,
       v: v
     }
-  )
-    .then(() => {
-      toast.add('success', '更新成功', '', 5000)
-    })
-    .catch((err) => {
-      let detail = ''
-      if (err.body) {
-        detail = err.body.detail
-      } else {
-        detail = err
-      }
-      toast.add('error', `更新失败, 原因：${detail}`, '', 5000)
-    })
+  })
+
+  if (error) {
+    toast.add('error', `更新失败, 原因：${error.detail?.toString()}`, '', 5000)
+  }
+
+  if (data) {
+    toast.add('success', '更新成功', '', 5000)
+  }
+
+  return { data, error }
 }
 
 export const useSettingsStore = defineStore('settingsStore', () => {
@@ -51,64 +58,61 @@ export const useSettingsStore = defineStore('settingsStore', () => {
 
   const getTomlConf = async (projectID: string) => {
     isRequesting.value = true
-    await ProjectService.getProjectMetaConfigV1ProjectConfigMetaDetailGet(projectID)
-      .then((res) => {
-        settingsData.value = settingsData.value.concat(res.detail)
-      })
-      .catch((err) => {
-        let detail = ''
-        if (err.body) {
-          detail = err.body.detail
-        } else {
-          detail = err
-        }
-        toast.add('error', `获取实例 toml 配置失败, 原因：${detail}`, '', 5000)
-      })
-      .finally(() => {
-        isRequesting.value = false
-      })
+    const { data, error } = await ProjectService.getProjectMetaConfigV1ProjectConfigMetaDetailGet({
+      query: {
+        project_id: projectID
+      }
+    })
+
+    if (error) {
+      toast.add('error', `获取实例 toml 配置失败, 原因：${error.detail?.toString()}`, '', 5000)
+    }
+
+    if (data) {
+      settingsData.value = settingsData.value.concat(data.detail)
+    }
+
+    isRequesting.value = false
   }
 
   const getNoneBotConf = async (projectID: string) => {
     isRequesting.value = true
-    await ProjectService.getProjectNonebotConfigV1ProjectConfigNonebotDetailGet(projectID)
-      .then((res) => {
-        settingsData.value = settingsData.value.concat(res.detail)
-      })
-      .catch((err) => {
-        let detail = ''
-        if (err.body) {
-          detail = err.body.detail
-        } else {
-          detail = err
+    const { data, error } =
+      await ProjectService.getProjectNonebotConfigV1ProjectConfigNonebotDetailGet({
+        query: {
+          project_id: projectID
         }
-        toast.add('error', `获取实例 NoneBot 配置失败, 原因：${detail}`, '', 5000)
       })
-      .finally(() => {
-        isRequesting.value = false
-      })
+
+    if (error) {
+      toast.add('error', `获取实例 NoneBot 配置失败, 原因：${error.detail?.toString()}`, '', 5000)
+    }
+
+    if (data) {
+      settingsData.value = settingsData.value.concat(data.detail)
+    }
+
+    isRequesting.value = false
   }
 
   const getNoneBotPluginConf = async (projectID: string) => {
     isRequesting.value = true
-    await ProjectService.getProjectNonebotPluginConfigV1ProjectConfigNonebotPluginDetailGet(
-      projectID
-    )
-      .then((res) => {
-        settingsData.value = settingsData.value.concat(res.detail)
-      })
-      .catch((err) => {
-        let detail = ''
-        if (err.body) {
-          detail = err.body.detail
-        } else {
-          detail = err
+    const { data, error } =
+      await ProjectService.getProjectNonebotPluginConfigV1ProjectConfigNonebotPluginDetailGet({
+        query: {
+          project_id: projectID
         }
-        toast.add('error', `获取实例配置失败, 原因：${detail}`, '', 5000)
       })
-      .finally(() => {
-        isRequesting.value = false
-      })
+
+    if (error) {
+      toast.add('error', `获取实例配置失败, 原因：${error.detail?.toString()}`, '', 5000)
+    }
+
+    if (data) {
+      settingsData.value = settingsData.value.concat(data.detail)
+    }
+
+    isRequesting.value = false
   }
 
   const updateViewData = (searchText?: string) => {
@@ -121,7 +125,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
       )
     })
 
-    const filter = { ...ConfigType, ...ModuleType }
+    const filter = [...ConfigTypeSchema.enum, ...ModuleTypeSchema.enum]
     if (viewModule.value !== 'all' && Object.values(filter).includes(viewModule.value)) {
       viewData.value = viewData.value.filter((item) => item.module_type === viewModule.value)
     }

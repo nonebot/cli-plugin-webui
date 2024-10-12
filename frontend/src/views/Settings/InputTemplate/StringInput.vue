@@ -2,18 +2,20 @@
 import type { ConfigType, ModuleConfigChild, ModuleType } from '@/client/api'
 import { updateConfig } from '../client'
 import { ref } from 'vue'
-import { useNoneBotStore } from '@/stores'
-
-const store = useNoneBotStore()
 
 const props = defineProps<{
   moduleType: ModuleType | ConfigType
   data: ModuleConfigChild
 }>()
 
-const inputValue = ref(props.data.configured),
+const data = props.data as Omit<ModuleConfigChild, 'configured' | 'default'> & {
+  configured: string
+  default: string
+}
+
+const inputValue = ref(data.configured),
   inEditing = ref(false),
-  inVisible = ref(!props.data.is_secret)
+  inVisible = ref(data.is_secret)
 
 const update = async () => {
   if (!inputValue.value) {

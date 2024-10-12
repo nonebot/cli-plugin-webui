@@ -29,23 +29,27 @@ const createBot = async () => {
     })
   }
 
-  await ProjectService.createProjectV1ProjectCreatePost({
-    is_bootstrap: store.template === 'bootstrap',
-    use_src: store.useSrc,
-    project_name: store.projectName,
-    project_dir: store.projectPath,
-    mirror_url: store.pythonMirror,
-    drivers: store.drivers,
-    adapters: store.adapters
+  const { data, error } = await ProjectService.createProjectV1ProjectCreatePost({
+    body: {
+      is_bootstrap: store.template === 'bootstrap',
+      use_src: store.useSrc,
+      project_name: store.projectName,
+      project_dir: store.projectPath,
+      mirror_url: store.pythonMirror,
+      drivers: store.drivers,
+      adapters: store.adapters
+    }
   })
-    .then((res) => {
-      logKey.value = res.detail
-      open()
-    })
-    .catch((err) => {
-      store.warningMessage = err.body ? err.body.detail : err
-      isFailed.value = true
-    })
+
+  if (error) {
+    store.warningMessage = error.detail?.toString() ?? ''
+    isFailed.value = true
+  }
+
+  if (data) {
+    logKey.value = data.detail
+    open()
+  }
 }
 
 const finish = async () => {
