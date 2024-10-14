@@ -18,6 +18,7 @@ import { computed, ref } from 'vue'
 import { useSearchStore } from './client'
 import { useNoneBotStore, useToastStore } from '@/stores'
 import LogView from '@/components/Modals/Global/LogView.vue'
+import router from '@/router'
 
 const store = useSearchStore(),
   nonebotStore = useNoneBotStore()
@@ -399,7 +400,13 @@ const getUpdateTime = computed(() => {
         <div class="w-full"></div>
 
         <!-- TODO: 设置跳转页面支持 -->
-        <button v-if="props.data.is_download" class="btn btn-sm btn-outline">设置</button>
+        <button
+          v-if="props.data.is_download"
+          class="btn btn-sm btn-outline"
+          @click="router.push(`/settings?search=${props.data.module_name}`)"
+        >
+          设置
+        </button>
         <button v-else class="btn btn-sm btn-ghost" @click="installModule(props.data)">安装</button>
       </div>
     </div>

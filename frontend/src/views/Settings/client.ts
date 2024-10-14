@@ -51,10 +51,11 @@ export const updateConfig = async (
 }
 
 export const useSettingsStore = defineStore('settingsStore', () => {
-  const viewModule = ref<ModuleConfigType>('all'),
-    settingsData = ref<ModuleConfigFather[]>([]),
-    viewData = ref<ModuleConfigFather[]>([]),
-    isRequesting = ref(false)
+  const viewModule = ref<ModuleConfigType>('all')
+  const settingsData = ref<ModuleConfigFather[]>([])
+  const viewData = ref<ModuleConfigFather[]>([])
+  const isRequesting = ref(false)
+  const searchInput = ref<string>('')
 
   const getTomlConf = async (projectID: string) => {
     isRequesting.value = true
@@ -145,11 +146,12 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     await getNoneBotConf(projectID)
     await getNoneBotPluginConf(projectID)
 
-    updateViewData()
+    updateViewData(searchInput.value)
   }
 
   const setViewModule = (module: ModuleConfigType) => {
     viewModule.value = module
+    searchInput.value = ''
     updateViewData()
   }
 
@@ -158,6 +160,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     settingsData,
     viewData,
     isRequesting,
+    searchInput,
     init,
     updateViewData,
     setViewModule

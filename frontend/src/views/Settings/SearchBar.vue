@@ -1,17 +1,25 @@
 <script setup lang="ts">
 import { ConfigTypeSchema, ModuleTypeSchema } from '@/client/api'
 import { useCustomStore, useNoneBotStore } from '@/stores'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useSettingsStore, type ModuleConfigType } from './client'
 import DotenvManageModal from './DotenvManageModal.vue'
+import { useRoute } from 'vue-router'
 
 const customStore = useCustomStore()
 const settingsStore = useSettingsStore()
 const nonebotStore = useNoneBotStore()
 
+const route = useRoute()
+
 const searchInputElement = ref<HTMLInputElement>()
 const dotenvManageModal = ref<InstanceType<typeof DotenvManageModal> | null>()
-const searchInput = ref('')
+
+onMounted(() => {
+  settingsStore.searchInput = Array.isArray(route.query.search)
+    ? route.query.search[0] ?? ''
+    : route.query.search ?? ''
+})
 
 document.addEventListener('keydown', (e) => {
   if (e.key === '/' && !e.ctrlKey && !e.altKey && !e.metaKey) {
@@ -21,8 +29,8 @@ document.addEventListener('keydown', (e) => {
 })
 
 const checkIsSearch = (e: KeyboardEvent) => {
-  if (e.key === 'Enter' && searchInput.value && !customStore.isInstantSearch) {
-    settingsStore.updateViewData(searchInput.value)
+  if (e.key === 'Enter' && settingsStore.searchInput && !customStore.isInstantSearch) {
+    settingsStore.updateViewData(settingsStore.searchInput)
   }
 }
 
@@ -36,11 +44,9 @@ const searchInputPlaceholder = () => {
 }
 
 watch(
-  () => searchInput.value,
+  () => settingsStore.searchInput,
   () => {
-    if (!searchInput.value) {
-      settingsStore.updateViewData()
-    }
+    settingsStore.updateViewData(settingsStore.searchInput)
   }
 )
 
@@ -75,7 +81,7 @@ const moduleItems: moduleItem[] = [
       <div class="p-2 pl-4 bg-base-200 rounded-box w-full lg:w-3/4 flex items-center gap-2">
         <input
           ref="searchInputElement"
-          v-model="searchInput"
+          v-model="settingsStore.searchInput"
           type="text"
           class="grow input input-sm bg-base-200 !outline-none border-none rounded-none p-0 leading-5 h-auto"
           :placeholder="searchInputPlaceholder()"
