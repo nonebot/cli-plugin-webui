@@ -23,7 +23,6 @@ from .dependencies import get_process, get_log_storage
 from .exceptions import DriverNotFound, AdapterNotFound
 
 router = APIRouter(tags=["process"])
-log_storage: Optional[LogStorage[ProcessLog]] = None
 log_listeners: Dict[WebSocket, Callable[[ProcessLog], Awaitable[None]]] = dict()
 
 
@@ -92,6 +91,8 @@ async def get_process_log(websocket: WebSocket):
             pass
         return
 
+    log_storage: Optional[LogStorage[ProcessLog]] = None
+
     def unregister_listener(log_storage: LogStorage[ProcessLog]):
         listener = log_listeners.get(websocket)
         if listener is not None:
@@ -102,13 +103,13 @@ async def get_process_log(websocket: WebSocket):
         await websocket.send_text(log.json())
 
     async def receive_listener(recv: dict):
-        global log_storage
-
-        if log_storage is not None:
-            unregister_listener(log_storage)
+        nonlocal log_storage
 
         if recv.get("type") != "log":
             return
+
+        if log_storage is not None:
+            unregister_listener(log_storage)
 
         log_key = recv.get("log_key", str())
         try:
