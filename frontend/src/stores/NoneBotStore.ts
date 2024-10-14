@@ -64,7 +64,7 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
 
     if (data && selectedBot.value) {
       selectedBot.value.use_env = env
-      statusStore.update(ID_OF_BOT_STATUS, 'badge-ghost', `当前环境: ${selectedBot.value.use_env}`)
+      statusStore.update(ID_OF_ENV_STATUS, 'badge-ghost', `当前环境: ${selectedBot.value.use_env}`)
     }
   }
 
