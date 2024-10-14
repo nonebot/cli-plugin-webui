@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import Drawer from '@/components/Drawer.vue'
+import DrawerItem from '@/components/DrawerItem.vue'
 import { useToastStore } from '@/stores'
 
 const store = useToastStore()
 
-const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
+const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null)
 </script>
 
 <template>
-  <Drawer ref="drawerRef">
+  <DrawerItem ref="drawerRef">
     <template v-slot:button>
       <button class="btn btn-sm btn-ghost btn-square" @click="drawerRef?.showDrawer()">
         <div class="indicator">
@@ -85,7 +85,7 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
         </button>
       </div>
     </template>
-  </Drawer>
+  </DrawerItem>
 </template>
 
 <style scoped>

@@ -116,10 +116,10 @@ const retry = () => {
 </script>
 
 <template>
-  <div class="w-full p-6 rounded-box bg-base-200 flex flex-col gap-4">
-    <div class="font-semibold flex justify-between gap-4">
+  <div class="w-full p-6 rounded-box bg-base-200 flex flex-col gap-2">
+    <div class="flex justify-between gap-4">
       <div class="flex items-center gap-4">
-        实例输出
+        <span class="font-semibold">实例输出</span>
         <div
           v-if="status === 'OPEN'"
           class="badge badge-sm badge-success font-normal text-base-100"

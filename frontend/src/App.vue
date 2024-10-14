@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import Toast from '@/components/Toast.vue'
+import ToastItem from '@/components/ToastItem.vue'
 import { useToastStore } from '@/stores'
 
 const store = useToastStore()
@@ -10,7 +10,7 @@ const store = useToastStore()
   <RouterView />
 
   <TransitionGroup name="list" tag="div" class="toast-container">
-    <Toast v-for="toast in store.visibleToasts" :key="toast.id" :data="toast" />
+    <ToastItem v-for="toast in store.visibleToasts" :key="toast.id" :data="toast" />
   </TransitionGroup>
 </template>
 

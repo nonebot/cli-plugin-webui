@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { generateURLForWebUI } from '@/client/utils'
-import Chart from '@/components/Chart.vue'
+import ChartItem from '@/components/ChartItem.vue'
 import { useWebSocket } from '@vueuse/core'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import type { StatusInfo, ChartItem } from './types'
+import type { StatusInfo, ChartItem as ChartItemType } from './types'
 import { useChartStore, useCustomStore, useNoneBotStore, useToastStore } from '@/stores'
 import type { LoadingOptions } from '@/types'
 
@@ -131,7 +131,7 @@ const loadingOptions: LoadingOptions = {
   color: 'rgb(107 114 128)'
 }
 
-const chartItems: ChartItem[] = [
+const chartItems: ChartItemType[] = [
   {
     title: '机器硬盘情况',
     subtitle: computed(() => {
@@ -215,7 +215,7 @@ const chartItems: ChartItem[] = [
       <div>{{ item.title }}</div>
       <div class="relative flex grow items-center h-full">
         <div class="absolute top-0 mt-2 mb-2 text-xs">{{ item.subtitle.value }}</div>
-        <Chart
+        <ChartItem
           :item-data="item.data"
           :time-data="item.timeData"
           :is-loading="item.isLoading?.value"

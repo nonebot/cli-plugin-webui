@@ -4,10 +4,10 @@ import { useNoneBotStore } from '@/stores'
 import { computed, ref, type ComputedRef } from 'vue'
 
 type detailItem = {
-  t: string
   title: string
-  details: ComputedRef<string[]>
-  editTo: string
+  details?: ComputedRef<string[]>
+  editTo?: string
+  key?: string
 }
 
 const store = useNoneBotStore()
@@ -16,31 +16,50 @@ const detailShowModal = ref<HTMLDialogElement>(),
   detailShowModalTitle = ref(''),
   detailShowModalContent = ref<string[]>([])
 
-const items: detailItem[] = [
+const basicItems: detailItem[] = [
   {
-    t: 'adapter',
+    title: '实例ID',
+    details: computed(() => [store.selectedBot?.project_id ?? 'unknown'])
+  },
+  {
+    title: '实例名称',
+    details: computed(() => [store.selectedBot?.project_name ?? 'unknown'])
+  },
+  {
+    title: '实例路径',
+    details: computed(() => [store.selectedBot?.project_dir ?? 'unknown'])
+  },
+  {
+    title: '实例 Python 镜像',
+    details: computed(() => [store.selectedBot?.mirror_url ?? 'unknown'])
+  }
+]
+
+const installedItems: detailItem[] = [
+  {
+    key: 'adapter',
     title: '已安装适配器',
     details: computed(() => store.selectedBot?.adapters.map((adapter) => adapter.name) ?? []),
     editTo: 'adapters'
   },
   {
-    t: 'driver',
+    key: 'driver',
     title: '已安装驱动',
     details: computed(() => store.selectedBot?.drivers.map((driver) => driver.name) ?? []),
     editTo: 'drivers'
   },
   {
-    t: 'plugin',
+    key: 'plugin',
     title: '已安装插件',
     details: computed(() => store.selectedBot?.plugins.map((plugin) => plugin.name) ?? []),
     editTo: 'plugins'
   }
 ]
 
-const openModal = (t: string) => {
-  const target = items.find((item) => item.t === t)
+const openModal = (key: string) => {
+  const target = installedItems.find((item) => item.key === key)
   detailShowModalTitle.value = target?.title ?? ''
-  detailShowModalContent.value = target?.details.value ?? []
+  detailShowModalContent.value = target?.details?.value ?? []
   detailShowModal.value?.showModal()
 }
 </script>
@@ -77,23 +96,11 @@ const openModal = (t: string) => {
   <div class="grid gap-4 grid-cols-1 xl:grid-cols-2">
     <div class="w-full p-6 bg-base-200 rounded-box">
       <div class="overflow-x-auto">
-        <table class="table">
+        <table class="table table-sm">
           <tbody>
-            <tr>
-              <th class="pl-0">实例ID</th>
-              <td>{{ store.selectedBot?.project_id }}</td>
-            </tr>
-            <tr>
-              <th class="pl-0">实例名称</th>
-              <td>{{ store.selectedBot?.project_name }}</td>
-            </tr>
-            <tr>
-              <th class="pl-0">实例路径</th>
-              <td>{{ store.selectedBot?.project_dir }}</td>
-            </tr>
-            <tr>
-              <th class="pl-0">实例 Python 镜像</th>
-              <td>{{ store.selectedBot?.mirror_url }}</td>
+            <tr v-for="item in basicItems" :key="item.title">
+              <td class="pl-0 text-base font-semibold">{{ item.title }}</td>
+              <td>{{ item.details?.value[0] }}</td>
             </tr>
           </tbody>
         </table>
@@ -103,13 +110,13 @@ const openModal = (t: string) => {
     <div class="w-full p-6 bg-base-200 rounded-box">
       <table class="table">
         <tbody>
-          <tr v-for="item in items" :key="item.title">
-            <th class="pl-0">{{ item.title }}</th>
+          <tr v-for="item in installedItems" :key="item.title">
+            <td class="pl-0 text-base font-semibold">{{ item.title }}</td>
             <td>
-              <div class="badge">{{ item.details.value.length }} 个</div>
+              <div class="badge">{{ item.details?.value.length }} 个</div>
             </td>
             <td class="flex justify-end pr-0">
-              <button class="btn btn-sm btn-ghost" @click="openModal(item.t)">详细</button>
+              <button class="btn btn-sm btn-ghost" @click="openModal(item.key!)">详细</button>
             </td>
           </tr>
         </tbody>

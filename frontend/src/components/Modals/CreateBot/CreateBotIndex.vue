@@ -5,7 +5,7 @@ import BotBasic from './BotBasic.vue'
 import MirrorSelect from './MirrorSelect.vue'
 import DriverSelect from './DriverSelect.vue'
 import AdapterSelect from './AdapterSelect.vue'
-import Installation from './Installation.vue'
+import InstallationItem from './InstallationItem.vue'
 import { useCreateBotStore } from '.'
 
 const store = useCreateBotStore()
@@ -52,7 +52,7 @@ const steps: StepItem[] = [
   {
     title: '安装依赖',
     pass: () => false,
-    component: Installation
+    component: InstallationItem
   }
 ]
 </script>

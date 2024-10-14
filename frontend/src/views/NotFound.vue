@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import Footer from '@/components/Footer.vue'
+import FooterItem from '@/components/FooterItem.vue'
 
 defineProps<{ pathMatched?: string }>()
 </script>
@@ -18,5 +18,5 @@ defineProps<{ pathMatched?: string }>()
     </div>
   </div>
 
-  <Footer />
+  <FooterItem />
 </template>

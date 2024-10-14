@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import GetBotBasicInfo from './GetBotBasicInfo.vue'
 import MirrorSelect from './MirrorSelect.vue'
-import Installation from './Installation.vue'
+import InstallationItem from './InstallationItem.vue'
 import { useAddBotStore } from '.'
 
 const store = useAddBotStore()
@@ -34,7 +34,7 @@ const steps: StepItem[] = [
   {
     title: '确认&安装依赖',
     pass: () => store.pythonMirror !== '',
-    component: Installation
+    component: InstallationItem
   }
 ]
 </script>

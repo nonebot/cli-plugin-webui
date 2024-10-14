@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import OperationBar from '@/views/Operation/OperationBar.vue'
 import BotDetails from '@/views/Operation/BotDetails.vue'
-import Terminal from '@/views/Operation/Terminal.vue'
+import TerminalItem from '@/views/Operation/TerminalItem.vue'
 </script>
 
 <template>
@@ -10,6 +10,6 @@ import Terminal from '@/views/Operation/Terminal.vue'
 
     <BotDetails />
 
-    <Terminal />
+    <TerminalItem />
   </div>
 </template>

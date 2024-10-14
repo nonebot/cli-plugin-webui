@@ -15,7 +15,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/',
         name: 'Welcome',
-        component: () => import('@/views/Welcome.vue')
+        component: () => import('@/views/WelcomeItem.vue')
       }
     ]
   },

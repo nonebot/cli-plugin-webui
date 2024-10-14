@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LoginForm from '@/views/Login/LoginForm.vue'
-import Footer from '@/components/Footer.vue'
+import Footer from '@/components/FooterItem.vue'
 </script>
 
 <template>

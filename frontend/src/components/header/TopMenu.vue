@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import router from '@/router'
 import { useCustomStore, useToastStore } from '@/stores'
-import Notification from '@/components/header/Notification.vue'
+import NotificationItem from '@/components/header/NotificationItem.vue'
 import BotChoose from '@/components/header/BotChoose.vue'
-import Status from '@/components/header/Status.vue'
+import StatusItem from '@/components/header/StatusItem.vue'
 import WebUISettings from '@/components/header/WebUISettings.vue'
 
 const store = useCustomStore()
@@ -37,7 +37,7 @@ const logout = () => {
     <div class="w-full"></div>
 
     <div class="h-full flex justify-end items-center gap-4">
-      <Status />
+      <StatusItem />
 
       <button class="btn btn-sm btn-ghost btn-square">
         <label class="swap swap-rotate">
@@ -58,7 +58,7 @@ const logout = () => {
         </label>
       </button>
 
-      <Notification />
+      <NotificationItem />
 
       <BotChoose />
 

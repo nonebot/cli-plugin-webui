@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useCustomStore } from '@/stores'
-import Drawer from '@/components/Drawer.vue'
+import DrawerItem from '@/components/DrawerItem.vue'
 
 const store = useCustomStore()
 
-const drawerRef = ref<InstanceType<typeof Drawer> | null>()
+const drawerRef = ref<InstanceType<typeof DrawerItem> | null>()
 </script>
 
 <template>
-  <Drawer ref="drawerRef">
+  <DrawerItem ref="drawerRef">
     <template v-slot:button>
       <button class="btn btn-sm btn-ghost btn-square" @click="drawerRef?.showDrawer()">
         <span class="material-symbols-outlined"> tune </span>
@@ -57,7 +57,7 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>()
         </div>
       </div>
     </template>
-  </Drawer>
+  </DrawerItem>
 </template>
 
 <style scoped>

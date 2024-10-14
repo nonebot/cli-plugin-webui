@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useNoneBotStore } from '@/stores'
-import Drawer from '@/components/Drawer.vue'
+import DrawerItem from '@/components/DrawerItem.vue'
 import CreateBotIndex from '@/components/Modals/CreateBot/CreateBotIndex.vue'
 
 const store = useNoneBotStore()
 
 const createBotModal = ref<InstanceType<typeof CreateBotIndex> | null>(null)
-const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
+const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null)
 </script>
 
 <template>
   <CreateBotIndex ref="createBotModal" />
 
-  <Drawer ref="drawerRef">
+  <DrawerItem ref="drawerRef">
     <template v-slot:button>
       <button class="btn btn-sm btn-ghost btn-square" @click="drawerRef?.showDrawer()">
         <span class="material-symbols-outlined"> robot_2 </span>
@@ -66,7 +66,7 @@ const drawerRef = ref<InstanceType<typeof Drawer> | null>(null)
         </div>
       </div>
     </template>
-  </Drawer>
+  </DrawerItem>
 </template>
 
 <style scoped>
