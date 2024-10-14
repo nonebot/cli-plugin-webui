@@ -36,6 +36,8 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
       'badge-ghost',
       `当前实例: ${selectedBot.value.project_name}`
     )
+
+    statusStore.update(ID_OF_ENV_STATUS, 'badge-ghost', `当前环境: ${selectedBot.value.use_env}`)
   }
 
   const loadBots = async () => {
