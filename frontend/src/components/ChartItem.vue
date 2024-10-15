@@ -65,7 +65,7 @@ const getData = (): EChartsOption => {
 const option = ref<EChartsOption>(getData())
 
 watch(props, () => {
-  option.value.series = props.itemData.map((item, _) => {
+  option.value.series = props.itemData.map((item) => {
     return {
       name: item.name,
       data: item.data,

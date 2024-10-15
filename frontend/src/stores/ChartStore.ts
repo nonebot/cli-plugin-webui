@@ -54,9 +54,7 @@ export const useChartStore = defineStore('chartStore', () => {
 
   const resetData = (dataType: string) => {
     const data = dataCreators[dataType]?.()
-    if (data) {
-      dataRefs.value[dataType] = data
-    }
+    dataRefs.value[dataType] = data
   }
 
   return {

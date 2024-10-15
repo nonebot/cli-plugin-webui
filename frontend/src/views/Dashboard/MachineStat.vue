@@ -121,6 +121,9 @@ watch(
   (newValue) => {
     if (!newValue) return
     send(JSON.stringify({ type: 'status', project_id: newValue.project_id }))
+
+    // bug: 重置数据后, 图表会停止更新
+    // chartStore.resetData('processData')
   }
 )
 
