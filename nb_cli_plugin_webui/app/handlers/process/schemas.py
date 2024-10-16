@@ -1,8 +1,10 @@
 from enum import Enum
 from datetime import datetime
-from typing import Union, Optional
+from typing import Union, Generic, TypeVar, Optional
 
 from pydantic import Field, BaseModel
+
+_T = TypeVar("_T")
 
 
 class LogLevel(str, Enum):
@@ -14,15 +16,15 @@ class LogLevel(str, Enum):
     DEBUG = "DEBUG"
 
 
-class CustomLog(BaseModel):
+class CustomLog(BaseModel, Generic[_T]):
     time: Union[datetime, str] = Field(
         default_factory=lambda: datetime.now().strftime("%H:%M:%S.%f")[:-3]
     )
-    level: str = str()
+    level: _T = Field(default=str())
     message: str
 
 
-class ProcessLog(CustomLog):
+class ProcessLog(CustomLog[LogLevel]):
     level: LogLevel = LogLevel.STDOUT
 
 
