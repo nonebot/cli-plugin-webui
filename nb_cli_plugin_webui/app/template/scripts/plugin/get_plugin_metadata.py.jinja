@@ -1,0 +1,9 @@
+{% from "scripts/nonebot/_metadata.py.jinja" import get_plugin_metadata %}
+
+from dataclasses import asdict
+
+{{ get_plugin_metadata("{{ plugin }}") }}
+
+if metadata:
+    data = asdict(metadata)
+    print(json.dumps(str(data)))

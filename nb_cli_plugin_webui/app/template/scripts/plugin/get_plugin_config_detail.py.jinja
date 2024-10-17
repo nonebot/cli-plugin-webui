@@ -1,0 +1,11 @@
+{% from "scripts/nonebot/_metadata.py.jinja" import get_plugin_metadata %}
+
+{{ get_plugin_metadata("{{ plugin }}") }}
+
+if metadata:
+    if metadata.config:
+        schema = metadata.config().model_json_schema()
+        config = json.loads(metadata.config().model_dump_json())
+        print(json.dumps({"schema": schema, "config": config}))
+else:
+    print("Failed")

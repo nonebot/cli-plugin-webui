@@ -13,8 +13,11 @@ from nb_cli.config.parser import CONFIG_FILE_ENCODING
 from nb_cli_plugin_webui.app.utils.storage import get_data_file
 from nb_cli_plugin_webui.app.schemas import Plugin, ModuleInfo, NoneBotProjectMeta
 
-from .store import plugin_store_manager
-from .plugin import get_nonebot_plugin_list, get_nonebot_plugin_config_detail
+from .plugin import (
+    get_nonebot_plugin_list,
+    get_nonebot_plugin_detail,
+    get_nonebot_plugin_config_detail,
+)
 
 PROJECT_DATA_FILE = "project.json"
 PROJECT_DATA_PATH = get_data_file(PROJECT_DATA_FILE)
@@ -148,35 +151,30 @@ class NoneBotProjectManager:
         self.store(data)
 
     async def update_plugin_config_schema(self) -> None:
-        plugin_list = await get_nonebot_plugin_list(self.config_manager.python_path)
-        for plugin in plugin_list:
-            plugin_store_manager.search_item(self.read(), content=plugin)
-            search_result = plugin_store_manager.get_item(is_search=True)
-            if not search_result:
-                break
-            plugin_detail = None
-            for i in search_result:
-                if i.module_name == plugin:
-                    plugin_detail = i
-                    break
+        data = self.read()
 
-            if plugin_detail is None:
-                break
+        config_file = self.config_manager.config_file
+        plugins = await get_nonebot_plugin_list(
+            config_file, self.config_manager.python_path
+        )
+
+        for plugin in plugins:
+            raw_metadata = await get_nonebot_plugin_detail(
+                plugin, self.config_manager.python_path
+            )
+            metadata = Plugin.parse_obj(raw_metadata)
 
             config_detail = await get_nonebot_plugin_config_detail(
                 plugin, self.config_manager.python_path
             )
-            raw_plugin_info = plugin_detail.dict()
-            raw_plugin_info["config_detail"] = config_detail
-            new_plugin_info = Plugin.parse_obj(raw_plugin_info)
+            metadata.config_detail = config_detail
 
-            data = self.read()
             installed_plugin = [i.module_name for i in data.plugins]
-            if plugin_detail.module_name not in installed_plugin:
-                data.plugins.append(new_plugin_info)
+            if metadata.module_name not in installed_plugin:
+                data.plugins.append(metadata)
             else:
                 for plugin in data.plugins:
-                    if plugin.module_name == plugin_detail.module_name:
+                    if plugin.module_name == metadata.module_name:
                         plugin.config_detail = config_detail
                         break
             self.store(data)

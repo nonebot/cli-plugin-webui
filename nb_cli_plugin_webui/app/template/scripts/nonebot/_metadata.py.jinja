@@ -1,0 +1,19 @@
+{% macro get_plugin_metadata(plugin) %}
+import json
+import nonebot
+def get_plugin_metadata(plugin: str):
+    try:
+        nonebot.logger.remove()
+        nonebot.init()
+        module = load_plugin(plugin)
+    except Exception:
+        return None
+
+    if module is None:
+        return None
+    if module.metadata is None:
+        return None
+
+    return module.metadata
+metadata = get_plugin_metadata("{{ plugin }}")
+{% endmacro %}

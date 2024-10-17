@@ -1,38 +1,28 @@
-import sys
 import json
 import asyncio
+from pathlib import Path
 from typing import List, Optional
 
 from nb_cli.handlers.process import create_process
 from nb_cli.handlers.meta import get_default_python
 
+from nb_cli_plugin_webui.app.utils.process import run_python_script
+
 from . import templates
 
 
-async def get_nonebot_plugin_list(python_path: Optional[str] = None) -> List[str]:
+async def get_nonebot_plugin_list(
+    config_file: Path, python_path: Optional[str] = None
+) -> List[str]:
     if python_path is None:
         python_path = await get_default_python()
 
-    t = templates.get_template("scripts/script/list_assign_prefix_pkg.py.jinja")
-    if sys.version_info >= (3, 10):
-        temp = await t.render_async(pkg_prefix="nonebot_plugin")
-    else:
-        temp = await t.render_async(pkg_prefix="nonebot-plugin")
-
-    proc = await create_process(
-        python_path,
-        "-c",
-        temp,
-        stdout=asyncio.subprocess.PIPE,
+    cwd = config_file.parent
+    t = templates.get_template("scripts/plugin/get_loaded_plugins.py.jinja")
+    raw_content = await run_python_script(
+        python_path, await t.render_async(toml_path=config_file), cwd
     )
-    stdout, _ = await proc.communicate()
-    raw_content = stdout.decode().strip()
-    result = list()
-    if raw_content:
-        result = raw_content.split(",")
-        result = [plugin.replace("-", "_") for plugin in result]
-
-    return result
+    return raw_content.split(",")
 
 
 async def get_nonebot_plugin_config_detail(
@@ -41,20 +31,13 @@ async def get_nonebot_plugin_config_detail(
     if python_path is None:
         python_path = await get_default_python()
 
-    t = templates.get_template(
-        "scripts/plugin/get_nonebot_plugin_config_detail.py.jinja"
+    t = templates.get_template("scripts/plugin/get_plugin_config_detail.py.jinja")
+    raw_content = await run_python_script(
+        python_path, await t.render_async(plugin=plugin)
     )
-    proc = await create_process(
-        python_path,
-        "-c",
-        await t.render_async(plugin_name=plugin),
-        stdout=asyncio.subprocess.PIPE,
-    )
-    stdout, _ = await proc.communicate()
-    raw_content = stdout.decode().strip()
     config_schema = dict()
     if raw_content and raw_content != "Failed":
-        parsed_stdout = json.loads(stdout.decode().strip())
+        parsed_stdout = json.loads(raw_content)
 
         config_schema = parsed_stdout["schema"]
         config_set = parsed_stdout["config"]
@@ -64,3 +47,25 @@ async def get_nonebot_plugin_config_detail(
             config_schema["properties"][i]["latest_change"] = ".env"
 
     return config_schema
+
+
+async def get_nonebot_plugin_detail(
+    plugin: str, python_path: Optional[str] = None
+) -> dict:
+    if python_path is None:
+        python_path = await get_default_python()
+
+    t = templates.get_template("scripts/plugin/get_plugin_metadata.py.jinja")
+    proc = await create_process(
+        python_path,
+        "-c",
+        await t.render_async(plugin=plugin),
+        stdout=asyncio.subprocess.PIPE,
+    )
+    stdout, _ = await proc.communicate()
+    raw_content = stdout.decode().strip()
+    plugin_info = dict()
+    if raw_content:
+        plugin_info = json.loads(raw_content)
+
+    return plugin_info

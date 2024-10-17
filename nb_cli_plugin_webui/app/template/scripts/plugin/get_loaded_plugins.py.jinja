@@ -1,0 +1,16 @@
+import nonebot
+
+
+def get_loaded_plugins(toml_path: str):
+    try:
+        nonebot.logger.remove()
+        nonebot.init()
+        nonebot.load_from_toml(toml_path)
+        return nonebot.get_loaded_plugins()
+    except Exception:
+        return None
+
+
+plugins = get_loaded_plugins("{{ toml_path }}")
+if plugins:
+    print(",".join([plugin.module_name for plugin in plugins]))
