@@ -3,14 +3,14 @@
   lang="ts"
   generic="
     T extends
-      | nb_cli_plugin_webui__app__schemas__Plugin
-      | nb_cli_plugin_webui__app__schemas__ModuleInfo
+      | nb_cli_plugin_webui__app__models__store__Plugin
+      | nb_cli_plugin_webui__app__models__base__ModuleInfo
   "
 >
 import {
   StoreService,
-  type nb_cli_plugin_webui__app__schemas__ModuleInfo,
-  type nb_cli_plugin_webui__app__schemas__Plugin
+  type nb_cli_plugin_webui__app__models__base__ModuleInfo,
+  type nb_cli_plugin_webui__app__models__store__Plugin
 } from '@/client/api'
 import type { PypiInfo } from '@/views/Store/types'
 import { useFetch } from '@vueuse/core'
@@ -382,15 +382,15 @@ const getUpdateTime = computed(() => {
 
       <div class="flex items-center gap-2">
         <div
-          v-if="(props.data as nb_cli_plugin_webui__app__schemas__Plugin).version"
+          v-if="(props.data as nb_cli_plugin_webui__app__models__store__Plugin).version"
           class="flex items-center gap-1 text-sm"
         >
           <span class="material-symbols-outlined text-base"> sell </span>
-          v{{ (props.data as nb_cli_plugin_webui__app__schemas__Plugin).version }}
+          v{{ (props.data as nb_cli_plugin_webui__app__models__store__Plugin).version }}
         </div>
 
         <div
-          v-if="(props.data as nb_cli_plugin_webui__app__schemas__Plugin).time"
+          v-if="(props.data as nb_cli_plugin_webui__app__models__store__Plugin).time"
           class="flex items-center gap-1 text-sm"
         >
           <span class="material-symbols-outlined text-base"> update </span>

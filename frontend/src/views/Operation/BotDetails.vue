@@ -39,19 +39,19 @@ const installedItems: detailItem[] = [
   {
     key: 'adapter',
     title: '已安装适配器',
-    details: computed(() => store.selectedBot?.adapters.map((adapter) => adapter.name) ?? []),
+    details: computed(() => store.selectedBot?.adapters.map((adapter) => adapter.name!) ?? []),
     editTo: 'adapters'
   },
   {
     key: 'driver',
     title: '已安装驱动',
-    details: computed(() => store.selectedBot?.drivers.map((driver) => driver.name) ?? []),
+    details: computed(() => store.selectedBot?.drivers.map((driver) => driver.name!) ?? []),
     editTo: 'drivers'
   },
   {
     key: 'plugin',
     title: '已安装插件',
-    details: computed(() => store.selectedBot?.plugins.map((plugin) => plugin.name) ?? []),
+    details: computed(() => store.selectedBot?.plugins.map((plugin) => plugin.name!) ?? []),
     editTo: 'plugins'
   }
 ]

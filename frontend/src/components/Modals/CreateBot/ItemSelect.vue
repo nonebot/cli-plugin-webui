@@ -89,17 +89,18 @@ const updateItem = (data: T) => {
             <div class="text-semibold flex items-center gap-1">
               <a
                 target="_blank"
-                :href="`${item.homepage.startsWith('/docs') ? 'https://nonebot.dev' : ''}${
-                  item.homepage
-                }`"
+                :href="`
+                ${item.homepage!.startsWith('/docs') ? 'https://nonebot.dev' : ''}
+                ${item.homepage}
+                `"
               >
-                {{ limitContentShow(item.name, 10) }}
+                {{ limitContentShow(item.name!, 10) }}
               </a>
               <div v-if="item.is_official" class="tooltip flex items-center" data-tip="官方认证">
                 <span class="material-symbols-outlined text-green-600"> check_circle </span>
               </div>
             </div>
-            <div class="text-sm">{{ limitContentShow(item.desc, 20) }}</div>
+            <div class="text-sm">{{ limitContentShow(item.desc!, 20) }}</div>
           </div>
           <div class="flex items-center justify-center">
             <input

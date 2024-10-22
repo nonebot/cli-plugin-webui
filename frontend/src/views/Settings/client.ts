@@ -122,7 +122,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
       return (
         item.title.includes(searchText) ||
         item.name.includes(searchText) ||
-        item.description.includes(searchText)
+        (item.description ?? '').includes(searchText)
       )
     })
 

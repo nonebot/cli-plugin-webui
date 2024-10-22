@@ -1,10 +1,10 @@
 import {
   type Adapter,
   type Driver,
-  type nb_cli_plugin_webui__app__schemas__Plugin,
+  type nb_cli_plugin_webui__app__models__store__Plugin,
   StoreService,
   type ModuleType,
-  type nb_cli_plugin_webui__app__schemas__SearchTag
+  type nb_cli_plugin_webui__app__models__store__SearchTag
 } from '@/client/api'
 import { useToastStore } from '@/stores'
 import { defineStore } from 'pinia'
@@ -14,8 +14,8 @@ const toast = useToastStore()
 
 export const useSearchStore = defineStore('storeSearchStore', () => {
   const searchInput = ref(''),
-    searchTags = ref<nb_cli_plugin_webui__app__schemas__SearchTag[]>([]),
-    storeData = ref<(nb_cli_plugin_webui__app__schemas__Plugin | Adapter | Driver)[]>([]),
+    searchTags = ref<nb_cli_plugin_webui__app__models__store__SearchTag[]>([]),
+    storeData = ref<(nb_cli_plugin_webui__app__models__store__Plugin | Adapter | Driver)[]>([]),
     nowPage = ref(1),
     totalPage = ref(1),
     totalItem = ref(0),
@@ -31,18 +31,18 @@ export const useSearchStore = defineStore('storeSearchStore', () => {
     totalItem.value = 0
   }
 
-  const isTagExisted = (tag: nb_cli_plugin_webui__app__schemas__SearchTag) => {
+  const isTagExisted = (tag: nb_cli_plugin_webui__app__models__store__SearchTag) => {
     return searchTags.value.some((t) => t.label === tag.label && t.text === tag.text)
   }
 
-  const removeTag = (tag: nb_cli_plugin_webui__app__schemas__SearchTag) => {
+  const removeTag = (tag: nb_cli_plugin_webui__app__models__store__SearchTag) => {
     const index = searchTags.value.findIndex((t) => t.label === tag.label && t.text === tag.text)
     if (index !== -1) {
       searchTags.value.splice(index, 1)
     }
   }
 
-  const updateTag = (tag: nb_cli_plugin_webui__app__schemas__SearchTag) => {
+  const updateTag = (tag: nb_cli_plugin_webui__app__models__store__SearchTag) => {
     if (isTagExisted(tag)) {
       removeTag(tag)
     } else {

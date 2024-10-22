@@ -2,32 +2,46 @@
 
 export const AdapterSchema = {
   title: 'Adapter',
-  required: ['module_name', 'project_link', 'name', 'desc', 'author', 'homepage', 'is_official'],
   type: 'object',
   properties: {
     module_name: {
       title: 'Module Name',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     project_link: {
       title: 'Project Link',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     name: {
       title: 'Name',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     desc: {
       title: 'Desc',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     author: {
       title: 'Author',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     homepage: {
       title: 'Homepage',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
+    },
+    usage: {
+      title: 'Usage',
+      type: 'string',
+      default: 'unknown'
+    },
+    extra: {
+      title: 'Extra',
+      type: 'object'
     },
     tags: {
       title: 'Tags',
@@ -38,11 +52,13 @@ export const AdapterSchema = {
     },
     is_official: {
       title: 'Is Official',
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     },
     is_download: {
       title: 'Is Download',
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     }
   }
 } as const
@@ -150,14 +166,14 @@ export const CreateProjectDataSchema = {
       title: 'Drivers',
       type: 'array',
       items: {
-        $ref: '#/components/schemas/nb_cli_plugin_webui__app__schemas__ModuleInfo'
+        $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__base__ModuleInfo'
       }
     },
     adapters: {
       title: 'Adapters',
       type: 'array',
       items: {
-        $ref: '#/components/schemas/nb_cli_plugin_webui__app__schemas__ModuleInfo'
+        $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__base__ModuleInfo'
       }
     },
     use_src: {
@@ -169,32 +185,46 @@ export const CreateProjectDataSchema = {
 
 export const DriverSchema = {
   title: 'Driver',
-  required: ['module_name', 'project_link', 'name', 'desc', 'author', 'homepage', 'is_official'],
   type: 'object',
   properties: {
     module_name: {
       title: 'Module Name',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     project_link: {
       title: 'Project Link',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     name: {
       title: 'Name',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     desc: {
       title: 'Desc',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     author: {
       title: 'Author',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     homepage: {
       title: 'Homepage',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
+    },
+    usage: {
+      title: 'Usage',
+      type: 'string',
+      default: 'unknown'
+    },
+    extra: {
+      title: 'Extra',
+      type: 'object'
     },
     tags: {
       title: 'Tags',
@@ -205,11 +235,13 @@ export const DriverSchema = {
     },
     is_official: {
       title: 'Is Official',
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     },
     is_download: {
       title: 'Is Download',
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     }
   }
 } as const
@@ -388,7 +420,7 @@ export const LoginRequestSchema = {
 
 export const ModuleConfigChildSchema = {
   title: 'ModuleConfigChild',
-  required: ['title', 'description', 'name', 'conf_type', 'enum', 'is_secret'],
+  required: ['title', 'name', 'conf_type', 'enum', 'unique_items', 'is_secret'],
   type: 'object',
   properties: {
     title: {
@@ -418,6 +450,10 @@ export const ModuleConfigChildSchema = {
     configured: {
       title: 'Configured'
     },
+    unique_items: {
+      title: 'Unique Items',
+      type: 'boolean'
+    },
     is_secret: {
       title: 'Is Secret',
       type: 'boolean'
@@ -425,14 +461,14 @@ export const ModuleConfigChildSchema = {
     latest_change: {
       title: 'Latest Change',
       type: 'string',
-      default: ''
+      default: '.env'
     }
   }
 } as const
 
 export const ModuleConfigFatherSchema = {
   title: 'ModuleConfigFather',
-  required: ['title', 'description', 'name', 'module_type', 'properties'],
+  required: ['title', 'name', 'module_type', 'properties'],
   type: 'object',
   properties: {
     title: {
@@ -524,7 +560,7 @@ export const ModuleTagSchema = {
 
 export const ModuleTypeSchema = {
   title: 'ModuleType',
-  enum: ['plugin', 'adapter', 'driver'],
+  enum: ['module', 'plugin', 'adapter', 'driver'],
   type: 'string',
   description: 'An enumeration.'
 } as const
@@ -564,21 +600,21 @@ export const NoneBotProjectMetaSchema = {
       title: 'Adapters',
       type: 'array',
       items: {
-        $ref: '#/components/schemas/nb_cli_plugin_webui__app__schemas__ModuleInfo'
+        $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__base__ModuleInfo'
       }
     },
     drivers: {
       title: 'Drivers',
       type: 'array',
       items: {
-        $ref: '#/components/schemas/nb_cli_plugin_webui__app__schemas__ModuleInfo'
+        $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__base__ModuleInfo'
       }
     },
     plugins: {
       title: 'Plugins',
       type: 'array',
       items: {
-        $ref: '#/components/schemas/nb_cli_plugin_webui__app__schemas__Plugin'
+        $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__base__Plugin'
       }
     },
     plugin_dirs: {
@@ -616,6 +652,14 @@ export const NoneBotProjectMetaSchema = {
       default: 'bot.py'
     }
   }
+} as const
+
+export const PluginTypeSchema = {
+  title: 'PluginType',
+  enum: ['application', 'library'],
+  type: 'string',
+  description: `类型参考:
+- https://github.com/nonebot/noneflow/blob/main/src/utils/validation/constants.py#L17`
 } as const
 
 export const ProcessLogSchema = {
@@ -705,7 +749,7 @@ export const SearchRequestSchema = {
       title: 'Tags',
       type: 'array',
       items: {
-        $ref: '#/components/schemas/nb_cli_plugin_webui__app__schemas__SearchTag'
+        $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__store__SearchTag'
       },
       default: []
     },
@@ -747,7 +791,7 @@ export const StoreListResponseSchema = {
         {
           type: 'array',
           items: {
-            $ref: '#/components/schemas/nb_cli_plugin_webui__app__schemas__Plugin'
+            $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__store__Plugin'
           }
         },
         {
@@ -821,41 +865,48 @@ export const VerifyRequestSchema = {
   }
 } as const
 
-export const nb_cli_plugin_webui__app__constants__SearchTagSchema = {
-  title: 'SearchTag',
-  enum: ['official', 'valid', 'latest', 'downloaded', 'author', 'tag'],
-  type: 'string',
-  description: 'An enumeration.'
-} as const
-
-export const nb_cli_plugin_webui__app__schemas__ModuleInfoSchema = {
+export const nb_cli_plugin_webui__app__models__base__ModuleInfoSchema = {
   title: 'ModuleInfo',
-  required: ['module_name', 'project_link', 'name', 'desc', 'author', 'homepage', 'is_official'],
   type: 'object',
   properties: {
     module_name: {
       title: 'Module Name',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     project_link: {
       title: 'Project Link',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     name: {
       title: 'Name',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     desc: {
       title: 'Desc',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     author: {
       title: 'Author',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     homepage: {
       title: 'Homepage',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
+    },
+    usage: {
+      title: 'Usage',
+      type: 'string',
+      default: 'unknown'
+    },
+    extra: {
+      title: 'Extra',
+      type: 'object'
     },
     tags: {
       title: 'Tags',
@@ -866,55 +917,59 @@ export const nb_cli_plugin_webui__app__schemas__ModuleInfoSchema = {
     },
     is_official: {
       title: 'Is Official',
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     },
     is_download: {
       title: 'Is Download',
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     }
   }
 } as const
 
-export const nb_cli_plugin_webui__app__schemas__PluginSchema = {
+export const nb_cli_plugin_webui__app__models__base__PluginSchema = {
   title: 'Plugin',
-  required: [
-    'module_name',
-    'project_link',
-    'name',
-    'desc',
-    'author',
-    'homepage',
-    'is_official',
-    'valid',
-    'version',
-    'time',
-    'skip_test'
-  ],
   type: 'object',
   properties: {
     module_name: {
       title: 'Module Name',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     project_link: {
       title: 'Project Link',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     name: {
       title: 'Name',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     desc: {
       title: 'Desc',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     author: {
       title: 'Author',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
     },
     homepage: {
       title: 'Homepage',
-      type: 'string'
+      type: 'string',
+      default: 'unknown'
+    },
+    usage: {
+      title: 'Usage',
+      type: 'string',
+      default: 'unknown'
+    },
+    extra: {
+      title: 'Extra',
+      type: 'object'
     },
     tags: {
       title: 'Tags',
@@ -925,15 +980,159 @@ export const nb_cli_plugin_webui__app__schemas__PluginSchema = {
     },
     is_official: {
       title: 'Is Official',
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     },
     is_download: {
       title: 'Is Download',
-      type: 'boolean'
+      type: 'boolean',
+      default: false
+    },
+    config: {
+      title: 'Config',
+      type: 'object',
+      default: {}
+    }
+  }
+} as const
+
+export const nb_cli_plugin_webui__app__models__store__ModuleInfoSchema = {
+  title: 'ModuleInfo',
+  type: 'object',
+  properties: {
+    module_name: {
+      title: 'Module Name',
+      type: 'string',
+      default: 'unknown'
+    },
+    project_link: {
+      title: 'Project Link',
+      type: 'string',
+      default: 'unknown'
+    },
+    name: {
+      title: 'Name',
+      type: 'string',
+      default: 'unknown'
+    },
+    desc: {
+      title: 'Desc',
+      type: 'string',
+      default: 'unknown'
+    },
+    author: {
+      title: 'Author',
+      type: 'string',
+      default: 'unknown'
+    },
+    homepage: {
+      title: 'Homepage',
+      type: 'string',
+      default: 'unknown'
+    },
+    usage: {
+      title: 'Usage',
+      type: 'string',
+      default: 'unknown'
+    },
+    extra: {
+      title: 'Extra',
+      type: 'object'
+    },
+    tags: {
+      title: 'Tags',
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/ModuleTag'
+      }
+    },
+    is_official: {
+      title: 'Is Official',
+      type: 'boolean',
+      default: false
+    },
+    is_download: {
+      title: 'Is Download',
+      type: 'boolean',
+      default: false
+    },
+    module_type: {
+      title: 'Module Type',
+      enum: ['module'],
+      type: 'string',
+      default: 'module'
+    }
+  }
+} as const
+
+export const nb_cli_plugin_webui__app__models__store__PluginSchema = {
+  title: 'Plugin',
+  required: ['valid', 'time', 'version', 'skip_test'],
+  type: 'object',
+  properties: {
+    module_name: {
+      title: 'Module Name',
+      type: 'string',
+      default: 'unknown'
+    },
+    project_link: {
+      title: 'Project Link',
+      type: 'string',
+      default: 'unknown'
+    },
+    name: {
+      title: 'Name',
+      type: 'string',
+      default: 'unknown'
+    },
+    desc: {
+      title: 'Desc',
+      type: 'string',
+      default: 'unknown'
+    },
+    author: {
+      title: 'Author',
+      type: 'string',
+      default: 'unknown'
+    },
+    homepage: {
+      title: 'Homepage',
+      type: 'string',
+      default: 'unknown'
+    },
+    usage: {
+      title: 'Usage',
+      type: 'string',
+      default: 'unknown'
+    },
+    extra: {
+      title: 'Extra',
+      type: 'object'
+    },
+    tags: {
+      title: 'Tags',
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/ModuleTag'
+      }
+    },
+    is_official: {
+      title: 'Is Official',
+      type: 'boolean',
+      default: false
+    },
+    is_download: {
+      title: 'Is Download',
+      type: 'boolean',
+      default: false
+    },
+    config: {
+      title: 'Config',
+      type: 'object',
+      default: {}
     },
     type: {
-      title: 'Type',
-      type: 'string'
+      $ref: '#/components/schemas/PluginType'
     },
     supported_adapters: {
       title: 'Supported Adapters',
@@ -946,33 +1145,36 @@ export const nb_cli_plugin_webui__app__schemas__PluginSchema = {
       title: 'Valid',
       type: 'boolean'
     },
-    version: {
-      title: 'Version',
-      type: 'string'
-    },
     time: {
       title: 'Time',
+      type: 'string'
+    },
+    version: {
+      title: 'Version',
       type: 'string'
     },
     skip_test: {
       title: 'Skip Test',
       type: 'boolean'
     },
-    config_detail: {
-      title: 'Config Detail',
-      type: 'object',
-      default: {}
+    module_type: {
+      title: 'Module Type',
+      enum: ['plugin'],
+      type: 'string',
+      default: 'plugin'
     }
-  }
+  },
+  description: `结构参考:
+- https://github.com/nonebot/noneflow/blob/main/src/utils/store_test/models.py#L14`
 } as const
 
-export const nb_cli_plugin_webui__app__schemas__SearchTagSchema = {
+export const nb_cli_plugin_webui__app__models__store__SearchTagSchema = {
   title: 'SearchTag',
   required: ['label'],
   type: 'object',
   properties: {
     label: {
-      $ref: '#/components/schemas/nb_cli_plugin_webui__app__constants__SearchTag'
+      $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__types__SearchTag'
     },
     text: {
       title: 'Text',
@@ -982,160 +1184,9 @@ export const nb_cli_plugin_webui__app__schemas__SearchTagSchema = {
   }
 } as const
 
-export const nb_cli_plugin_webui__app__store__schemas__ModuleInfoSchema = {
-  title: 'ModuleInfo',
-  required: [
-    'module_name',
-    'project_link',
-    'name',
-    'desc',
-    'author',
-    'homepage',
-    'is_official',
-    'module_type'
-  ],
-  type: 'object',
-  properties: {
-    module_name: {
-      title: 'Module Name',
-      type: 'string'
-    },
-    project_link: {
-      title: 'Project Link',
-      type: 'string'
-    },
-    name: {
-      title: 'Name',
-      type: 'string'
-    },
-    desc: {
-      title: 'Desc',
-      type: 'string'
-    },
-    author: {
-      title: 'Author',
-      type: 'string'
-    },
-    homepage: {
-      title: 'Homepage',
-      type: 'string'
-    },
-    tags: {
-      title: 'Tags',
-      type: 'array',
-      items: {
-        $ref: '#/components/schemas/ModuleTag'
-      }
-    },
-    is_official: {
-      title: 'Is Official',
-      type: 'boolean'
-    },
-    is_download: {
-      title: 'Is Download',
-      type: 'boolean'
-    },
-    module_type: {
-      title: 'Module Type',
-      enum: ['module'],
-      type: 'string'
-    }
-  }
-} as const
-
-export const nb_cli_plugin_webui__app__store__schemas__PluginSchema = {
-  title: 'Plugin',
-  required: [
-    'module_name',
-    'project_link',
-    'name',
-    'desc',
-    'author',
-    'homepage',
-    'is_official',
-    'valid',
-    'version',
-    'time',
-    'skip_test',
-    'module_type'
-  ],
-  type: 'object',
-  properties: {
-    module_name: {
-      title: 'Module Name',
-      type: 'string'
-    },
-    project_link: {
-      title: 'Project Link',
-      type: 'string'
-    },
-    name: {
-      title: 'Name',
-      type: 'string'
-    },
-    desc: {
-      title: 'Desc',
-      type: 'string'
-    },
-    author: {
-      title: 'Author',
-      type: 'string'
-    },
-    homepage: {
-      title: 'Homepage',
-      type: 'string'
-    },
-    tags: {
-      title: 'Tags',
-      type: 'array',
-      items: {
-        $ref: '#/components/schemas/ModuleTag'
-      }
-    },
-    is_official: {
-      title: 'Is Official',
-      type: 'boolean'
-    },
-    is_download: {
-      title: 'Is Download',
-      type: 'boolean'
-    },
-    type: {
-      title: 'Type',
-      type: 'string'
-    },
-    supported_adapters: {
-      title: 'Supported Adapters',
-      type: 'array',
-      items: {
-        type: 'string'
-      }
-    },
-    valid: {
-      title: 'Valid',
-      type: 'boolean'
-    },
-    version: {
-      title: 'Version',
-      type: 'string'
-    },
-    time: {
-      title: 'Time',
-      type: 'string'
-    },
-    skip_test: {
-      title: 'Skip Test',
-      type: 'boolean'
-    },
-    config_detail: {
-      title: 'Config Detail',
-      type: 'object',
-      default: {}
-    },
-    module_type: {
-      title: 'Module Type',
-      enum: ['plugin'],
-      type: 'string'
-    }
-  }
+export const nb_cli_plugin_webui__app__models__types__SearchTagSchema = {
+  title: 'SearchTag',
+  enum: ['official', 'valid', 'latest', 'downloaded', 'author', 'tag'],
+  type: 'string',
+  description: 'An enumeration.'
 } as const

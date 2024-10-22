@@ -3,8 +3,8 @@ import { ref, watch } from 'vue'
 import { useSearchStore } from './client'
 import {
   type ModuleType,
-  type nb_cli_plugin_webui__app__constants__SearchTag,
-  nb_cli_plugin_webui__app__constants__SearchTagSchema
+  type nb_cli_plugin_webui__app__models__types__SearchTag,
+  nb_cli_plugin_webui__app__models__types__SearchTagSchema
 } from '@/client/api'
 import { useCustomStore, useNoneBotStore } from '@/stores'
 
@@ -30,7 +30,7 @@ const checkIsDelete = (e: KeyboardEvent) => {
 }
 
 const checkIsAddTag = (e: KeyboardEvent) => {
-  const addTag = (label: nb_cli_plugin_webui__app__constants__SearchTag, text: string) => {
+  const addTag = (label: nb_cli_plugin_webui__app__models__types__SearchTag, text: string) => {
     e.preventDefault()
     store.searchTags.push({ label, text })
     store.searchInput = ''
@@ -41,14 +41,17 @@ const checkIsAddTag = (e: KeyboardEvent) => {
   if (e.key === ' ') {
     let input = store.searchInput
 
-    for (let tag in nb_cli_plugin_webui__app__constants__SearchTagSchema.enum) {
+    for (let tag in nb_cli_plugin_webui__app__models__types__SearchTagSchema.enum) {
       tag = tag.toLowerCase()
       if (input.startsWith(`${tag}:`) && input.length > tag.length + 1) {
         if (noTextLabel.includes(tag)) {
           input = ''
         }
 
-        addTag(tag as nb_cli_plugin_webui__app__constants__SearchTag, input.slice(tag.length + 1))
+        addTag(
+          tag as nb_cli_plugin_webui__app__models__types__SearchTag,
+          input.slice(tag.length + 1)
+        )
         return
       }
     }
@@ -95,7 +98,7 @@ const moduleItems: moduleItem[] = [
 ]
 
 type filterItem = {
-  label: nb_cli_plugin_webui__app__constants__SearchTag
+  label: nb_cli_plugin_webui__app__models__types__SearchTag
   text?: string
   tip: string
 }
