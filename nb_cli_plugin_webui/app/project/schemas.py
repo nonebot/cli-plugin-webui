@@ -2,11 +2,8 @@ from typing import Dict, List
 
 from pydantic import BaseModel
 
-from nb_cli_plugin_webui.app.schemas import (
-    ModuleInfo,
-    GenericResponse,
-    NoneBotProjectMeta,
-)
+from nb_cli_plugin_webui.app.schemas import GenericResponse
+from nb_cli_plugin_webui.app.models.base import ModuleInfo, NoneBotProjectMeta
 
 
 class ProjectTomlDetail(BaseModel):

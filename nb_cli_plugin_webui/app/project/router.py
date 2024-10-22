@@ -3,8 +3,8 @@ import shutil
 from fastapi import Depends, APIRouter
 
 from nb_cli_plugin_webui.app.logging import logger as log
-from nb_cli_plugin_webui.app.schemas import NoneBotProjectMeta
 from nb_cli_plugin_webui.app.handlers import NoneBotProjectManager
+from nb_cli_plugin_webui.app.models.base import NoneBotProjectMeta
 
 from .exceptions import ProjectDeleteFailed
 from .config.router import router as config_router

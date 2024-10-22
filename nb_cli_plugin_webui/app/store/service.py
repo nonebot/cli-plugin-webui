@@ -6,7 +6,9 @@ from pydantic import Field
 from nb_cli.handlers import call_pip_uninstall
 
 from nb_cli_plugin_webui.app.config import Config
+from nb_cli_plugin_webui.app.models.types import ModuleType
 from nb_cli_plugin_webui.app.handlers import call_pip_install
+from nb_cli_plugin_webui.app.models.store import Plugin, ModuleInfo
 from nb_cli_plugin_webui.app.project import service as project_service
 from nb_cli_plugin_webui.app.utils.string_utils import generate_complexity_string
 from nb_cli_plugin_webui.app.project.exceptions import WriteNoneBotProjectProfileFailed
@@ -17,7 +19,6 @@ from nb_cli_plugin_webui.app.handlers.process import (
     ProcessFuncWithLog,
 )
 
-from .schemas import Plugin, ModuleInfo
 from .exception import ModuleNotFound, ModuleIsExisted, ModuleTypeNotFound
 
 
@@ -39,7 +40,7 @@ def install_nonebot_module(
             if module.module_name == driver.module_name:
                 raise ModuleIsExisted()
 
-    if module.module_type == "module":
+    if module.module_type == ModuleType.MODULE:
         module_type = "driver"
         if "~" not in module.module_name:
             pattern = r"nonebot-(.*?)-"

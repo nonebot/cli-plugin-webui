@@ -18,16 +18,11 @@ from dateutil import parser
 
 from nb_cli_plugin_webui.i18n import _
 from nb_cli_plugin_webui.app.config import Config
-from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.logging import logger as log
+from nb_cli_plugin_webui.app.models.types import ModuleType
+from nb_cli_plugin_webui.app.models.store import Plugin, SearchTag
+from nb_cli_plugin_webui.app.models.base import Driver, Adapter, NoneBotProjectMeta
 from nb_cli_plugin_webui.app.utils.list_utils import safe_list_get, safe_list_remove
-from nb_cli_plugin_webui.app.schemas import (
-    Driver,
-    Plugin,
-    Adapter,
-    SearchTag,
-    NoneBotProjectMeta,
-)
 
 _T = TypeVar("_T", Plugin, Adapter, Driver)
 VISIBLE_ITEMS = Config.extension_store_visible_items
@@ -36,19 +31,19 @@ if TYPE_CHECKING:
 
     @overload
     async def load_module_data(
-        module_type: Literal[ModuleType.plugin],
+        module_type: Literal[ModuleType.PLUGIN],
     ) -> List[Plugin]:
         ...
 
     @overload
     async def load_module_data(
-        module_type: Literal[ModuleType.adapter],
+        module_type: Literal[ModuleType.ADAPTER],
     ) -> List[Adapter]:
         ...
 
     @overload
     async def load_module_data(
-        module_type: Literal[ModuleType.driver],
+        module_type: Literal[ModuleType.DRIVER],
     ) -> List[Driver]:
         ...
 
@@ -63,11 +58,11 @@ else:
     async def load_module_data(
         module_type: ModuleType,
     ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
-        if module_type == ModuleType.plugin:
+        if module_type == ModuleType.PLUGIN:
             module_class = Plugin
-        elif module_type == ModuleType.adapter:
+        elif module_type == ModuleType.ADAPTER:
             module_class = Adapter
-        elif module_type == ModuleType.driver:
+        elif module_type == ModuleType.DRIVER:
             module_class = Driver
         else:
             raise ValueError(
@@ -274,6 +269,6 @@ class ModuleStoreManager(Generic[_T]):
         self.search_result = unique_base_models
 
 
-plugin_store_manager = ModuleStoreManager[Plugin](module_type=ModuleType.plugin)
-adapter_store_manager = ModuleStoreManager[Adapter](module_type=ModuleType.adapter)
-driver_store_manager = ModuleStoreManager[Driver](module_type=ModuleType.driver)
+plugin_store_manager = ModuleStoreManager[Plugin](module_type=ModuleType.PLUGIN)
+adapter_store_manager = ModuleStoreManager[Adapter](module_type=ModuleType.ADAPTER)
+driver_store_manager = ModuleStoreManager[Driver](module_type=ModuleType.DRIVER)

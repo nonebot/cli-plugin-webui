@@ -11,7 +11,7 @@ from nb_cli.config import SimpleInfo as CliSimpleInfo
 from nb_cli.config.parser import CONFIG_FILE_ENCODING
 
 from nb_cli_plugin_webui.app.utils.storage import get_data_file
-from nb_cli_plugin_webui.app.schemas import Plugin, ModuleInfo, NoneBotProjectMeta
+from nb_cli_plugin_webui.app.models.base import Plugin, ModuleInfo, NoneBotProjectMeta
 
 from .plugin import (
     get_nonebot_plugin_list,

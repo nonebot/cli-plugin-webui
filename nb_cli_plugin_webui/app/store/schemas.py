@@ -1,25 +1,15 @@
-from typing import List, Union, Literal
+from typing import List, Union
 
 from pydantic import BaseModel
 
-from nb_cli_plugin_webui.app.schemas import Driver
-from nb_cli_plugin_webui.app.constants import ModuleType
+from nb_cli_plugin_webui.app.models.types import ModuleType
 from nb_cli_plugin_webui.app.schemas import GenericResponse
-from nb_cli_plugin_webui.app.schemas import Adapter, SearchTag
-from nb_cli_plugin_webui.app.schemas import Plugin as BasePlugin
-from nb_cli_plugin_webui.app.schemas import ModuleInfo as BaseModuleInfo
-
-
-class Plugin(BasePlugin):
-    module_type: Literal["plugin"]
-
-
-class ModuleInfo(BaseModuleInfo):
-    module_type: Literal["module"]
+from nb_cli_plugin_webui.app.models.base import Driver, Adapter
+from nb_cli_plugin_webui.app.models.store import Plugin, SearchTag
 
 
 class StoreListResponse(
-    GenericResponse[Union[List[BasePlugin], List[Adapter], List[Driver]]]
+    GenericResponse[Union[List[Plugin], List[Adapter], List[Driver]]]
 ):
     now_page: int
     total_page: int

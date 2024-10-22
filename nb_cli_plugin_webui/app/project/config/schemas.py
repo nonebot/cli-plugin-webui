@@ -1,15 +1,15 @@
 from enum import Enum
-from typing import Any, List, Union
+from typing import Any, List, Union, Optional
 
 from pydantic import BaseModel
 
 from nb_cli_plugin_webui.app.schemas import GenericResponse
-from nb_cli_plugin_webui.app.constants import ModuleType as BaseModuleType
+from nb_cli_plugin_webui.app.models.types import ModuleType as BaseModuleType
 
 
 class ConfigType(str, Enum):
-    project = "project"
-    toml = "toml"
+    PROJECT = "project"
+    TOML = "toml"
 
 
 ConfigModuleType = Union[BaseModuleType, ConfigType]
@@ -17,7 +17,7 @@ ConfigModuleType = Union[BaseModuleType, ConfigType]
 
 class ModuleConfigSimpleInfo(BaseModel):
     title: str
-    description: str
+    description: Optional[str]
     name: str
 
 
@@ -26,8 +26,9 @@ class ModuleConfigChild(ModuleConfigSimpleInfo):
     conf_type: str
     enum: List[Any]
     configured: Any
+    unique_item: bool
     is_secret: bool
-    latest_change: str = str()
+    latest_change: str = ".env"
 
 
 class ModuleConfigFather(ModuleConfigSimpleInfo):

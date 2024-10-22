@@ -1,7 +1,8 @@
 from typing import Union
 
-from nb_cli_plugin_webui.app.constants import ModuleType
-from nb_cli_plugin_webui.app.schemas import Driver, Plugin, Adapter
+from nb_cli_plugin_webui.app.models.store import Plugin
+from nb_cli_plugin_webui.app.models.types import ModuleType
+from nb_cli_plugin_webui.app.models.base import Driver, Adapter
 from nb_cli_plugin_webui.app.handlers import (
     ModuleStoreManager,
     driver_store_manager,

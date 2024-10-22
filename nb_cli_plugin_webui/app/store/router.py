@@ -2,14 +2,15 @@ from typing import Union, Optional
 
 from fastapi import Body, Depends, APIRouter
 
-from nb_cli_plugin_webui.app.constants import ModuleType
+from nb_cli_plugin_webui.app.models.store import ModuleInfo
+from nb_cli_plugin_webui.app.models.types import ModuleType
 from nb_cli_plugin_webui.app.schemas import GenericResponse
 from nb_cli_plugin_webui.app.handlers import NoneBotProjectManager
 from nb_cli_plugin_webui.app.project import get_nonebot_project_manager
 
 from .utils import get_store_manager
+from .schemas import Plugin, SearchRequest, StoreListResponse
 from .service import install_nonebot_module, uninstall_nonebot_module
-from .schemas import Plugin, ModuleInfo, SearchRequest, StoreListResponse
 
 router = APIRouter(tags=["store"])
 

@@ -6,9 +6,9 @@ from typing import Any, Dict, List
 
 from fastapi import Depends, APIRouter, HTTPException, status
 
-from nb_cli_plugin_webui.app.constants import ModuleType
 from nb_cli_plugin_webui.app.logging import logger as log
-from nb_cli_plugin_webui.app.schemas import NoneBotProjectMeta
+from nb_cli_plugin_webui.app.models.types import ModuleType
+from nb_cli_plugin_webui.app.models.base import NoneBotProjectMeta
 from nb_cli_plugin_webui.app.handlers import (
     NoneBotProjectManager,
     get_nonebot_config_detail,
