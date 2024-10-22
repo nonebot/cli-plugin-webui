@@ -158,16 +158,21 @@ class NoneBotProjectManager:
             config_file, self.config_manager.python_path
         )
 
+        cwd = config_file.parent
+
         for plugin in plugins:
             raw_metadata = await get_nonebot_plugin_detail(
-                plugin, self.config_manager.python_path
+                plugin, cwd, self.config_manager.python_path
             )
-            metadata = Plugin.parse_obj(raw_metadata)
 
             config_detail = await get_nonebot_plugin_config_detail(
-                plugin, self.config_manager.python_path
+                plugin, cwd, self.config_manager.python_path
             )
-            metadata.config_detail = config_detail
+            raw_metadata["config"] = config_detail
+
+            metadata = Plugin.parse_obj(raw_metadata)
+            if metadata.module_name == "unknown":
+                metadata.module_name = plugin
 
             installed_plugin = [i.module_name for i in data.plugins]
             if metadata.module_name not in installed_plugin:
@@ -175,7 +180,7 @@ class NoneBotProjectManager:
             else:
                 for plugin in data.plugins:
                     if plugin.module_name == metadata.module_name:
-                        plugin.config_detail = config_detail
+                        plugin.config = config_detail
                         break
             self.store(data)
 
