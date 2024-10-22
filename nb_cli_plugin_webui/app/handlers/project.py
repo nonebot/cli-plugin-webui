@@ -73,7 +73,7 @@ class NoneBotProjectManager:
             load = self._load()
             data = load.__root__
         except FileNotFoundError:
-            data = dict()
+            raise FileNotFoundError(f"{PROJECT_DATA_FILE} Not found")
         info = data.get(self.project_id)
         if info is None:
             raise ProjectNotFoundError
