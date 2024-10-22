@@ -5,7 +5,7 @@ def get_plugin_metadata(plugin: str):
     try:
         nonebot.logger.remove()
         nonebot.init()
-        module = load_plugin(plugin)
+        module = nonebot.load_plugin(plugin)
     except Exception:
         return None
 
