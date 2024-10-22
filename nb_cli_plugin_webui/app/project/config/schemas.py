@@ -26,7 +26,7 @@ class ModuleConfigChild(ModuleConfigSimpleInfo):
     conf_type: str
     enum: List[Any]
     configured: Any
-    unique_item: bool
+    unique_items: bool
     is_secret: bool
     latest_change: str = ".env"
 

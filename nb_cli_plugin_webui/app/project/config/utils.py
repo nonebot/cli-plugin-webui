@@ -10,7 +10,7 @@ def config_child_parser(name: str, data: dict) -> ModuleConfigChild:
     )
     conf_title = data.get("title", "Unknown Config")
     conf_description = data.get("description", None)
-    conf_unique_item = data.get("uniqueItem", False)
+    conf_unique_items = data.get("uniqueItems", False)
     conf_is_secret = data.get("writeOnly", False)
     conf_latest_change = data.get("latest_change", ".env")
 
@@ -22,7 +22,7 @@ def config_child_parser(name: str, data: dict) -> ModuleConfigChild:
         conf_type=conf_type,
         enum=conf_enum,
         configured=conf_configured,
-        unique_item=conf_unique_item,
+        unique_items=conf_unique_items,
         is_secret=conf_is_secret,
         latest_change=conf_latest_change,
     )
