@@ -1,8 +1,6 @@
 from typing import Any, Dict, List, Generic, TypeVar, Optional
 
-from pydantic import Field, BaseModel
-
-_T = TypeVar("_T")
+from pydantic import Field, BaseModel, validator
 
 
 class ModuleTag(BaseModel):
@@ -12,11 +10,11 @@ class ModuleTag(BaseModel):
 
 class ModuleInfo(BaseModel):
     module_name: str = Field(default="unknown")
-    project_link: Optional[str] = Field(default="unknown")
+    project_link: str = Field(default="unknown")
     name: str = Field(default="unknown")
     desc: str = Field(default="unknown")
-    author: Optional[str] = Field(default="unknown")
-    homepage: Optional[str] = Field(default="unknown")
+    author: str = Field(default="unknown")
+    homepage: str = Field(default="unknown")
 
     # nonebot:PluginMetadata 类型, 为通用移至此处
     usage: str = Field(default="unknown")
@@ -28,6 +26,18 @@ class ModuleInfo(BaseModel):
 
     # WebUI 拓展类型
     is_download: bool = False
+
+    @validator("project_link", pre=True, always=True)
+    def set_project_link_default(cls, v):
+        return v if v is not None else "unknown"
+
+    @validator("author", pre=True, always=True)
+    def set_author_default(cls, v):
+        return v if v is not None else "unknown"
+
+    @validator("homepage", pre=True, always=True)
+    def set_homepage_default(cls, v):
+        return v if v is not None else "unknown"
 
 
 class Plugin(ModuleInfo):
@@ -51,6 +61,9 @@ class Driver(ModuleInfo):
         module_name = "drivers"
 
 
+_T = TypeVar("_T", bound=Plugin)
+
+
 class NoneBotProjectMeta(BaseModel, Generic[_T]):
     project_id: str
     project_name: str
@@ -58,7 +71,7 @@ class NoneBotProjectMeta(BaseModel, Generic[_T]):
     mirror_url: str
     adapters: List[ModuleInfo]
     drivers: List[ModuleInfo]
-    plugins: List[Plugin | _T]
+    plugins: List[_T]
     plugin_dirs: List[str]
     builtin_plugins: List[str]
 
