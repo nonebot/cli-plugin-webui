@@ -14,6 +14,7 @@ from nb_cli_plugin_webui.app.handlers import (
     get_nonebot_config_detail,
 )
 
+from .utils import config_child_parser
 from ..dependencies import get_nonebot_project_manager
 from .exceptions import EnvExists, EnvNotFound, ConfigNotFound, BaseEnvCannotBeDeleted
 from .schemas import (
@@ -125,26 +126,15 @@ async def _get_project_meta_config(
         if prop not in project.meta_modifiable_keys:
             continue
 
-        prop_detail = config_props[prop]
-        conf_type = prop_detail.get("type", "string")
-
-        detail = ModuleConfigChild(
-            title=prop_detail["title"],
-            description=str(),
-            name=prop,
-            default=str(),
-            conf_type=conf_type,
-            enum=prop_detail.get("enum", list()),
-            is_secret=prop_detail.get("writeOnly", False),
-            configured=getattr(project_meta, prop),
-        )
+        config_props[prop]["configured"] = getattr(project_meta, prop)
+        detail = config_child_parser(prop, config_props[prop])
         cache_list.append(detail)
 
     result = ModuleConfigFather(
         title="Project Config",
         description="",
         name="project-meta",
-        module_type=ConfigType.toml,
+        module_type=ConfigType.TOML,
         properties=cache_list,
     )
 
@@ -174,32 +164,14 @@ async def _get_project_nonebot_config(
     config_props = config_detail["properties"]
     cache_list: List[ModuleConfigChild] = list()
     for prop in config_props:
-        prop_detail = config_props[prop]
-        default_param = prop_detail["default"]
-        default_item = (
-            [str(i) for i in default_param]
-            if type(default_param) in {list, set}
-            else default_param
-        )
-        conf_type = prop_detail.get("type", "string")
-
-        detail = ModuleConfigChild(
-            title=prop_detail["title"],
-            description=prop_detail.get("description", str()),
-            name=prop,
-            default=default_item,
-            conf_type=conf_type,
-            enum=prop_detail.get("enum", list()),
-            is_secret=prop_detail.get("writeOnly", False),
-            configured=prop_detail.get("configured", str()),
-        )
+        detail = config_child_parser(prop, config_props[prop])
         cache_list.append(detail)
 
     result = ModuleConfigFather(
         title="NoneBot Config",
         description=config_detail.get("description", str()),
         name="nonebot-config",
-        module_type=ConfigType.project,
+        module_type=ConfigType.PROJECT,
         properties=cache_list,
     )
 
@@ -217,51 +189,23 @@ async def _get_project_nonebot_plugin_config(
     plugin_list = project_meta.plugins
     result: List[ModuleConfigFather] = list()
     for plugin in plugin_list:
-        config_detail = plugin.config_detail
+        config_detail = plugin.config
         props = config_detail.get("properties")
         if props is None:
             continue
 
         cache_list: List[ModuleConfigChild] = list()
         for prop in props:
-            prop_detail = props[prop]
-            conf_type = prop_detail.get("type", "string")
-            if conf_type == "object":
-                configured = str(prop_detail.get("configured", str()))
-                default_param = configured
-            else:
-                configured = prop_detail.get("configured", str())
-                default_param = prop_detail.get("default", str())
-
-            default_value = (
-                [str(i) for i in default_param]
-                if type(default_param) in {list, set}
-                else default_param
-            )
-
-            enum = list()
-            items = prop_detail.get("items")
-            if items and conf_type == "array":
-                enum = items.get("enum", list())
-
-            detail = ModuleConfigChild(
-                title=prop_detail["title"],
-                description=prop_detail.get("description", str()),
-                name=prop,
-                default=default_value,
-                conf_type=conf_type,
-                enum=enum,
-                configured=configured,
-                is_secret=prop_detail.get("writeOnly", False),
-                latest_change=prop_detail.get("latest_change", str()),
-            )
+            detail = config_child_parser(prop, props[prop])
             cache_list.append(detail)
+
+        plugin_desc = str() if plugin.desc == "unknown" else plugin.desc
 
         plugin_detail = ModuleConfigFather(
             title=plugin.module_name,
-            description=plugin.desc,
+            description=plugin_desc,
             name=plugin.module_name,
-            module_type=ModuleType.plugin,
+            module_type=ModuleType.PLUGIN,
             properties=cache_list,
         )
         result.append(plugin_detail)
@@ -286,7 +230,7 @@ async def _update_project_config(
     project_meta = project.read()
     target_config = data.k.split(":")[-1]
 
-    if module_type == ConfigType.toml:
+    if module_type == ConfigType.TOML:
         if data.conf_type == "boolean":
             setattr(data, "v", bool(data.v))
 
@@ -310,10 +254,10 @@ async def _update_project_config(
             v = data.v
         project.write_to_env(data.env, target_config, v)
 
-        if module_type == ModuleType.plugin:
+        if module_type == ModuleType.PLUGIN:
             plugins = project_meta.plugins
             for plugin in plugins:
-                config_detail = plugin.config_detail
+                config_detail = plugin.config
                 props = config_detail.get("properties")
                 if props is None:
                     continue
@@ -323,8 +267,8 @@ async def _update_project_config(
                     conf = props[prop].get("configured")
                     if conf is None:
                         raise ConfigNotFound()
-                    plugin.config_detail["properties"][prop]["configured"] = data.v
-                    plugin.config_detail["properties"][prop]["latest_change"] = data.env
+                    plugin.config["properties"][prop]["configured"] = data.v
+                    plugin.config["properties"][prop]["latest_change"] = data.env
                     project_meta.plugins = plugins
                     project.store(project_meta)
 
