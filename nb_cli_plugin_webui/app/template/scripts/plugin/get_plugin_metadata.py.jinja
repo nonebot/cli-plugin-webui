@@ -2,8 +2,9 @@
 
 from dataclasses import asdict
 
-{{ get_plugin_metadata("{{ plugin }}") }}
+{{ get_plugin_metadata(plugin) }}
 
 if metadata:
     data = asdict(metadata)
-    print(json.dumps(str(data)))
+    data["config"] = dict()
+    print(json.dumps(data))
