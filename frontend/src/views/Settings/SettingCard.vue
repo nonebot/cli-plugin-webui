@@ -4,6 +4,7 @@ import StringInput from './InputTemplate/StringInput.vue'
 import BooleanInput from './InputTemplate/BooleanInput.vue'
 import ArrayInput from './InputTemplate/ArrayInput.vue'
 import NumberInput from './InputTemplate/NumberInput.vue'
+import SelectInput from './InputTemplate/SelectInput.vue'
 
 const props = defineProps<{ data: ModuleConfigFather }>()
 </script>
@@ -38,8 +39,9 @@ const props = defineProps<{ data: ModuleConfigFather }>()
         最后修改于：{{ i.latest_change }}
       </div>
 
+      <SelectInput v-if="i.enum" :data="i" :module-type="data.module_type" />
       <StringInput
-        v-if="['string', 'object'].indexOf(i.conf_type) !== -1"
+        v-else-if="['string', 'object'].indexOf(i.conf_type) !== -1"
         :data="i"
         :module-type="data.module_type"
       />

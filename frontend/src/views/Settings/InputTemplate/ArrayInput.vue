@@ -10,15 +10,16 @@ const props = defineProps<{
   moduleType: ModuleType | ConfigType
   data: ModuleConfigChild
 }>()
-const _data = props.data as Omit<ModuleConfigChild, 'configured'> & {
+const data = props.data as Omit<ModuleConfigChild, 'configured' | 'enum'> & {
   configured: string[]
+  enum: any[]
 }
 
 const isAddItem = ref(false),
   inputValue = ref<string>()
 
 const findItem = (fItem: string) => {
-  return _data.configured.findIndex((item: string) => item === fItem)
+  return data.configured.findIndex((item: string) => item === fItem)
 }
 
 const addItem = async () => {
@@ -30,14 +31,14 @@ const addItem = async () => {
     return
   }
 
-  _data.configured.push(inputValue.value)
+  data.configured.push(inputValue.value)
 
-  const result = await updateConfig(props.moduleType, _data.conf_type, _data.name, _data.configured)
+  const result = await updateConfig(props.moduleType, data.conf_type, data.name, data.configured)
 
   if (result?.error) {
     const index = findItem(inputValue.value!)
     if (index === -1) return
-    _data.configured.splice(index, 1)
+    data.configured.splice(index, 1)
   }
 
   if (result?.data) {
@@ -53,10 +54,10 @@ const removeItem = async (rItem: string) => {
 
   const index = findItem(rItem)
   if (index === -1) return
-  _data.configured.splice(index, 1)
+  data.configured.splice(index, 1)
 
-  await updateConfig(props.moduleType, _data.conf_type, _data.name, _data.configured).catch(() => {
-    _data.configured.push(rItem)
+  await updateConfig(props.moduleType, data.conf_type, data.name, data.configured).catch(() => {
+    data.configured.push(rItem)
   })
 }
 
@@ -93,8 +94,18 @@ const cancel = () => {
       <button v-if="!isAddItem" class="btn btn-xs btn-ghost" @click="isAddItem = true">
         + 添加
       </button>
-      <div v-else class="flex gap-2">
-        <input v-model="inputValue" class="input input-xs" placeholder="请键入" />
+      <div v-else class="flex items-center gap-2">
+        <input
+          v-if="!data.items?.enum"
+          v-model="inputValue"
+          class="input input-xs"
+          placeholder="请键入"
+        />
+        <select v-else v-model="inputValue" class="select select-sm">
+          <option disabled selected>请选择</option>
+          <option v-for="i in data.items.enum" :key="String(i)">{{ i }}</option>
+        </select>
+
         <button class="btn btn-xs btn-ghost" @click="addItem()">确认</button>
         <button class="btn btn-xs btn-ghost" @click="cancel()">取消</button>
       </div>
