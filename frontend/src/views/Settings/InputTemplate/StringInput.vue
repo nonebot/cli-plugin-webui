@@ -9,11 +9,13 @@ const props = defineProps<{
 }>()
 
 const data = props.data as Omit<ModuleConfigChild, 'configured' | 'default'> & {
-  configured: string
-  default: string
+  configured: any
+  default: any
 }
 
-const inputValue = ref(data.configured),
+const inputValue = ref(
+    data.conf_type === 'object' ? JSON.stringify(data.configured) : data.configured
+  ),
   inEditing = ref(false),
   inVisible = ref(data.is_secret)
 
