@@ -380,6 +380,23 @@ export const HTTPValidationErrorSchema = {
   }
 } as const
 
+export const ItemSchema = {
+  title: 'Item',
+  required: ['enum', 'type'],
+  type: 'object',
+  properties: {
+    enum: {
+      title: 'Enum',
+      type: 'array',
+      items: {}
+    },
+    type: {
+      title: 'Type',
+      type: 'string'
+    }
+  }
+} as const
+
 export const ListProjectResponseSchema = {
   title: 'ListProjectResponse',
   required: ['detail'],
@@ -420,7 +437,7 @@ export const LoginRequestSchema = {
 
 export const ModuleConfigChildSchema = {
   title: 'ModuleConfigChild',
-  required: ['title', 'name', 'conf_type', 'enum', 'unique_items', 'is_secret'],
+  required: ['title', 'name', 'conf_type', 'unique_items', 'is_secret'],
   type: 'object',
   properties: {
     title: {
@@ -449,6 +466,9 @@ export const ModuleConfigChildSchema = {
     },
     configured: {
       title: 'Configured'
+    },
+    items: {
+      $ref: '#/components/schemas/Item'
     },
     unique_items: {
       title: 'Unique Items',

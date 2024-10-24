@@ -101,6 +101,11 @@ export type HTTPValidationError = {
   detail?: Array<ValidationError>
 }
 
+export type Item = {
+  enum: Array<unknown>
+  type: string
+}
+
 export type ListProjectResponse = {
   detail: {
     [key: string]: NoneBotProjectMeta
@@ -123,8 +128,9 @@ export type ModuleConfigChild = {
   name: string
   default?: unknown
   conf_type: string
-  enum: Array<unknown>
+  enum?: Array<unknown>
   configured?: unknown
+  items?: Item
   unique_items: boolean
   is_secret: boolean
   latest_change?: string

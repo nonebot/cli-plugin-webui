@@ -21,11 +21,17 @@ class ModuleConfigSimpleInfo(BaseModel):
     name: str
 
 
+class Item(BaseModel):
+    enum: Optional[List[Any]]
+    type: str
+
+
 class ModuleConfigChild(ModuleConfigSimpleInfo):
     default: Any
     conf_type: str
-    enum: List[Any]
+    enum: Optional[List[Any]]
     configured: Any
+    items: Optional[Item]
     unique_items: bool
     is_secret: bool
     latest_change: str = ".env"
