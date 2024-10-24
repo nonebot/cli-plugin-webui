@@ -16,7 +16,13 @@ from nb_cli_plugin_webui.app.handlers import (
 
 from .utils import config_child_parser
 from ..dependencies import get_nonebot_project_manager
-from .exceptions import EnvExists, EnvNotFound, ConfigNotFound, BaseEnvCannotBeDeleted
+from .exceptions import (
+    EnvExists,
+    EnvNotFound,
+    ConfigNotFound,
+    ConfigParseError,
+    BaseEnvCannotBeDeleted,
+)
 from .schemas import (
     ConfigType,
     GenericResponse,
@@ -248,7 +254,10 @@ async def _update_project_config(
     def modify_config():
         data.v = str(data.v)
         if data.conf_type in {"object", "array", "boolean"}:
-            data.v = ast.literal_eval(data.v)
+            try:
+                data.v = ast.literal_eval(data.v)
+            except Exception:
+                raise ConfigParseError()
             v = json.dumps(data.v)
         else:
             v = data.v

@@ -17,3 +17,7 @@ class ConfigNotFound(NotFound):
 
 class BaseEnvCannotBeDeleted(BadRequest):
     detail = ErrorCode.BASE_ENV_CANNOT_BE_DELETED
+
+
+class ConfigParseError(BadRequest):
+    detail = ErrorCode.CONFIG_PARSE_ERROR

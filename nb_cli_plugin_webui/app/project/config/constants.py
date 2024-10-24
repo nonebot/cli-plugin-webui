@@ -3,3 +3,4 @@ class ErrorCode:
     ENV_NOT_FOUND = "环境未找到"
     CONFIG_NOT_FOUND = "配置未找到"
     BASE_ENV_CANNOT_BE_DELETED = "基础环境不能被删除"
+    CONFIG_PARSE_ERROR = "配置解析错误"
