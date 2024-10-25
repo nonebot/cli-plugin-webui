@@ -1,3 +1,4 @@
+import re
 import json
 from pathlib import Path
 from typing import List, Optional
@@ -21,7 +22,13 @@ async def get_nonebot_plugin_list(
     raw_content = await run_python_script(
         python_path, await t.render_async(toml_path=config_file), cwd
     )
-    return raw_content.split(",")
+
+    matches = re.findall(r"nonebot_plugins:\[(.*?)\]", raw_content)
+    result = list()
+    if matches:
+        result = matches[0].split(",")
+
+    return result
 
 
 async def get_nonebot_plugin_config_detail(
