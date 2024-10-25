@@ -8,7 +8,7 @@ const store = useSearchStore()
 <template>
   <div
     v-if="store.storeData.length > 0"
-    class="relative grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 grid-rows-auto gap-6"
+    class="relative grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 grid-rows-auto gap-6"
   >
     <div
       v-if="store.isRequesting"
