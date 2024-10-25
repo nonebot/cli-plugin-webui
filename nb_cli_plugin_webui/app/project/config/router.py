@@ -230,9 +230,6 @@ async def _update_project_config(
     - 说明:
         * `module_type` 仅作 WebUI 更新自身存储的实例信息，不会影响实例本体
     """
-
-    # TODO: 修复modify_config 中接受的 value 类型判断不准确。module_type 需重新考虑
-
     project_meta = project.read()
     target_config = data.k.split(":")[-1]
 
