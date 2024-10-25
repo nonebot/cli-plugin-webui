@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { ProjectService } from '@/client/api'
 import type { NoneBotProjectMeta } from '@/client/api'
@@ -31,13 +31,7 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
   const selectBot = (bot: NoneBotProjectMeta) => {
     selectedBot.value = bot
     localStorage.setItem('selectedBot', JSON.stringify(bot))
-    statusStore.update(
-      ID_OF_BOT_STATUS,
-      'badge-ghost',
-      `当前实例: ${selectedBot.value.project_name}`
-    )
-
-    statusStore.update(ID_OF_ENV_STATUS, 'badge-ghost', `当前环境: ${selectedBot.value.use_env}`)
+    toast.add('success', `已选择实例: ${bot.project_name}`, '', 5000)
   }
 
   const loadBots = async () => {
@@ -66,7 +60,6 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
 
     if (data && selectedBot.value) {
       selectedBot.value.use_env = env
-      statusStore.update(ID_OF_ENV_STATUS, 'badge-ghost', `当前环境: ${selectedBot.value.use_env}`)
     }
   }
 
@@ -75,15 +68,22 @@ export const useNoneBotStore = defineStore('nonebotStore', () => {
     selectedBot.value = JSON.parse(data) as NoneBotProjectMeta
   }
 
-  if (selectedBot.value) {
-    statusStore.update(
-      ID_OF_BOT_STATUS,
-      'badge-ghost',
-      `当前实例: ${selectedBot.value.project_name}`
-    )
+  watch(
+    () => selectedBot.value,
+    (bot) => {
+      if (bot) {
+        statusStore.update(ID_OF_BOT_STATUS, 'badge-ghost', `当前实例: ${bot.project_name}`)
+        statusStore.update(ID_OF_ENV_STATUS, 'badge-ghost', `当前环境: ${bot.use_env}`)
+      }
+    }
+  )
 
-    statusStore.update(ID_OF_ENV_STATUS, 'badge-ghost', `当前环境: ${selectedBot.value.use_env}`)
-  }
+  watch(
+    () => selectedBot.value?.use_env,
+    (env) => {
+      statusStore.update(ID_OF_ENV_STATUS, 'badge-ghost', `当前环境: ${env}`)
+    }
+  )
 
   return {
     bots,
