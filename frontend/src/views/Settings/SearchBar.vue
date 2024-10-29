@@ -46,7 +46,9 @@ const searchInputPlaceholder = () => {
 watch(
   () => settingsStore.searchInput,
   () => {
-    settingsStore.updateViewData(settingsStore.searchInput)
+    if (customStore.isInstantSearch || !settingsStore.searchInput) {
+      settingsStore.updateViewData(settingsStore.searchInput)
+    }
   }
 )
 
