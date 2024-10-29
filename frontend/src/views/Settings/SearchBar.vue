@@ -78,7 +78,6 @@ const moduleItems: moduleItem[] = [
   <DotenvManageModal ref="dotenvManageModal" />
 
   <div class="flex flex-col gap-4">
-    <!-- Search input -->
     <div class="w-full flex justify-center">
       <div class="p-2 pl-4 bg-base-200 rounded-box w-full lg:w-3/4 flex items-center gap-2">
         <input
@@ -94,7 +93,6 @@ const moduleItems: moduleItem[] = [
       </div>
     </div>
 
-    <!-- Search filter -->
     <div
       class="flex items-center justify-center md:justify-between flex-col md:flex-row gap-4 md:gap-0"
     >
