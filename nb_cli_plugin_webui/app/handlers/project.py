@@ -11,12 +11,14 @@ from nb_cli.config import SimpleInfo as CliSimpleInfo
 from nb_cli.config.parser import CONFIG_FILE_ENCODING
 
 from nb_cli_plugin_webui.app.utils.storage import get_data_file
+from nb_cli_plugin_webui.app.utils.openapi import resolve_references
 from nb_cli_plugin_webui.app.models.base import Plugin, ModuleInfo, NoneBotProjectMeta
 
-from .plugin import (
-    get_nonebot_plugin_list,
-    get_nonebot_plugin_detail,
-    get_nonebot_plugin_config_detail,
+from .nonebot import (
+    get_nonebot_loaded_config,
+    get_nonebot_loaded_plugins,
+    get_nonebot_plugin_metadata,
+    get_nonebot_plugin_config_schema,
 )
 
 PROJECT_DATA_FILE = "project.json"
@@ -152,25 +154,37 @@ class NoneBotProjectManager:
 
     async def update_plugin_config_schema(self) -> None:
         data = self.read()
-
         config_file = self.config_manager.config_file
-        plugins = await get_nonebot_plugin_list(
+
+        plugins = await get_nonebot_loaded_plugins(
             config_file, self.config_manager.python_path
         )
-
         cwd = config_file.parent
 
+        config = await get_nonebot_loaded_config(cwd, self.config_manager.python_path)
+
         for plugin in plugins:
-            raw_metadata = await get_nonebot_plugin_detail(
+            plugin_metadata = await get_nonebot_plugin_metadata(
+                plugin, cwd, self.config_manager.python_path
+            )
+            plugin_config_schema = await get_nonebot_plugin_config_schema(
                 plugin, cwd, self.config_manager.python_path
             )
 
-            config_detail = await get_nonebot_plugin_config_detail(
-                plugin, cwd, self.config_manager.python_path
-            )
-            raw_metadata["config"] = config_detail
+            plugin_config = resolve_references(plugin_config_schema)
+            for i in config:
+                if (
+                    plugin_config_schema["properties"].get(i) is None
+                    or config.get(i) is None
+                ):
+                    continue
 
-            metadata = Plugin.parse_obj(raw_metadata)
+                plugin_config_schema["properties"][i]["configured"] = config[i]
+                plugin_config_schema["properties"][i]["latest_change"] = ".env"
+
+            plugin_metadata["config"] = plugin_config
+
+            metadata = Plugin.parse_obj(plugin_metadata)
             if metadata.module_name == "unknown":
                 metadata.module_name = plugin
 
@@ -180,7 +194,7 @@ class NoneBotProjectManager:
             else:
                 for plugin in data.plugins:
                     if plugin.module_name == metadata.module_name:
-                        plugin.config = config_detail
+                        plugin.config = plugin_config
                         break
             self.store(data)
 

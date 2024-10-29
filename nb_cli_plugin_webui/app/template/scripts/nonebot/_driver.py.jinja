@@ -1,0 +1,9 @@
+{% macro get_nonebot_driver() %}
+import json
+import nonebot
+
+
+nonebot.logger.remove()
+nonebot.init()
+driver = nonebot.get_driver()
+{% endmacro %}

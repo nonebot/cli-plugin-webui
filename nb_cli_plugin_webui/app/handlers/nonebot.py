@@ -1,39 +1,86 @@
+import re
 import json
-import asyncio
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
-from nb_cli.handlers import create_process, get_default_python
+from nb_cli.handlers import get_default_python
+
+from nb_cli_plugin_webui.app.utils.process import run_python_script
 
 from . import templates
 
 
-async def get_nonebot_config_detail(
+def _findall(pattern, string) -> str:
+    matches = re.findall(pattern, string)
+    return matches[0] if matches else str()
+
+
+async def get_nonebot_loaded_plugins(
+    config_file: Path, python_path: Optional[str] = None
+) -> List[str]:
+    if python_path is None:
+        python_path = await get_default_python()
+
+    cwd = config_file.parent
+    t = templates.get_template("scripts/nonebot/get_nonebot_loaded_plugins.py.jinja")
+    raw_content = await run_python_script(
+        python_path, await t.render_async(toml_path=config_file), cwd
+    )
+
+    return _findall(r"nonebot_plugins:\s*(.*)", raw_content).split(",")
+
+
+async def get_nonebot_loaded_config(
     cwd: Optional[Path] = None, python_path: Optional[str] = None
 ):
     if python_path is None:
         python_path = await get_default_python()
 
-    t = templates.get_template("scripts/nonebot/get_nonebot_config_detail.py.jinja")
+    t = templates.get_template("scripts/nonebot/get_nonebot_loaded_config.py.jinja")
+    raw_content = await run_python_script(python_path, await t.render_async(), cwd)
 
-    proc = await create_process(
-        python_path,
-        "-c",
-        await t.render_async(),
-        cwd=cwd,
-        stdout=asyncio.subprocess.PIPE,
+    return json.loads(_findall(r"nonebot_loaded_config:\s*(.*)", raw_content))
+
+
+async def get_nonebot_self_config_schema(
+    cwd: Optional[Path] = None, python_path: Optional[str] = None
+):
+    if python_path is None:
+        python_path = await get_default_python()
+
+    t = templates.get_template(
+        "scripts/nonebot/get_nonebot_self_config_schema.py.jinja"
     )
-    stdout, _ = await proc.communicate()
-    parsed_stdout = json.loads(stdout.strip())
+    raw_content = await run_python_script(python_path, await t.render_async(), cwd)
 
-    config_schema = parsed_stdout["schema"]
-    config_set = parsed_stdout["config"]
+    return json.loads(_findall(r"nonebot_self_config_schema:\s*(.*)", raw_content))
 
-    for i in config_set:
-        if config_schema["properties"].get(i) is None:
-            continue
 
-        config_schema["properties"][i]["configured"] = config_set[i]
-        config_schema["properties"][i]["latest_change"] = ".env"
+async def get_nonebot_plugin_config_schema(
+    plugin: str, cwd: Optional[Path] = None, python_path: Optional[str] = None
+):
+    if python_path is None:
+        python_path = await get_default_python()
 
-    return config_schema
+    t = templates.get_template(
+        "scripts/nonebot/get_nonebot_plugin_config_schema.py.jinja"
+    )
+    raw_content = await run_python_script(
+        python_path, await t.render_async(plugin=plugin), cwd
+    )
+
+    return json.loads(_findall(r"nonebot_plugin_config_schema:\s*(.*)", raw_content))
+
+
+async def get_nonebot_plugin_metadata(
+    plugin: str, cwd: Optional[Path] = None, python_path: Optional[str] = None
+):
+    if python_path is None:
+        python_path = await get_default_python()
+
+    t = templates.get_template("scripts/nonebot/get_nonebot_plugin_metadata.py.jinja")
+    raw_content = await run_python_script(
+        python_path, await t.render_async(plugin=plugin), cwd
+    )
+
+    return json.loads(_findall(r"nonebot_plugin_metadata:\s*(.*)", raw_content))

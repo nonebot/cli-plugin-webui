@@ -1,4 +1,4 @@
-from nb_cli_plugin_webui.app.exceptions import NotFound, BadRequest
+from nb_cli_plugin_webui.app.exceptions import NotFound, BadRequest, BaseServerException
 
 from .constants import ErrorCode
 
@@ -21,3 +21,7 @@ class BaseEnvCannotBeDeleted(BadRequest):
 
 class ConfigParseError(BadRequest):
     detail = ErrorCode.CONFIG_PARSE_ERROR
+
+
+class GetConfigError(BaseServerException):
+    detail = ErrorCode.GET_CONFIG_ERROR

@@ -4,3 +4,4 @@ class ErrorCode:
     CONFIG_NOT_FOUND = "配置未找到"
     BASE_ENV_CANNOT_BE_DELETED = "基础环境不能被删除"
     CONFIG_PARSE_ERROR = "配置解析错误"
+    GET_CONFIG_ERROR = "获取配置错误"

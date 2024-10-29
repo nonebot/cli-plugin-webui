@@ -4,14 +4,16 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List
 
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import Depends, APIRouter
 
 from nb_cli_plugin_webui.app.logging import logger as log
 from nb_cli_plugin_webui.app.models.types import ModuleType
 from nb_cli_plugin_webui.app.models.base import NoneBotProjectMeta
+from nb_cli_plugin_webui.app.utils.openapi import resolve_references
 from nb_cli_plugin_webui.app.handlers import (
     NoneBotProjectManager,
-    get_nonebot_config_detail,
+    get_nonebot_loaded_config,
+    get_nonebot_self_config_schema,
 )
 
 from .utils import config_child_parser
@@ -20,6 +22,7 @@ from .exceptions import (
     EnvExists,
     EnvNotFound,
     ConfigNotFound,
+    GetConfigError,
     ConfigParseError,
     BaseEnvCannotBeDeleted,
 )
@@ -155,19 +158,26 @@ async def _get_project_nonebot_config(
     - 获取 NoneBot 实例配置信息
     """
     project_meta = project.read()
+
     try:
-        config_detail = await get_nonebot_config_detail(
+        config = await get_nonebot_loaded_config(
+            Path(project_meta.project_dir), project.config_manager.python_path
+        )
+        config_schema = await get_nonebot_self_config_schema(
             Path(project_meta.project_dir), project.config_manager.python_path
         )
     except Exception as err:
-        log.error(f"Get nonebot config detail failed: {err}")
-        log.exception(err)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"获取 NoneBot 配置信息失败: {err}",
-        )
+        log.error(f"Get nonebot config failed: {err}")
+        raise GetConfigError()
 
-    config_props = config_detail["properties"]
+    config_schema = resolve_references(config_schema)
+    for i in config:
+        if config_schema["properties"].get(i) is None or config.get(i) is None:
+            continue
+
+        config_schema["properties"][i]["configured"] = config[i]
+
+    config_props = config_schema["properties"]
     cache_list: List[ModuleConfigChild] = list()
     for prop in config_props:
         detail = config_child_parser(prop, config_props[prop])
@@ -175,7 +185,7 @@ async def _get_project_nonebot_config(
 
     result = ModuleConfigFather(
         title="NoneBot Config",
-        description=config_detail.get("description", str()),
+        description=config.get("description", str()),
         name="nonebot-config",
         module_type=ConfigType.PROJECT,
         properties=cache_list,
@@ -192,16 +202,37 @@ async def _get_project_nonebot_plugin_config(
     - 获取 NoneBot 实例中所有 NoneBot 插件设置信息
     """
     project_meta = project.read()
+
+    try:
+        config = await get_nonebot_loaded_config(
+            Path(project_meta.project_dir), project.config_manager.python_path
+        )
+    except Exception as err:
+        log.error(f"Get nonebot config failed: {err}")
+        raise GetConfigError()
+
     plugin_list = project_meta.plugins
     result: List[ModuleConfigFather] = list()
     for plugin in plugin_list:
-        config_detail = plugin.config
-        props = config_detail.get("properties")
-        if props is None:
+        plugin_config = plugin.config
+        if not plugin_config:
             continue
 
         cache_list: List[ModuleConfigChild] = list()
+        for i in config:
+            if plugin_config.get("properties") is None or plugin_config.get(i) is None:
+                continue
+
+            plugin_config["properties"][i]["configured"] = config[i]
+
+        props = plugin_config.get("properties")
+        if props is None:
+            continue
+
         for prop in props:
+            if _plugin_config := config.get(prop):
+                props[prop]["configured"] = _plugin_config
+
             detail = config_child_parser(prop, props[prop])
             cache_list.append(detail)
 

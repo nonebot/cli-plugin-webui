@@ -1,0 +1,5 @@
+{% from "scripts/nonebot/_driver.py.jinja" import get_nonebot_driver %}
+
+{{ get_nonebot_driver() }}
+
+print(f"nonebot_loaded_config:{driver.config.model_dump_json()}")
