@@ -99,7 +99,7 @@ const cancel = () => {
 
 <template>
   <dialog ref="dotenvManageModal" class="modal" @close="cancel()">
-    <div class="modal-box w-11/12 max-5-xl rounded-xl flex flex-col gap-4">
+    <div class="modal-box w-11/12 max-w-3xl rounded-xl flex flex-col gap-4">
       <h3 class="font-semibold text-lg">Dotenv 管理</h3>
 
       <table class="table table-sm">
