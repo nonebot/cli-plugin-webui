@@ -20,6 +20,7 @@
     "daisyui": "^4.7.2",
     "echarts": "^5.5.0",
     "material-symbols": "^0.16.0",
+    "monaco-editor": "^0.52.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.15",
     "vue-echarts": "^6.6.9",

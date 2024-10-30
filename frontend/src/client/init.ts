@@ -4,6 +4,7 @@ import router from '@/router'
 import { client, AuthService } from './api'
 import { useNoneBotStore, useToastStore } from '@/stores'
 import App from '@/App.vue'
+import './useMonacoWorker'
 
 const installVuePlugins = (app: VueAPP) => {
   app.use(createPinia())
