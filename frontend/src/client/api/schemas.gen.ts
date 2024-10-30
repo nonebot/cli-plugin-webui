@@ -382,7 +382,7 @@ export const HTTPValidationErrorSchema = {
 
 export const ItemSchema = {
   title: 'Item',
-  required: ['enum', 'type'],
+  required: ['type'],
   type: 'object',
   properties: {
     enum: {

@@ -5,6 +5,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useSettingsStore, type ModuleConfigType } from './client'
 import DotenvManageModal from './DotenvManageModal.vue'
 import { useRoute } from 'vue-router'
+import DotenvEditorModal from './DotenvEditorModal.vue'
 
 const customStore = useCustomStore()
 const settingsStore = useSettingsStore()
@@ -14,6 +15,7 @@ const route = useRoute()
 
 const searchInputElement = ref<HTMLInputElement>()
 const dotenvManageModal = ref<InstanceType<typeof DotenvManageModal> | null>()
+const dotenvEditorModal = ref<InstanceType<typeof DotenvEditorModal> | null>()
 
 onMounted(() => {
   settingsStore.searchInput = Array.isArray(route.query.search)
@@ -76,6 +78,7 @@ const moduleItems: moduleItem[] = [
 
 <template>
   <DotenvManageModal ref="dotenvManageModal" />
+  <DotenvEditorModal ref="dotenvEditorModal" :theme="customStore.currentTheme" />
 
   <div class="flex flex-col gap-4">
     <div class="w-full flex justify-center">
@@ -108,12 +111,16 @@ const moduleItems: moduleItem[] = [
         </a>
       </div>
 
-      <button class="btn btn-sm btn-outline btn-primary" @click="dotenvManageModal?.openModal()">
-        <div class="flex gap-1 items-center">
-          <span class="material-symbols-outlined text-base"> menu </span>
-          当前环境：{{ nonebotStore.selectedBot?.use_env || '未知' }}
-        </div>
-      </button>
+      <div class="flex items-center gap-2">
+        <button class="btn btn-sm btn-outline btn-primary" @click="dotenvManageModal?.openModal()">
+          <div class="flex gap-1 items-center">
+            <span class="material-symbols-outlined text-base"> menu </span>
+            当前环境：{{ nonebotStore.selectedBot?.use_env || '未知' }}
+          </div>
+        </button>
+
+        <button class="btn btn-sm" @click="dotenvEditorModal?.openModal()">编辑文件</button>
+      </div>
     </div>
   </div>
 </template>

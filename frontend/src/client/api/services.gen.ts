@@ -65,6 +65,12 @@ import type {
   UpdateProjectConfigV1ProjectConfigUpdatePostData,
   UpdateProjectConfigV1ProjectConfigUpdatePostError,
   UpdateProjectConfigV1ProjectConfigUpdatePostResponse,
+  GetDotenvFileV1ProjectConfigDotenvGetData,
+  GetDotenvFileV1ProjectConfigDotenvGetError,
+  GetDotenvFileV1ProjectConfigDotenvGetResponse,
+  UpdateDotenvFileV1ProjectConfigDotenvPutData,
+  UpdateDotenvFileV1ProjectConfigDotenvPutError,
+  UpdateDotenvFileV1ProjectConfigDotenvPutResponse,
   CreateProjectV1ProjectCreatePostData,
   CreateProjectV1ProjectCreatePostError,
   CreateProjectV1ProjectCreatePostResponse,
@@ -456,6 +462,40 @@ export class ProjectService {
     >({
       ...options,
       url: '/v1/project/config/update'
+    })
+  }
+
+  /**
+   * Get Dotenv File
+   * - 获取环境文件内容
+   */
+  public static getDotenvFileV1ProjectConfigDotenvGet<ThrowOnError extends boolean = false>(
+    options: Options<GetDotenvFileV1ProjectConfigDotenvGetData, ThrowOnError>
+  ) {
+    return (options?.client ?? client).get<
+      GetDotenvFileV1ProjectConfigDotenvGetResponse,
+      GetDotenvFileV1ProjectConfigDotenvGetError,
+      ThrowOnError
+    >({
+      ...options,
+      url: '/v1/project/config/dotenv'
+    })
+  }
+
+  /**
+   * Update Dotenv File
+   * - 更新环境文件内容
+   */
+  public static updateDotenvFileV1ProjectConfigDotenvPut<ThrowOnError extends boolean = false>(
+    options: Options<UpdateDotenvFileV1ProjectConfigDotenvPutData, ThrowOnError>
+  ) {
+    return (options?.client ?? client).put<
+      UpdateDotenvFileV1ProjectConfigDotenvPutResponse,
+      UpdateDotenvFileV1ProjectConfigDotenvPutError,
+      ThrowOnError
+    >({
+      ...options,
+      url: '/v1/project/config/dotenv'
     })
   }
 

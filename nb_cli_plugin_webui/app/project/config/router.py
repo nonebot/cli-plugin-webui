@@ -316,3 +316,40 @@ async def _update_project_config(
             return GenericResponse(detail="success")
 
     raise EnvNotFound()
+
+
+@router.get("/dotenv", response_model=GenericResponse[str])
+async def get_dotenv_file(
+    env: str,
+    project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
+) -> GenericResponse[str]:
+    """
+    - 获取环境文件内容
+    """
+    project_meta = project.read()
+    project_dir = Path(project_meta.project_dir)
+    env_file = project_dir / env
+    if not env_file.exists():
+        raise EnvNotFound()
+
+    return GenericResponse(detail=env_file.read_text(encoding="utf-8"))
+
+
+@router.put("/dotenv", response_model=GenericResponse[str])
+async def update_dotenv_file(
+    env: str,
+    data: str,
+    project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
+) -> GenericResponse[str]:
+    """
+    - 更新环境文件内容
+    """
+    project_meta = project.read()
+    project_dir = Path(project_meta.project_dir)
+    env_file = project_dir / env
+    if not env_file.exists():
+        raise EnvNotFound()
+
+    env_file.write_text(data, encoding="utf-8")
+
+    return GenericResponse(detail="success")

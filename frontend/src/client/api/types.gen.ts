@@ -102,7 +102,7 @@ export type HTTPValidationError = {
 }
 
 export type Item = {
-  enum: Array<unknown>
+  enum?: Array<unknown>
   type: string
 }
 
@@ -560,6 +560,29 @@ export type UpdateProjectConfigV1ProjectConfigUpdatePostData = {
 export type UpdateProjectConfigV1ProjectConfigUpdatePostResponse = GenericResponse_str_
 
 export type UpdateProjectConfigV1ProjectConfigUpdatePostError = HTTPValidationError
+
+export type GetDotenvFileV1ProjectConfigDotenvGetData = {
+  query: {
+    env: string
+    project_id: string
+  }
+}
+
+export type GetDotenvFileV1ProjectConfigDotenvGetResponse = GenericResponse_str_
+
+export type GetDotenvFileV1ProjectConfigDotenvGetError = HTTPValidationError
+
+export type UpdateDotenvFileV1ProjectConfigDotenvPutData = {
+  query: {
+    data: string
+    env: string
+    project_id: string
+  }
+}
+
+export type UpdateDotenvFileV1ProjectConfigDotenvPutResponse = GenericResponse_str_
+
+export type UpdateDotenvFileV1ProjectConfigDotenvPutError = HTTPValidationError
 
 export type CreateProjectV1ProjectCreatePostData = {
   body: CreateProjectData
