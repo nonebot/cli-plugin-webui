@@ -29,6 +29,12 @@ export const useCustomStore = defineStore('customStore', () => {
     }
   }
 
+  const toggleTheme = (theme: 'light' | 'dark') => {
+    currentTheme.value = theme
+    localStorage.setItem('theme', theme)
+    document.documentElement.setAttribute('data-theme', theme)
+  }
+
   const isThemeFollowSystem = ref(true)
 
   data = localStorage.getItem('isThemeFollowSystem')
@@ -41,20 +47,19 @@ export const useCustomStore = defineStore('customStore', () => {
     localStorage.setItem('isThemeFollowSystem', isThemeFollowSystem.value ? '1' : '0')
   }
 
-  const currentTheme = ref('light')
+  const currentTheme = ref<string>('light')
 
-  data = localStorage.getItem('theme')
-  if (data) {
-    currentTheme.value = data
-    if (!isThemeFollowSystem.value) {
-      document.documentElement.setAttribute('data-theme', currentTheme.value)
+  data = localStorage.getItem('theme') ?? 'light'
+  const sysTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+
+  if (isThemeFollowSystem.value) {
+    toggleTheme(sysTheme)
+  } else {
+    if (data) {
+      toggleTheme(data as 'light' | 'dark')
+    } else {
+      toggleTheme(sysTheme)
     }
-  }
-
-  const toggleTheme = (theme: 'light' | 'dark') => {
-    currentTheme.value = theme
-    localStorage.setItem('theme', theme)
-    document.documentElement.setAttribute('data-theme', theme)
   }
 
   const isInstantSearch = ref(false)
