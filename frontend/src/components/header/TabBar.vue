@@ -44,14 +44,14 @@ const operation = (route: NavItem) => {
 </script>
 
 <template>
-  <div role="tablist" class="tabs tabs-lifted justify-start">
+  <div role="tablist" class="tabs tabs-lifted justify-start overflow-x-auto !flex">
     <TransitionGroup>
       <a
         v-for="(i, index) in store.viewHistory"
         :key="i.name"
         role="tab"
         :class="{
-          'tab flex gap-2 hover:bg-primary/[.2] transition !border-b-0': true,
+          'tab flex gap-2 hover:bg-primary/[.2] transition !border-b-0 shrink-0': true,
           '[--tab-bg:oklch(var(--b2))] tab-active': isCurrentRoute(i.routeData.path)
         }"
         @click="operation(i)"
@@ -87,5 +87,9 @@ const operation = (route: NavItem) => {
 .tabs-lifted > .tab.tab-active:not(.tab-disabled):not([disabled]):before,
 .tabs-lifted > .tab:is(input:checked):before {
   z-index: 0;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 </style>
