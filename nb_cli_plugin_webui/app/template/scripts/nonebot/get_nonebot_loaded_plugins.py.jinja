@@ -13,4 +13,4 @@ def get_loaded_plugins(toml_path: str):
 
 plugins = get_loaded_plugins("{{ toml_path }}")
 if plugins:
-    print(f"nonebot_plugins:[{','.join([plugin.module_name for plugin in plugins])}]")
+    print(f"nonebot_plugins:{','.join([plugin.module_name for plugin in plugins])}")
