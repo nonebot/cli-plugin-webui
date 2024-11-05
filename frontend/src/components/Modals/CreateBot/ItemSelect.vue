@@ -1,55 +1,55 @@
 <script setup lang="ts" generic="T extends Driver | Adapter">
-import { type Driver, type Adapter, type ModuleType } from '@/client/api'
-import { ref, watch, type Ref } from 'vue'
-import { limitContentShow } from '@/client/utils'
-import { useCreateBotStore } from '.'
+import { type Driver, type Adapter, type ModuleType } from "@/client/api";
+import { ref, watch, type Ref } from "vue";
+import { limitContentShow } from "@/client/utils";
+import { useCreateBotStore } from ".";
 
-const props = defineProps<{ data: T[]; dataType: ModuleType }>()
+const props = defineProps<{ data: T[]; dataType: ModuleType }>();
 
-const store = useCreateBotStore()
+const store = useCreateBotStore();
 
 const currentPage = ref(0),
   maxPage = ref(0),
   rawData = ref<T[]>([]) as Ref<T[]>,
-  showData = ref<T[]>([]) as Ref<T[]>
+  showData = ref<T[]>([]) as Ref<T[]>;
 
 watch(
   () => props.data,
   (value) => {
-    rawData.value = value
-    maxPage.value = Math.ceil(rawData.value.length / 12) - 1
-    updateData(currentPage.value)
-  }
-)
+    rawData.value = value;
+    maxPage.value = Math.ceil(rawData.value.length / 12) - 1;
+    updateData(currentPage.value);
+  },
+);
 
 const updateData = (page: number) => {
-  showData.value = rawData.value.slice(page * 12, (page + 1) * 12)
-}
+  showData.value = rawData.value.slice(page * 12, (page + 1) * 12);
+};
 
 const itemIsExisted = (data: T): number => {
-  if (props.dataType === 'driver') {
-    return store.drivers.findIndex((item) => item.name === data.name)
+  if (props.dataType === "driver") {
+    return store.drivers.findIndex((item) => item.name === data.name);
   } else {
-    return store.adapters.findIndex((item) => item.name === data.name)
+    return store.adapters.findIndex((item) => item.name === data.name);
   }
-}
+};
 
 const updateItem = (data: T) => {
-  const index = itemIsExisted(data)
+  const index = itemIsExisted(data);
   if (index === -1) {
-    if (props.dataType === 'driver') {
-      store.drivers.push(data as Driver)
+    if (props.dataType === "driver") {
+      store.drivers.push(data as Driver);
     } else {
-      store.adapters.push(data as Adapter)
+      store.adapters.push(data as Adapter);
     }
   } else {
-    if (props.dataType === 'driver') {
-      store.drivers.splice(index, 1)
+    if (props.dataType === "driver") {
+      store.drivers.splice(index, 1);
     } else {
-      store.adapters.splice(index, 1)
+      store.adapters.splice(index, 1);
     }
   }
-}
+};
 </script>
 
 <template>
@@ -58,7 +58,10 @@ const updateItem = (data: T) => {
       <div class="flex flex-col gap-4">
         <div class="h-full"></div>
         <button
-          :class="{ 'btn btn-sm btn-square btn-ghost': true, 'btn-disabled': currentPage <= 0 }"
+          :class="{
+            'btn btn-sm btn-square btn-ghost': true,
+            'btn-disabled': currentPage <= 0,
+          }"
           @click="currentPage--, updateData(currentPage)"
         >
           <span class="material-symbols-outlined"> expand_less </span>
@@ -67,7 +70,7 @@ const updateItem = (data: T) => {
         <button
           :class="{
             'btn btn-sm btn-square btn-ghost': true,
-            'btn-disabled': currentPage >= maxPage
+            'btn-disabled': currentPage >= maxPage,
           }"
           @click="currentPage++, updateData(currentPage)"
         >
@@ -96,8 +99,14 @@ const updateItem = (data: T) => {
               >
                 {{ limitContentShow(item.name!, 10) }}
               </a>
-              <div v-if="item.is_official" class="tooltip flex items-center" data-tip="官方认证">
-                <span class="material-symbols-outlined text-green-600"> check_circle </span>
+              <div
+                v-if="item.is_official"
+                class="tooltip flex items-center"
+                data-tip="官方认证"
+              >
+                <span class="material-symbols-outlined text-green-600">
+                  check_circle
+                </span>
               </div>
             </div>
             <div class="text-sm">{{ limitContentShow(item.desc!, 20) }}</div>
@@ -138,9 +147,9 @@ const updateItem = (data: T) => {
 <style scoped>
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 1,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 </style>

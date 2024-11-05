@@ -1,121 +1,129 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useSearchStore } from './client'
+import { ref, watch } from "vue";
+import { useSearchStore } from "./client";
 import {
   type ModuleType,
   type nb_cli_plugin_webui__app__models__types__SearchTag,
-  nb_cli_plugin_webui__app__models__types__SearchTagSchema
-} from '@/client/api'
-import { useCustomStore, useNoneBotStore } from '@/stores'
+  nb_cli_plugin_webui__app__models__types__SearchTagSchema,
+} from "@/client/api";
+import { useCustomStore, useNoneBotStore } from "@/stores";
 
 const store = useSearchStore(),
   nonebotStore = useNoneBotStore(),
-  customStore = useCustomStore()
+  customStore = useCustomStore();
 
 const searchInputElement = ref<HTMLInputElement>(),
-  authorInput = ref(''),
-  labelInput = ref('')
+  authorInput = ref(""),
+  labelInput = ref("");
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === '/' && !e.ctrlKey && !e.altKey && !e.metaKey) {
-    e.preventDefault()
-    searchInputElement.value?.focus()
+document.addEventListener("keydown", (e) => {
+  if (e.key === "/" && !e.ctrlKey && !e.altKey && !e.metaKey) {
+    e.preventDefault();
+    searchInputElement.value?.focus();
   }
-})
+});
 
 const checkIsDelete = (e: KeyboardEvent) => {
-  if (e.key === 'Backspace' && !store.searchInput) {
-    store.searchTags.pop()
+  if (e.key === "Backspace" && !store.searchInput) {
+    store.searchTags.pop();
   }
-}
+};
 
 const checkIsAddTag = (e: KeyboardEvent) => {
-  const addTag = (label: nb_cli_plugin_webui__app__models__types__SearchTag, text: string) => {
-    e.preventDefault()
-    store.searchTags.push({ label, text })
-    store.searchInput = ''
-  }
+  const addTag = (
+    label: nb_cli_plugin_webui__app__models__types__SearchTag,
+    text: string,
+  ) => {
+    e.preventDefault();
+    store.searchTags.push({ label, text });
+    store.searchInput = "";
+  };
 
-  const noTextLabel = ['official', 'valid', 'downloaded']
+  const noTextLabel = ["official", "valid", "downloaded"];
 
-  if (e.key === ' ') {
-    let input = store.searchInput
+  if (e.key === " ") {
+    let input = store.searchInput;
 
     for (let tag in nb_cli_plugin_webui__app__models__types__SearchTagSchema.enum) {
-      tag = tag.toLowerCase()
+      tag = tag.toLowerCase();
       if (input.startsWith(`${tag}:`) && input.length > tag.length + 1) {
         if (noTextLabel.includes(tag)) {
-          input = ''
+          input = "";
         }
 
         addTag(
           tag as nb_cli_plugin_webui__app__models__types__SearchTag,
-          input.slice(tag.length + 1)
-        )
-        return
+          input.slice(tag.length + 1),
+        );
+        return;
       }
     }
   }
-}
+};
 
 const checkIsSearch = (e: KeyboardEvent) => {
   if (
-    e.key === 'Enter' &&
+    e.key === "Enter" &&
     (store.searchInput || store.searchTags.length > 0) &&
     !customStore.isInstantSearch
   ) {
-    store.upDataBySearch(nonebotStore.selectedBot?.project_id!)
+    store.upDataBySearch(nonebotStore.selectedBot?.project_id!);
   }
-}
+};
 
 watch(
   () => [store.searchInput, store.searchTags.length],
   async () => {
-    if (customStore.isInstantSearch || (!store.searchInput && store.searchTags.length === 0)) {
-      await store.upDataBySearch(nonebotStore.selectedBot?.project_id!)
+    if (
+      customStore.isInstantSearch ||
+      (!store.searchInput && store.searchTags.length === 0)
+    ) {
+      await store.upDataBySearch(nonebotStore.selectedBot?.project_id!);
     }
-  }
-)
+  },
+);
 
 const searchInputPlaceholder = () => {
-  let text = '键入 / 以开始'
-  const noInstanceSearchText = ', 回车以搜索'
+  let text = "键入 / 以开始";
+  const noInstanceSearchText = ", 回车以搜索";
   if (!customStore.isInstantSearch) {
-    text += noInstanceSearchText
+    text += noInstanceSearchText;
   }
-  return text
-}
+  return text;
+};
 
 type moduleItem = {
-  label: ModuleType
-  tip: string
-}
+  label: ModuleType;
+  tip: string;
+};
 
 const moduleItems: moduleItem[] = [
-  { label: 'plugin', tip: '插件' },
-  { label: 'adapter', tip: '适配器' },
-  { label: 'driver', tip: '驱动器' }
-]
+  { label: "plugin", tip: "插件" },
+  { label: "adapter", tip: "适配器" },
+  { label: "driver", tip: "驱动器" },
+];
 
 type filterItem = {
-  label: nb_cli_plugin_webui__app__models__types__SearchTag
-  text?: string
-  tip: string
-}
+  label: nb_cli_plugin_webui__app__models__types__SearchTag;
+  text?: string;
+  tip: string;
+};
 
 const filterItems: filterItem[] = [
-  { label: 'official', tip: '官方认证' },
-  { label: 'valid', tip: '测试通过' },
-  { label: 'downloaded', tip: '已下载' },
-  { label: 'latest', text: 'week', tip: '最近一周' },
-  { label: 'latest', text: 'month', tip: '最近一月' }
-]
+  { label: "official", tip: "官方认证" },
+  { label: "valid", tip: "测试通过" },
+  { label: "downloaded", tip: "已下载" },
+  { label: "latest", text: "week", tip: "最近一周" },
+  { label: "latest", text: "month", tip: "最近一月" },
+];
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
     <div class="w-full flex justify-center">
-      <div class="p-2 pl-4 bg-base-200 rounded-box w-full lg:w-3/4 flex items-center gap-2">
+      <div
+        class="p-2 pl-4 bg-base-200 rounded-box w-full lg:w-3/4 flex items-center gap-2"
+      >
         <div class="w-full flex flex-wrap items-center gap-1">
           <div
             v-for="tag in store.searchTags"
@@ -148,7 +156,9 @@ const filterItems: filterItem[] = [
       </div>
     </div>
 
-    <div class="flex justify-center md:justify-between flex-wrap md:flex-row gap-4 md:gap-0">
+    <div
+      class="flex justify-center md:justify-between flex-wrap md:flex-row gap-4 md:gap-0"
+    >
       <div role="tablist" class="tabs tabs-boxed">
         <a
           v-for="m in moduleItems"
@@ -179,7 +189,10 @@ const filterItems: filterItem[] = [
               >
                 <a
                   :class="{
-                    active: store.isTagExisted({ label: filter.label, text: filter.text })
+                    active: store.isTagExisted({
+                      label: filter.label,
+                      text: filter.text,
+                    }),
                   }"
                 >
                   {{ filter.tip }}
@@ -204,7 +217,7 @@ const filterItems: filterItem[] = [
               @keydown.enter="
                 store.updateTag({
                   label: 'author',
-                  text: authorInput
+                  text: authorInput,
                 }),
                   (authorInput = '')
               "
@@ -227,7 +240,7 @@ const filterItems: filterItem[] = [
               @keydown.enter="
                 store.updateTag({
                   label: 'tag',
-                  text: labelInput
+                  text: labelInput,
                 }),
                   (labelInput = '')
               "

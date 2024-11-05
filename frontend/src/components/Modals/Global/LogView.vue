@@ -1,91 +1,91 @@
 <script setup lang="ts">
-import type { ProcessLog } from '@/client/api'
-import { generateURLForWebUI } from '@/client/utils'
-import { useCustomStore } from '@/stores'
-import { useWebSocket } from '@vueuse/core'
-import { onUnmounted, ref, watch } from 'vue'
+import type { ProcessLog } from "@/client/api";
+import { generateURLForWebUI } from "@/client/utils";
+import { useCustomStore } from "@/stores";
+import { useWebSocket } from "@vueuse/core";
+import { onUnmounted, ref, watch } from "vue";
 
-const store = useCustomStore()
+const store = useCustomStore();
 
 const props = defineProps<{
-  logKey: string
-}>()
+  logKey: string;
+}>();
 
-const emit = defineEmits(['retry', 'finished'])
+const emit = defineEmits(["retry", "finished"]);
 
-const logViewModal = ref<HTMLDialogElement>()
+const logViewModal = ref<HTMLDialogElement>();
 
 defineExpose({
   openModal: () => {
-    logViewModal.value?.showModal()
+    logViewModal.value?.showModal();
   },
   closeModal: () => {
-    logViewModal.value?.close()
-  }
-})
+    logViewModal.value?.close();
+  },
+});
 
 const logData = ref<ProcessLog[]>([]),
   logContainer = ref<HTMLElement>(),
   isFailed = ref(false),
-  isInstalling = ref(false)
+  isInstalling = ref(false);
 
 const { status, data, close, open } = useWebSocket<ProcessLog>(
-  generateURLForWebUI('/v1/process/log/ws', true),
+  generateURLForWebUI("/v1/process/log/ws", true),
   {
     immediate: false,
     onConnected(ws) {
-      const token = localStorage.getItem('token') ?? ''
-      ws.send(token)
-      ws.send(JSON.stringify({ type: 'log', log_key: props.logKey }))
-    }
-  }
-)
+      const token = localStorage.getItem("token") ?? "";
+      ws.send(token);
+      ws.send(JSON.stringify({ type: "log", log_key: props.logKey }));
+    },
+  },
+);
 
 onUnmounted(() => {
-  close()
-})
+  close();
+});
 
 watch(
   () => status.value,
   (newValue) => {
-    isInstalling.value = newValue === 'OPEN'
+    isInstalling.value = newValue === "OPEN";
 
     if (store.isDebug) {
-      logData.value.push({ message: `WebSocket connection status: ${newValue}` })
+      logData.value.push({ message: `WebSocket connection status: ${newValue}` });
     }
-  }
-)
+  },
+);
 
 watch(
   () => data.value,
   (newValue) => {
-    if (!newValue) return
+    if (!newValue) return;
 
-    const data: ProcessLog = JSON.parse(newValue.toString())
+    const data: ProcessLog = JSON.parse(newValue.toString());
 
-    logData.value.push(data)
+    logData.value.push(data);
 
-    if (data.message === '❌ Failed!') {
-      isFailed.value = true
+    if (data.message === "❌ Failed!") {
+      isFailed.value = true;
     }
-    if (data.message === '✨ Done!') {
-      close()
+    if (data.message === "✨ Done!") {
+      close();
     }
 
     if (logContainer.value) {
-      logContainer.value.scrollTop = logContainer.value.scrollHeight
+      logContainer.value.scrollTop = logContainer.value.scrollHeight;
     }
-  }
-)
+  },
+);
 
 watch(
   () => props.logKey,
   (newValue) => {
-    if (!newValue) return
-    logData.value = []
-    open()
-  }
-)
+    if (!newValue) return;
+    logData.value = [];
+    open();
+  },
+);
 </script>
 
 <template>
@@ -102,10 +102,12 @@ watch(
               :class="{
                 'flex font-mono': true,
                 'bg-error/50': log.level === 'ERROR',
-                'bg-warning/50': log.level === 'WARNING'
+                'bg-warning/50': log.level === 'WARNING',
               }"
             >
-              <th v-if="log.time" class="sticky left-0 right-0 text-gray-500">{{ log.time }}</th>
+              <th v-if="log.time" class="sticky left-0 right-0 text-gray-500">
+                {{ log.time }}
+              </th>
               <td v-if="log.level" class="flex">{{ log.level }}</td>
               <td class="flex">{{ log.message }}</td>
             </tr>
@@ -132,7 +134,7 @@ watch(
         <button
           :class="{
             'btn btn-sm btn-primary text-base-100': true,
-            'btn-disabled': isFailed || isInstalling
+            'btn-disabled': isFailed || isInstalling,
           }"
           @click="emit('finished', true), logViewModal?.close()"
         >

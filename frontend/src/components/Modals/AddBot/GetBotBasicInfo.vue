@@ -1,45 +1,48 @@
 <script setup lang="ts">
-import { ProjectService } from '@/client/api'
-import { ref } from 'vue'
-import { useAddBotStore } from '.'
+import { ProjectService } from "@/client/api";
+import { ref } from "vue";
+import { useAddBotStore } from ".";
 
-const store = useAddBotStore()
+const store = useAddBotStore();
 
-const inputValue = ref('')
+const inputValue = ref("");
 
 const search = async () => {
   if (!inputValue.value) {
-    store.warningMessage = '请输入实例路径'
-    return
+    store.warningMessage = "请输入实例路径";
+    return;
   }
 
   const { data, error } = await ProjectService.checkProjectTomlV1ProjectCheckTomlPost({
     query: {
-      project_dir: inputValue.value
-    }
-  })
+      project_dir: inputValue.value,
+    },
+  });
   if (error) {
-    store.warningMessage = error.detail?.toString() ?? ''
+    store.warningMessage = error.detail?.toString() ?? "";
   }
 
   if (data) {
-    const detail = data.detail
-    store.projectName = detail.project_name
-    store.adapters = detail.adapters
-    store.plugins = detail.plugins
-    store.pluginDirs = detail.plugin_dirs
-    store.projectPath = inputValue.value
+    const detail = data.detail;
+    store.projectName = detail.project_name;
+    store.adapters = detail.adapters;
+    store.plugins = detail.plugins;
+    store.pluginDirs = detail.plugin_dirs;
+    store.projectPath = inputValue.value;
 
-    store.searchBotSuccess = true
-    store.warningMessage = ''
-    inputValue.value = ''
+    store.searchBotSuccess = true;
+    store.warningMessage = "";
+    inputValue.value = "";
   }
-}
+};
 </script>
 
 <template>
   <div class="flex flex-col items-center gap-8">
-    <div v-if="!store.searchBotSuccess" class="flex flex-col justify-center gap-4 w-full max-w-xs">
+    <div
+      v-if="!store.searchBotSuccess"
+      class="flex flex-col justify-center gap-4 w-full max-w-xs"
+    >
       <div class="form-control">
         <div class="label">
           <span class="label-text">实例绝对路径</span>
@@ -64,11 +67,11 @@ const search = async () => {
       <div
         :class="{
           'flex gap-4 rounded-lg p-4 bg-base-200': true,
-          'opacity-50': !store.adapters.length
+          'opacity-50': !store.adapters.length,
         }"
       >
         <span class="font-semibold">
-          {{ store.adapters.length ? '已有适配器:' : '未找到适配器' }}
+          {{ store.adapters.length ? "已有适配器:" : "未找到适配器" }}
         </span>
         <div class="flex items-center flex-wrap gap-2">
           <span
@@ -85,11 +88,11 @@ const search = async () => {
       <div
         :class="{
           'flex gap-4 rounded-lg p-4 bg-base-200': true,
-          'opacity-50': !store.plugins.length
+          'opacity-50': !store.plugins.length,
         }"
       >
         <span class="font-semibold">
-          {{ store.plugins.length ? '已有插件:' : '未找到插件' }}
+          {{ store.plugins.length ? "已有插件:" : "未找到插件" }}
         </span>
         <div class="flex items-center flex-wrap gap-2">
           <span
@@ -106,11 +109,11 @@ const search = async () => {
       <div
         :class="{
           'flex gap-4 rounded-lg p-4 bg-base-200': true,
-          'opacity-50': !store.pluginDirs.length
+          'opacity-50': !store.pluginDirs.length,
         }"
       >
         <span class="font-semibold">
-          {{ store.pluginDirs.length ? '已有插件目录:' : '未找到插件目录' }}
+          {{ store.pluginDirs.length ? "已有插件目录:" : "未找到插件目录" }}
         </span>
         <div class="flex items-center flex-wrap gap-2">
           <span
@@ -144,7 +147,7 @@ const search = async () => {
         <button
           :class="{
             'btn btn-sm btn-primary text-base-100': true,
-            'btn-disabled': !store.searchBotSuccess
+            'btn-disabled': !store.searchBotSuccess,
           }"
           @click="store.step++"
         >

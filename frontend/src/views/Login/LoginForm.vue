@@ -1,51 +1,51 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { client, AuthService } from '@/client/api'
-import router from '@/router'
-import { useNoneBotStore, useToastStore } from '@/stores'
+import { ref } from "vue";
+import { client, AuthService } from "@/client/api";
+import router from "@/router";
+import { useNoneBotStore, useToastStore } from "@/stores";
 
-const store = useToastStore()
-const nonebotStore = useNoneBotStore()
+const store = useToastStore();
+const nonebotStore = useNoneBotStore();
 
-const token = ref(''),
+const token = ref(""),
   isDebug = ref(false),
-  host = ref(''),
-  port = ref('')
+  host = ref(""),
+  port = ref("");
 
-const date = new Date()
+const date = new Date();
 
 const login = async () => {
   if (isDebug.value) {
-    const baseUrl = `//${host.value}:${port.value}/api`
+    const baseUrl = `//${host.value}:${port.value}/api`;
     client.setConfig({
-      baseUrl: baseUrl
-    })
-    localStorage.setItem('isDebug', '1')
-    localStorage.setItem('debugUrl', baseUrl)
+      baseUrl: baseUrl,
+    });
+    localStorage.setItem("isDebug", "1");
+    localStorage.setItem("debugUrl", baseUrl);
   }
 
   const { data, error } = await AuthService.authTokenV1AuthLoginPost({
     body: {
       token: token.value,
-      mark: date.toISOString()
-    }
-  })
+      mark: date.toISOString(),
+    },
+  });
 
   if (error) {
-    store.add('error', `错误: ${error.detail?.toString()}`, '', 5000)
+    store.add("error", `错误: ${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    localStorage.setItem('token', data.detail)
+    localStorage.setItem("token", data.detail);
     client.interceptors.request.use((request) => {
-      request.headers.set('Authorization', `Bearer ${data.detail}`)
-      return request
-    })
-    router.push('/')
-    await nonebotStore.loadBots()
-    store.add('success', '登陆成功', '', 5000)
+      request.headers.set("Authorization", `Bearer ${data.detail}`);
+      return request;
+    });
+    router.push("/");
+    await nonebotStore.loadBots();
+    store.add("success", "登陆成功", "", 5000);
   }
-}
+};
 </script>
 
 <template>

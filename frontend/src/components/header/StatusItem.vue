@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useStatusStore } from '@/stores'
+import { useStatusStore } from "@/stores";
 
-const statusStore = useStatusStore()
+const statusStore = useStatusStore();
 </script>
 
 <template>

@@ -1,67 +1,73 @@
 <script setup lang="ts">
-import router from '@/router'
-import { useNoneBotStore } from '@/stores'
-import { computed, ref, type ComputedRef } from 'vue'
+import router from "@/router";
+import { useNoneBotStore } from "@/stores";
+import { computed, ref, type ComputedRef } from "vue";
 
 type detailItem = {
-  title: string
-  details?: ComputedRef<string[]>
-  editTo?: string
-  key?: string
-}
+  title: string;
+  details?: ComputedRef<string[]>;
+  editTo?: string;
+  key?: string;
+};
 
-const store = useNoneBotStore()
+const store = useNoneBotStore();
 
 const detailShowModal = ref<HTMLDialogElement>(),
-  detailShowModalTitle = ref(''),
-  detailShowModalContent = ref<string[]>([])
+  detailShowModalTitle = ref(""),
+  detailShowModalContent = ref<string[]>([]);
 
 const basicItems: detailItem[] = [
   {
-    title: '实例ID',
-    details: computed(() => [store.selectedBot?.project_id ?? 'unknown'])
+    title: "实例ID",
+    details: computed(() => [store.selectedBot?.project_id ?? "unknown"]),
   },
   {
-    title: '实例名称',
-    details: computed(() => [store.selectedBot?.project_name ?? 'unknown'])
+    title: "实例名称",
+    details: computed(() => [store.selectedBot?.project_name ?? "unknown"]),
   },
   {
-    title: '实例路径',
-    details: computed(() => [store.selectedBot?.project_dir ?? 'unknown'])
+    title: "实例路径",
+    details: computed(() => [store.selectedBot?.project_dir ?? "unknown"]),
   },
   {
-    title: '实例 Python 镜像',
-    details: computed(() => [store.selectedBot?.mirror_url ?? 'unknown'])
-  }
-]
+    title: "实例 Python 镜像",
+    details: computed(() => [store.selectedBot?.mirror_url ?? "unknown"]),
+  },
+];
 
 const installedItems: detailItem[] = [
   {
-    key: 'adapter',
-    title: '已安装适配器',
-    details: computed(() => store.selectedBot?.adapters.map((adapter) => adapter.name!) ?? []),
-    editTo: 'adapters'
+    key: "adapter",
+    title: "已安装适配器",
+    details: computed(
+      () => store.selectedBot?.adapters.map((adapter) => adapter.name!) ?? [],
+    ),
+    editTo: "adapters",
   },
   {
-    key: 'driver',
-    title: '已安装驱动',
-    details: computed(() => store.selectedBot?.drivers.map((driver) => driver.name!) ?? []),
-    editTo: 'drivers'
+    key: "driver",
+    title: "已安装驱动",
+    details: computed(
+      () => store.selectedBot?.drivers.map((driver) => driver.name!) ?? [],
+    ),
+    editTo: "drivers",
   },
   {
-    key: 'plugin',
-    title: '已安装插件',
-    details: computed(() => store.selectedBot?.plugins.map((plugin) => plugin.name!) ?? []),
-    editTo: 'plugins'
-  }
-]
+    key: "plugin",
+    title: "已安装插件",
+    details: computed(
+      () => store.selectedBot?.plugins.map((plugin) => plugin.name!) ?? [],
+    ),
+    editTo: "plugins",
+  },
+];
 
 const openModal = (key: string) => {
-  const target = installedItems.find((item) => item.key === key)
-  detailShowModalTitle.value = target?.title ?? ''
-  detailShowModalContent.value = target?.details?.value ?? []
-  detailShowModal.value?.showModal()
-}
+  const target = installedItems.find((item) => item.key === key);
+  detailShowModalTitle.value = target?.title ?? "";
+  detailShowModalContent.value = target?.details?.value ?? [];
+  detailShowModal.value?.showModal();
+};
 </script>
 
 <template>
@@ -87,7 +93,9 @@ const openModal = (key: string) => {
         </div>
 
         <div class="flex items-center gap-2">
-          <button class="btn btn-sm btn-ghost" @click="detailShowModal?.close()">关闭</button>
+          <button class="btn btn-sm btn-ghost" @click="detailShowModal?.close()">
+            关闭
+          </button>
         </div>
       </div>
     </div>
@@ -116,7 +124,9 @@ const openModal = (key: string) => {
               <div class="badge">{{ item.details?.value.length }} 个</div>
             </td>
             <td class="flex justify-end pr-0">
-              <button class="btn btn-sm btn-ghost" @click="openModal(item.key!)">详细</button>
+              <button class="btn btn-sm btn-ghost" @click="openModal(item.key!)">
+                详细
+              </button>
             </td>
           </tr>
         </tbody>

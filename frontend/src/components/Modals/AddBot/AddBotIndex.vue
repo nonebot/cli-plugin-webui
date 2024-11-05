@@ -1,58 +1,62 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import GetBotBasicInfo from './GetBotBasicInfo.vue'
-import MirrorSelect from './MirrorSelect.vue'
-import InstallationItem from './InstallationItem.vue'
-import { useAddBotStore } from '.'
+import { ref } from "vue";
+import GetBotBasicInfo from "./GetBotBasicInfo.vue";
+import MirrorSelect from "./MirrorSelect.vue";
+import InstallationItem from "./InstallationItem.vue";
+import { useAddBotStore } from ".";
 
-const store = useAddBotStore()
+const store = useAddBotStore();
 
-const addBotModal = ref<HTMLDialogElement>()
+const addBotModal = ref<HTMLDialogElement>();
 
 defineExpose({
   openModal: () => addBotModal.value?.showModal(),
-  closeModal: () => addBotModal.value?.close()
-})
+  closeModal: () => addBotModal.value?.close(),
+});
 
 interface StepItem {
-  title: string
-  pass: () => boolean
-  component?: any
+  title: string;
+  pass: () => boolean;
+  component?: any;
 }
 
 const steps: StepItem[] = [
   {
-    title: '信息获取',
+    title: "信息获取",
     pass: () => true,
-    component: GetBotBasicInfo
+    component: GetBotBasicInfo,
   },
   {
-    title: '镜像选择',
+    title: "镜像选择",
     pass: () => store.searchBotSuccess,
-    component: MirrorSelect
+    component: MirrorSelect,
   },
   {
-    title: '确认&安装依赖',
-    pass: () => store.pythonMirror !== '',
-    component: InstallationItem
-  }
-]
+    title: "确认&安装依赖",
+    pass: () => store.pythonMirror !== "",
+    component: InstallationItem,
+  },
+];
 </script>
 
 <template>
   <dialog ref="addBotModal" class="modal" @close="store.reset()">
-    <div class="modal-box overflow-hidden w-11/12 max-w-5xl rounded-xl flex flex-col gap-4">
+    <div
+      class="modal-box overflow-hidden w-11/12 max-w-5xl rounded-xl flex flex-col gap-4"
+    >
       <h3 class="font-semibold text-lg">添加 NoneBot 实例</h3>
       <div class="w-full flex justify-center">
         <ul class="steps w-full xl:w-3/4 gap-4">
           <li
             v-for="(step, index) in steps"
             :key="step.title"
-            :role="step.pass() && !store.isInstalling && !store.addBotSuccess ? 'button' : ''"
+            :role="
+              step.pass() && !store.isInstalling && !store.addBotSuccess ? 'button' : ''
+            "
             :data-content="index < store.step ? '✓' : index + 1"
             :class="{
               step: true,
-              'step-primary': index <= store.step
+              'step-primary': index <= store.step,
             }"
             @click="
               step.pass() && !store.isInstalling && !store.addBotSuccess

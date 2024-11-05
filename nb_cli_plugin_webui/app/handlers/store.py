@@ -32,25 +32,21 @@ if TYPE_CHECKING:
     @overload
     async def load_module_data(
         module_type: Literal[ModuleType.PLUGIN],
-    ) -> List[Plugin]:
-        ...
+    ) -> List[Plugin]: ...
 
     @overload
     async def load_module_data(
         module_type: Literal[ModuleType.ADAPTER],
-    ) -> List[Adapter]:
-        ...
+    ) -> List[Adapter]: ...
 
     @overload
     async def load_module_data(
         module_type: Literal[ModuleType.DRIVER],
-    ) -> List[Driver]:
-        ...
+    ) -> List[Driver]: ...
 
     async def load_module_data(
         module_type: ModuleType,
-    ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
-        ...
+    ) -> Union[List[Plugin], List[Adapter], List[Driver]]: ...
 
 else:
 

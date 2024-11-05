@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { limitContentShow } from '@/client/utils'
-import FolderSelect from '@/components/Modals/Global/FolderSelect.vue'
-import { useCreateBotStore } from '.'
+import { ref } from "vue";
+import { limitContentShow } from "@/client/utils";
+import FolderSelect from "@/components/Modals/Global/FolderSelect.vue";
+import { useCreateBotStore } from ".";
 
-const store = useCreateBotStore()
+const store = useCreateBotStore();
 
-const folderSelectModal = ref<InstanceType<typeof FolderSelect> | null>()
+const folderSelectModal = ref<InstanceType<typeof FolderSelect> | null>();
 
 const acceptModalData = (data: string) => {
-  store.projectPath = data
-}
+  store.projectPath = data;
+};
 </script>
 
 <template>
@@ -38,7 +38,10 @@ const acceptModalData = (data: string) => {
           选择文件夹
         </button>
         <div class="label">
-          <span v-if="store.projectPath" class="label-text bg-base-300 p-1 rounded w-full">
+          <span
+            v-if="store.projectPath"
+            class="label-text bg-base-300 p-1 rounded w-full"
+          >
             当前选择: (Base Dir)/{{ limitContentShow(store.projectPath, 30) }}
           </span>
         </div>
@@ -46,14 +49,16 @@ const acceptModalData = (data: string) => {
     </div>
 
     <div class="w-full flex items-center">
-      <button class="btn btn-sm btn-primary text-base-100" @click="store.step--">上一步</button>
+      <button class="btn btn-sm btn-primary text-base-100" @click="store.step--">
+        上一步
+      </button>
 
       <div class="w-full"></div>
 
       <button
         :class="{
           'btn btn-sm btn-primary text-base-100': true,
-          'btn-disabled': !store.projectName.length || !store.projectPath.length
+          'btn-disabled': !store.projectName.length || !store.projectPath.length,
         }"
         @click="store.step++"
       >

@@ -1,83 +1,83 @@
 <script setup lang="ts">
-import { FileService, type FileInfo } from '@/client/api'
-import { covertTimestampToDateString, limitContentShow } from '@/client/utils'
-import { ref } from 'vue'
+import { FileService, type FileInfo } from "@/client/api";
+import { covertTimestampToDateString, limitContentShow } from "@/client/utils";
+import { ref } from "vue";
 
 const emit = defineEmits<{
-  selectFolder: [value: string]
-}>()
+  selectFolder: [value: string];
+}>();
 
-const folderSelectModal = ref<HTMLDialogElement>()
+const folderSelectModal = ref<HTMLDialogElement>();
 
 defineExpose({
   openModal: async () => {
-    folderSelectModal.value?.showModal()
+    folderSelectModal.value?.showModal();
 
-    await getFileList('.')
+    await getFileList(".");
   },
   closeModal: () => {
-    folderSelectModal.value?.close()
-  }
-})
+    folderSelectModal.value?.close();
+  },
+});
 
-const newFolderModal = ref<HTMLDialogElement>()
+const newFolderModal = ref<HTMLDialogElement>();
 
 const fileList = ref<FileInfo[]>([]),
-  newFolderName = ref(''),
-  currentPath = ref(''),
-  selectedFolder = ref('')
+  newFolderName = ref(""),
+  currentPath = ref(""),
+  selectedFolder = ref("");
 
 const getFileList = async (path: string) => {
   const { data } = await FileService.getFileListV1FileListGet({
     query: {
-      path: path
-    }
-  })
+      path: path,
+    },
+  });
 
   if (data) {
-    fileList.value = data.detail
+    fileList.value = data.detail;
   }
-}
+};
 
 const createFolder = async (folderName: string, path: string) => {
   const { data } = await FileService.createFileV1FileCreatePost({
     body: {
       name: folderName,
       path: path,
-      is_dir: true
-    }
-  })
+      is_dir: true,
+    },
+  });
 
   if (data) {
-    fileList.value = data.detail
-    newFolderName.value = ''
-    newFolderModal.value?.close()
+    fileList.value = data.detail;
+    newFolderName.value = "";
+    newFolderModal.value?.close();
   }
-}
+};
 
 const deleteFolder = async (path: string) => {
   const { data } = await FileService.deleteFileV1FileDeleteDelete({
     query: {
-      path: path
-    }
-  })
+      path: path,
+    },
+  });
 
   if (data) {
-    fileList.value = data.detail
+    fileList.value = data.detail;
   }
-}
+};
 
 const updateFileList = async (path: string, isFolder: boolean) => {
-  if (!isFolder) return
+  if (!isFolder) return;
 
-  currentPath.value = path
-  await getFileList(path)
-}
+  currentPath.value = path;
+  await getFileList(path);
+};
 
 const selectFolder = (path: string, isFolder: boolean) => {
-  if (!isFolder) return
-  selectedFolder.value = path
-}
+  if (!isFolder) return;
+  selectedFolder.value = path;
+};
 </script>
 
 <template>
@@ -99,7 +99,7 @@ const selectFolder = (path: string, isFolder: boolean) => {
                       .split('/')
                       .slice(0, index + 1)
                       .join('/'),
-                    true
+                    true,
                   )
                 "
               >
@@ -129,7 +129,7 @@ const selectFolder = (path: string, isFolder: boolean) => {
               >
                 <td class="flex items-center gap-1 shrink-0 whitespace-nowrap">
                   <span class="material-symbols-outlined">
-                    {{ file.is_dir ? 'folder' : 'draft' }}
+                    {{ file.is_dir ? "folder" : "draft" }}
                   </span>
                   <a class="hover:link" @click="updateFileList(file.path, file.is_dir)">
                     {{ limitContentShow(file.name, 10) }}
@@ -138,12 +138,14 @@ const selectFolder = (path: string, isFolder: boolean) => {
                 <td class="whitespace-nowrap">
                   {{ covertTimestampToDateString(file.modified_time) }}
                 </td>
-                <td class="whitespace-nowrap">{{ file.is_dir ? '文件夹' : '文件' }}</td>
+                <td class="whitespace-nowrap">{{ file.is_dir ? "文件夹" : "文件" }}</td>
                 <td class="flex items-center whitespace-nowrap">
                   <label class="swap">
                     <input type="checkbox" />
 
-                    <span class="swap-on fill-current material-symbols-outlined"> check </span>
+                    <span class="swap-on fill-current material-symbols-outlined">
+                      check
+                    </span>
 
                     <span
                       class="swap-off fill-current material-symbols-outlined"
@@ -171,9 +173,15 @@ const selectFolder = (path: string, isFolder: boolean) => {
 
       <div class="flex justify-between flex-col md:flex-row gap-4 md:gap-0">
         <div class="flex gap-4 justify-between md:justify-start">
-          <button class="btn btn-sm" @click="updateFileList(currentPath, true)">刷新</button>
-          <button class="btn btn-sm" @click="newFolderModal?.showModal">新建文件夹</button>
-          <button class="btn btn-sm" @click="selectFolder(currentPath, true)">选中当前目录</button>
+          <button class="btn btn-sm" @click="updateFileList(currentPath, true)">
+            刷新
+          </button>
+          <button class="btn btn-sm" @click="newFolderModal?.showModal">
+            新建文件夹
+          </button>
+          <button class="btn btn-sm" @click="selectFolder(currentPath, true)">
+            选中当前目录
+          </button>
         </div>
 
         <div class="flex gap-4 justify-end">
@@ -181,7 +189,7 @@ const selectFolder = (path: string, isFolder: boolean) => {
           <button
             :class="{
               'btn btn-sm btn-primary text-base-100': true,
-              'btn-disabled': !selectedFolder
+              'btn-disabled': !selectedFolder,
             }"
             @click="folderSelectModal?.close(), emit('selectFolder', selectedFolder)"
           >
@@ -208,7 +216,10 @@ const selectFolder = (path: string, isFolder: boolean) => {
           取消
         </button>
         <button
-          :class="{ 'btn btn-sm btn-primary text-base-100': true, 'btn-disabled': !newFolderName }"
+          :class="{
+            'btn btn-sm btn-primary text-base-100': true,
+            'btn-disabled': !newFolderName,
+          }"
           @click="createFolder(newFolderName, currentPath)"
         >
           确认
@@ -221,9 +232,9 @@ const selectFolder = (path: string, isFolder: boolean) => {
 <style scoped>
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 300,
-    'GRAD' 0,
-    'opsz' 24;
+    "FILL" 0,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 24;
 }
 </style>

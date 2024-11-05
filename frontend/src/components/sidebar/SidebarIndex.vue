@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import SideMenu from '@/components/sidebar/SideMenu.vue'
-import router from '@/router'
-import { useCustomStore } from '@/stores'
+import SideMenu from "@/components/sidebar/SideMenu.vue";
+import router from "@/router";
+import { useCustomStore } from "@/stores";
 
-const store = useCustomStore()
+const store = useCustomStore();
 </script>
 
 <template>
@@ -22,7 +22,7 @@ const store = useCustomStore()
         'fixed lg:relative top-0 left-0 h-full flex flex-col justify-between py-2 px-4 transition-all': true,
         '-translate-x-full lg:translate-x-0 bg-base-200 lg:bg-base-200/50 shadow-md': true,
         '!-translate-x-0': store.menuShow,
-        'lg:!w-20': store.menuMinify
+        'lg:!w-20': store.menuMinify,
       }"
       class="w-full md:w-1/2 lg:w-72"
     >
@@ -55,7 +55,7 @@ const store = useCustomStore()
         <button
           :class="{
             'btn btn-sm btn-square btn-ghost flex items-center justify-center': true,
-            'block lg:hidden': true
+            'block lg:hidden': true,
           }"
           @click="store.toggleMenuShow()"
         >
@@ -71,10 +71,10 @@ const store = useCustomStore()
 <style scoped>
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 300,
-    'GRAD' -25,
-    'opsz' 48;
+    "FILL" 0,
+    "wght" 300,
+    "GRAD" -25,
+    "opsz" 48;
 }
 
 .v-enter-active,

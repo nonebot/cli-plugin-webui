@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import ExtensionCard from './ExtensionCard.vue'
-import { useSearchStore } from './client'
+import ExtensionCard from "./ExtensionCard.vue";
+import { useSearchStore } from "./client";
 
-const store = useSearchStore()
+const store = useSearchStore();
 </script>
 
 <template>
