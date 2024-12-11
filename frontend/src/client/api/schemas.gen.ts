@@ -55,6 +55,11 @@ export const AdapterSchema = {
       type: 'boolean',
       default: false
     },
+    version: {
+      title: 'Version',
+      type: 'string',
+      default: '0.0.0'
+    },
     is_download: {
       title: 'Is Download',
       type: 'boolean',
@@ -238,6 +243,11 @@ export const DriverSchema = {
       type: 'boolean',
       default: false
     },
+    version: {
+      title: 'Version',
+      type: 'string',
+      default: '0.0.0'
+    },
     is_download: {
       title: 'Is Download',
       type: 'boolean',
@@ -304,6 +314,36 @@ export const GenericResponse_List_nb_cli_plugin_webui_app_handlers_process_schem
       }
     }
   } as const
+
+export const GenericResponse_List_nb_cli_plugin_webui_app_models_base_ModuleInfo__Schema = {
+  title: 'GenericResponse[List[nb_cli_plugin_webui.app.models.base.ModuleInfo]]',
+  required: ['detail'],
+  type: 'object',
+  properties: {
+    detail: {
+      title: 'Detail',
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__base__ModuleInfo'
+      }
+    }
+  }
+} as const
+
+export const GenericResponse_List_nb_cli_plugin_webui_app_models_base_Plugin__Schema = {
+  title: 'GenericResponse[List[nb_cli_plugin_webui.app.models.base.Plugin]]',
+  required: ['detail'],
+  type: 'object',
+  properties: {
+    detail: {
+      title: 'Detail',
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/nb_cli_plugin_webui__app__models__base__Plugin'
+      }
+    }
+  }
+} as const
 
 export const GenericResponse_List_str__Schema = {
   title: 'GenericResponse[List[str]]',
@@ -940,6 +980,11 @@ export const nb_cli_plugin_webui__app__models__base__ModuleInfoSchema = {
       type: 'boolean',
       default: false
     },
+    version: {
+      title: 'Version',
+      type: 'string',
+      default: '0.0.0'
+    },
     is_download: {
       title: 'Is Download',
       type: 'boolean',
@@ -1002,6 +1047,11 @@ export const nb_cli_plugin_webui__app__models__base__PluginSchema = {
       title: 'Is Official',
       type: 'boolean',
       default: false
+    },
+    version: {
+      title: 'Version',
+      type: 'string',
+      default: '0.0.0'
     },
     is_download: {
       title: 'Is Download',
@@ -1071,6 +1121,11 @@ export const nb_cli_plugin_webui__app__models__store__ModuleInfoSchema = {
       type: 'boolean',
       default: false
     },
+    version: {
+      title: 'Version',
+      type: 'string',
+      default: '0.0.0'
+    },
     is_download: {
       title: 'Is Download',
       type: 'boolean',
@@ -1087,7 +1142,7 @@ export const nb_cli_plugin_webui__app__models__store__ModuleInfoSchema = {
 
 export const nb_cli_plugin_webui__app__models__store__PluginSchema = {
   title: 'Plugin',
-  required: ['valid', 'time', 'version', 'skip_test'],
+  required: ['version', 'valid', 'time', 'skip_test'],
   type: 'object',
   properties: {
     module_name: {
@@ -1141,6 +1196,10 @@ export const nb_cli_plugin_webui__app__models__store__PluginSchema = {
       type: 'boolean',
       default: false
     },
+    version: {
+      title: 'Version',
+      type: 'string'
+    },
     is_download: {
       title: 'Is Download',
       type: 'boolean',
@@ -1167,10 +1226,6 @@ export const nb_cli_plugin_webui__app__models__store__PluginSchema = {
     },
     time: {
       title: 'Time',
-      type: 'string'
-    },
-    version: {
-      title: 'Version',
       type: 'string'
     },
     skip_test: {

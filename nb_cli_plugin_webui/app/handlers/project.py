@@ -10,12 +10,12 @@ from nb_cli.exceptions import ProjectNotFoundError
 from nb_cli.config import SimpleInfo as CliSimpleInfo
 from nb_cli.config.parser import CONFIG_FILE_ENCODING
 
+from nb_cli_plugin_webui.app.handlers import get_pkg_version
 from nb_cli_plugin_webui.app.utils.storage import get_data_file
 from nb_cli_plugin_webui.app.utils.openapi import resolve_references
 from nb_cli_plugin_webui.app.models.base import Plugin, ModuleInfo, NoneBotProjectMeta
 
 from .nonebot import (
-    get_nonebot_loaded_config,
     get_nonebot_loaded_plugins,
     get_nonebot_plugin_metadata,
     get_nonebot_plugin_config_schema,
@@ -120,7 +120,7 @@ class NoneBotProjectManager:
                 builtin_plugins=builtin_plugins,
             )
         )
-        await self.update_plugin_config_schema()
+        await self.update_plugin_config()
 
     def remove_project(self) -> None:
         data = self._load()
@@ -152,7 +152,7 @@ class NoneBotProjectManager:
                 break
         self.store(data)
 
-    async def update_plugin_config_schema(self) -> None:
+    async def update_plugin_config(self) -> None:
         data = self.read()
         config_file = self.config_manager.config_file
 
@@ -161,8 +161,7 @@ class NoneBotProjectManager:
         )
         cwd = config_file.parent
 
-        config = await get_nonebot_loaded_config(cwd, self.config_manager.python_path)
-
+        data.plugins = list()
         for plugin in plugins:
             plugin_metadata = await get_nonebot_plugin_metadata(
                 plugin, cwd, self.config_manager.python_path
@@ -172,36 +171,23 @@ class NoneBotProjectManager:
             )
 
             plugin_config = resolve_references(plugin_config_schema)
-            for i in config:
-                if (
-                    plugin_config_schema["properties"].get(i) is None
-                    or config.get(i) is None
-                ):
-                    continue
-
-                plugin_config_schema["properties"][i]["configured"] = config[i]
-                plugin_config_schema["properties"][i]["latest_change"] = ".env"
-
             plugin_metadata["config"] = plugin_config
+
+            pkg_version = await get_pkg_version(plugin, self.config_manager.python_path)
+            plugin_metadata["version"] = pkg_version
 
             metadata = Plugin.parse_obj(plugin_metadata)
             if metadata.module_name == "unknown":
                 metadata.module_name = plugin
 
-            installed_plugin = [i.module_name for i in data.plugins]
-            if metadata.module_name not in installed_plugin:
-                data.plugins.append(metadata)
-            else:
-                for plugin in data.plugins:
-                    if plugin.module_name == metadata.module_name:
-                        plugin.config = plugin_config
-                        break
-            self.store(data)
+            data.plugins.append(metadata)
+
+        self.store(data)
 
     async def add_plugin(self, plugin: Plugin) -> None:
         self.config_manager.add_plugin(plugin.module_name)
 
-        await self.update_plugin_config_schema()
+        await self.update_plugin_config()
 
     def remove_plugin(self, plugin: Plugin) -> None:
         self.config_manager.remove_plugin(plugin.module_name)

@@ -1,10 +1,11 @@
 import shutil
+from typing import List
 
 from fastapi import Depends, APIRouter
 
 from nb_cli_plugin_webui.app.logging import logger as log
 from nb_cli_plugin_webui.app.handlers import NoneBotProjectManager
-from nb_cli_plugin_webui.app.models.base import NoneBotProjectMeta
+from nb_cli_plugin_webui.app.models.base import Plugin, ModuleInfo, NoneBotProjectMeta
 
 from .exceptions import ProjectDeleteFailed
 from .config.router import router as config_router
@@ -91,3 +92,36 @@ async def check_project_toml(
     """
 
     return GenericResponse(detail=toml_data)
+
+
+@router.get("/plugins", response_model=GenericResponse[List[Plugin]])
+async def get_plugins(
+    project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
+) -> GenericResponse[List[Plugin]]:
+    """
+    - 获取实例的插件列表
+    """
+    project_metadata = project.read()
+    return GenericResponse(detail=project_metadata.plugins)
+
+
+@router.get("/adapters", response_model=GenericResponse[List[ModuleInfo]])
+async def get_adapters(
+    project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
+) -> GenericResponse[List[ModuleInfo]]:
+    """
+    - 获取实例的适配器列表
+    """
+    project_metadata = project.read()
+    return GenericResponse(detail=project_metadata.adapters)
+
+
+@router.get("/drivers", response_model=GenericResponse[List[ModuleInfo]])
+async def get_drivers(
+    project: NoneBotProjectManager = Depends(get_nonebot_project_manager),
+) -> GenericResponse[List[ModuleInfo]]:
+    """
+    - 获取实例的驱动器列表
+    """
+    project_metadata = project.read()
+    return GenericResponse(detail=project_metadata.drivers)

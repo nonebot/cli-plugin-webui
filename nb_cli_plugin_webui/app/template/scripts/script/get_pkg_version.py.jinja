@@ -1,0 +1,8 @@
+from importlib.metadata import version, PackageNotFoundError
+
+try:
+    pkg_version = version("{{ package }}")
+except PackageNotFoundError:
+    pkg_version = "0.0.0"
+
+print(pkg_version)

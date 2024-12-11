@@ -43,6 +43,15 @@ export const defaultRoutes: NavItem[] = [
     }
   },
   {
+    googleIcon: 'power',
+    name: '拓展管理',
+    routeData: {
+      path: '/extension',
+      name: 'ExtensionManage',
+      component: () => import('@/views/ExtensionManage/ExtensionManageIndex.vue')
+    }
+  },
+  {
     googleIcon: 'settings',
     name: '实例设置',
     routeData: {

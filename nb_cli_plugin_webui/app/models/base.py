@@ -9,20 +9,21 @@ class ModuleTag(BaseModel):
 
 
 class ModuleInfo(BaseModel):
-    module_name: str = Field(default="unknown")
-    project_link: str = Field(default="unknown")
-    name: str = Field(default="unknown")
-    desc: str = Field(default="unknown")
-    author: str = Field(default="unknown")
-    homepage: str = Field(default="unknown")
+    module_name: str = "unknown"
+    project_link: str = "unknown"
+    name: str = "unknown"
+    desc: str = "unknown"
+    author: str = "unknown"
+    homepage: str = "unknown"
 
     # nonebot:PluginMetadata 类型, 为通用移至此处
-    usage: str = Field(default="unknown")
+    usage: str = "unknown"
     extra: Dict[Any, Any] = Field(default_factory=dict)
 
     # noneflow:PublishInfo 类型, 为通用移至此处
     tags: Optional[List[ModuleTag]]
     is_official: bool = False
+    version: str = "0.0.0"
 
     # WebUI 拓展类型
     is_download: bool = False

@@ -13,6 +13,7 @@ export type Adapter = {
   }
   tags?: Array<ModuleTag>
   is_official?: boolean
+  version?: string
   is_download?: boolean
 }
 
@@ -58,6 +59,7 @@ export type Driver = {
   }
   tags?: Array<ModuleTag>
   is_official?: boolean
+  version?: string
   is_download?: boolean
 }
 
@@ -75,6 +77,14 @@ export type FileResponse = {
 
 export type GenericResponse_List_nb_cli_plugin_webui_app_handlers_process_schemas_ProcessLog__ = {
   detail: Array<ProcessLog>
+}
+
+export type GenericResponse_List_nb_cli_plugin_webui_app_models_base_ModuleInfo__ = {
+  detail: Array<nb_cli_plugin_webui__app__models__base__ModuleInfo>
+}
+
+export type GenericResponse_List_nb_cli_plugin_webui_app_models_base_Plugin__ = {
+  detail: Array<nb_cli_plugin_webui__app__models__base__Plugin>
 }
 
 export type GenericResponse_List_str__ = {
@@ -245,6 +255,7 @@ export type nb_cli_plugin_webui__app__models__base__ModuleInfo = {
   }
   tags?: Array<ModuleTag>
   is_official?: boolean
+  version?: string
   is_download?: boolean
 }
 
@@ -261,6 +272,7 @@ export type nb_cli_plugin_webui__app__models__base__Plugin = {
   }
   tags?: Array<ModuleTag>
   is_official?: boolean
+  version?: string
   is_download?: boolean
   config?: {
     [key: string]: unknown
@@ -280,6 +292,7 @@ export type nb_cli_plugin_webui__app__models__store__ModuleInfo = {
   }
   tags?: Array<ModuleTag>
   is_official?: boolean
+  version?: string
   is_download?: boolean
   module_type?: 'module'
 }
@@ -303,6 +316,7 @@ export type nb_cli_plugin_webui__app__models__store__Plugin = {
   }
   tags?: Array<ModuleTag>
   is_official?: boolean
+  version: string
   is_download?: boolean
   config?: {
     [key: string]: unknown
@@ -311,7 +325,6 @@ export type nb_cli_plugin_webui__app__models__store__Plugin = {
   supported_adapters?: Array<string>
   valid: boolean
   time: string
-  version: string
   skip_test: boolean
   module_type?: 'plugin'
 }
@@ -634,3 +647,36 @@ export type CheckProjectTomlV1ProjectCheckTomlPostData = {
 export type CheckProjectTomlV1ProjectCheckTomlPostResponse = GenericResponse_ProjectTomlDetail_
 
 export type CheckProjectTomlV1ProjectCheckTomlPostError = HTTPValidationError
+
+export type GetPluginsV1ProjectPluginsGetData = {
+  query: {
+    project_id: string
+  }
+}
+
+export type GetPluginsV1ProjectPluginsGetResponse =
+  GenericResponse_List_nb_cli_plugin_webui_app_models_base_Plugin__
+
+export type GetPluginsV1ProjectPluginsGetError = HTTPValidationError
+
+export type GetAdaptersV1ProjectAdaptersGetData = {
+  query: {
+    project_id: string
+  }
+}
+
+export type GetAdaptersV1ProjectAdaptersGetResponse =
+  GenericResponse_List_nb_cli_plugin_webui_app_models_base_ModuleInfo__
+
+export type GetAdaptersV1ProjectAdaptersGetError = HTTPValidationError
+
+export type GetDriversV1ProjectDriversGetData = {
+  query: {
+    project_id: string
+  }
+}
+
+export type GetDriversV1ProjectDriversGetResponse =
+  GenericResponse_List_nb_cli_plugin_webui_app_models_base_ModuleInfo__
+
+export type GetDriversV1ProjectDriversGetError = HTTPValidationError

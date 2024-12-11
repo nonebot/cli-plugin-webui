@@ -10,6 +10,8 @@ templates = Environment(
     loader=FileSystemLoader(Path(__file__).parent.parent / "template"),
 )
 
+from .pkg import get_pkg_version
+
 # flake8:noqa:f402
 from .pip import call_pip, call_pip_install
 from .project import NoneBotProjectList, NoneBotProjectManager

@@ -87,7 +87,16 @@ import type {
   ListProjectV1ProjectListGetResponse,
   CheckProjectTomlV1ProjectCheckTomlPostData,
   CheckProjectTomlV1ProjectCheckTomlPostError,
-  CheckProjectTomlV1ProjectCheckTomlPostResponse
+  CheckProjectTomlV1ProjectCheckTomlPostResponse,
+  GetPluginsV1ProjectPluginsGetData,
+  GetPluginsV1ProjectPluginsGetError,
+  GetPluginsV1ProjectPluginsGetResponse,
+  GetAdaptersV1ProjectAdaptersGetData,
+  GetAdaptersV1ProjectAdaptersGetError,
+  GetAdaptersV1ProjectAdaptersGetResponse,
+  GetDriversV1ProjectDriversGetData,
+  GetDriversV1ProjectDriversGetError,
+  GetDriversV1ProjectDriversGetResponse
 } from './types.gen'
 
 export const client = createClient(createConfig())
@@ -600,6 +609,57 @@ export class ProjectService {
     >({
       ...options,
       url: '/v1/project/check_toml'
+    })
+  }
+
+  /**
+   * Get Plugins
+   * - 获取实例的插件列表
+   */
+  public static getPluginsV1ProjectPluginsGet<ThrowOnError extends boolean = false>(
+    options: Options<GetPluginsV1ProjectPluginsGetData, ThrowOnError>
+  ) {
+    return (options?.client ?? client).get<
+      GetPluginsV1ProjectPluginsGetResponse,
+      GetPluginsV1ProjectPluginsGetError,
+      ThrowOnError
+    >({
+      ...options,
+      url: '/v1/project/plugins'
+    })
+  }
+
+  /**
+   * Get Adapters
+   * - 获取实例的适配器列表
+   */
+  public static getAdaptersV1ProjectAdaptersGet<ThrowOnError extends boolean = false>(
+    options: Options<GetAdaptersV1ProjectAdaptersGetData, ThrowOnError>
+  ) {
+    return (options?.client ?? client).get<
+      GetAdaptersV1ProjectAdaptersGetResponse,
+      GetAdaptersV1ProjectAdaptersGetError,
+      ThrowOnError
+    >({
+      ...options,
+      url: '/v1/project/adapters'
+    })
+  }
+
+  /**
+   * Get Drivers
+   * - 获取实例的驱动器列表
+   */
+  public static getDriversV1ProjectDriversGet<ThrowOnError extends boolean = false>(
+    options: Options<GetDriversV1ProjectDriversGetData, ThrowOnError>
+  ) {
+    return (options?.client ?? client).get<
+      GetDriversV1ProjectDriversGetResponse,
+      GetDriversV1ProjectDriversGetError,
+      ThrowOnError
+    >({
+      ...options,
+      url: '/v1/project/drivers'
     })
   }
 }
