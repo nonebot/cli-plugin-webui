@@ -223,6 +223,12 @@ msgstr "文件未找到."
 msgid "File cleared."
 msgstr "文件已清理."
 
+#: nb_cli_plugin_webui/cli/__init__.py:58
+msgid ""
+"Not in a project root directory. Please run this command in a NoneBot project "
+"directory."
+msgstr "不在项目根目录中。请在 NoneBot 项目目录下运行此命令。"
+
 #: nb_cli_plugin_webui/cli/config.py:18
 msgid "Setting NoneBot CLI WebUI."
 msgstr "NoneBot CLI WebUI 设置"

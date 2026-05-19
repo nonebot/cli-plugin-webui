@@ -2,7 +2,7 @@
   "name": "Default Linux Universal",
   "image": "mcr.microsoft.com/devcontainers/universal:2-linux",
   "features": {
-    "ghcr.io/devcontainers-contrib/features/poetry:1": {}
+    "ghcr.io/devcontainers-extra/features/poetry:1": {}
   },
   "postCreateCommand": "poetry config virtualenvs.in-project true && poetry install && poetry run pre-commit install",
   "customizations": {
@@ -11,9 +11,9 @@
         "python.analysis.diagnosticMode": "workspace",
         "python.analysis.typeCheckingMode": "basic",
         "[python]": {
-          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.defaultFormatter": "ms-python.python",
           "editor.codeActionsOnSave": {
-            "source.organizeImports": true
+            "source.organizeImports": "explicit"
           }
         },
         "[javascript]": {
@@ -45,8 +45,6 @@
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "ms-python.isort",
-        "ms-python.black-formatter",
         "EditorConfig.EditorConfig",
         "esbenp.prettier-vscode"
       ]

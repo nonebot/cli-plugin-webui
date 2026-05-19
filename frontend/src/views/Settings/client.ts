@@ -4,156 +4,172 @@ import {
   type ModuleConfigFather,
   ProjectService,
   ConfigTypeSchema,
-  ModuleTypeSchema
-} from '@/client/api'
-import { useNoneBotStore, useToastStore } from '@/stores'
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+  ModuleTypeSchema,
+} from "@/client/api";
+import { useNoneBotStore, useToastStore } from "@/stores";
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
-const store = useNoneBotStore()
-const toast = useToastStore()
+const store = useNoneBotStore();
+const toast = useToastStore();
 
-export type ModuleConfigType = ModuleType | ConfigType | 'all'
+export type ModuleConfigType = ModuleType | ConfigType | "all";
 
 export const updateConfig = async (
   moduleType: ModuleType | ConfigType,
   confType: string,
   k: string,
-  v: any
+  v: any,
 ) => {
   if (!store.selectedBot) {
-    toast.add('warning', '未选择实例', '', 5000)
-    return
+    toast.add("warning", "未选择实例", "", 5000);
+    return;
   }
 
-  const { data, error } = await ProjectService.updateProjectConfigV1ProjectConfigUpdatePost({
-    query: {
-      module_type: moduleType,
-      project_id: store.selectedBot.project_id
-    },
-    body: {
-      env: store.selectedBot.use_env!,
-      conf_type: confType,
-      k: k,
-      v: v
-    }
-  })
+  const { data, error } =
+    await ProjectService.updateProjectConfigV1ProjectConfigUpdatePost({
+      query: {
+        module_type: moduleType,
+        project_id: store.selectedBot.project_id,
+      },
+      body: {
+        env: store.selectedBot.use_env!,
+        conf_type: confType,
+        k: k,
+        v: v,
+      },
+    });
 
   if (error) {
-    toast.add('error', `更新失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `更新失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    toast.add('success', '更新成功', '', 5000)
+    toast.add("success", "更新成功", "", 5000);
   }
 
-  return { data, error }
-}
+  return { data, error };
+};
 
-export const useSettingsStore = defineStore('settingsStore', () => {
-  const viewModule = ref<ModuleConfigType>('all')
-  const settingsData = ref<ModuleConfigFather[]>([])
-  const viewData = ref<ModuleConfigFather[]>([])
-  const isRequesting = ref(false)
-  const searchInput = ref<string>('')
+export const useSettingsStore = defineStore("settingsStore", () => {
+  const viewModule = ref<ModuleConfigType>("all");
+  const settingsData = ref<ModuleConfigFather[]>([]);
+  const viewData = ref<ModuleConfigFather[]>([]);
+  const isRequesting = ref(false);
+  const searchInput = ref<string>("");
 
   const getTomlConf = async (projectID: string) => {
-    isRequesting.value = true
-    const { data, error } = await ProjectService.getProjectMetaConfigV1ProjectConfigMetaDetailGet({
-      query: {
-        project_id: projectID
-      }
-    })
+    isRequesting.value = true;
+    const { data, error } =
+      await ProjectService.getProjectMetaConfigV1ProjectConfigMetaDetailGet({
+        query: {
+          project_id: projectID,
+        },
+      });
 
     if (error) {
-      toast.add('error', `获取实例 toml 配置失败, 原因：${error.detail?.toString()}`, '', 5000)
+      toast.add(
+        "error",
+        `获取实例 toml 配置失败, 原因：${error.detail?.toString()}`,
+        "",
+        5000,
+      );
     }
 
     if (data) {
-      settingsData.value = settingsData.value.concat(data.detail)
+      settingsData.value = settingsData.value.concat(data.detail);
     }
 
-    isRequesting.value = false
-  }
+    isRequesting.value = false;
+  };
 
   const getNoneBotConf = async (projectID: string) => {
-    isRequesting.value = true
+    isRequesting.value = true;
     const { data, error } =
       await ProjectService.getProjectNonebotConfigV1ProjectConfigNonebotDetailGet({
         query: {
-          project_id: projectID
-        }
-      })
+          project_id: projectID,
+        },
+      });
 
     if (error) {
-      toast.add('error', `获取实例 NoneBot 配置失败, 原因：${error.detail?.toString()}`, '', 5000)
+      toast.add(
+        "error",
+        `获取实例 NoneBot 配置失败, 原因：${error.detail?.toString()}`,
+        "",
+        5000,
+      );
     }
 
     if (data) {
-      settingsData.value = settingsData.value.concat(data.detail)
+      settingsData.value = settingsData.value.concat(data.detail);
     }
 
-    isRequesting.value = false
-  }
+    isRequesting.value = false;
+  };
 
   const getNoneBotPluginConf = async (projectID: string) => {
-    isRequesting.value = true
+    isRequesting.value = true;
     const { data, error } =
-      await ProjectService.getProjectNonebotPluginConfigV1ProjectConfigNonebotPluginDetailGet({
-        query: {
-          project_id: projectID
-        }
-      })
+      await ProjectService.getProjectNonebotPluginConfigV1ProjectConfigNonebotPluginDetailGet(
+        {
+          query: {
+            project_id: projectID,
+          },
+        },
+      );
 
     if (error) {
-      toast.add('error', `获取实例配置失败, 原因：${error.detail?.toString()}`, '', 5000)
+      toast.add("error", `获取实例配置失败, 原因：${error.detail?.toString()}`, "", 5000);
     }
 
     if (data) {
-      settingsData.value = settingsData.value.concat(data.detail)
+      settingsData.value = settingsData.value.concat(data.detail);
     }
 
-    isRequesting.value = false
-  }
+    isRequesting.value = false;
+  };
 
   const updateViewData = (searchText?: string) => {
     viewData.value = settingsData.value.filter((item) => {
-      if (!searchText) return true
+      if (!searchText) return true;
       return (
         item.title.includes(searchText) ||
         item.name.includes(searchText) ||
-        (item.description ?? '').includes(searchText)
-      )
-    })
+        (item.description ?? "").includes(searchText)
+      );
+    });
 
-    const filter = [...ConfigTypeSchema.enum, ...ModuleTypeSchema.enum]
-    if (viewModule.value !== 'all' && Object.values(filter).includes(viewModule.value)) {
-      viewData.value = viewData.value.filter((item) => item.module_type === viewModule.value)
+    const filter = [...ConfigTypeSchema.enum, ...ModuleTypeSchema.enum];
+    if (viewModule.value !== "all" && Object.values(filter).includes(viewModule.value)) {
+      viewData.value = viewData.value.filter(
+        (item) => item.module_type === viewModule.value,
+      );
     }
-  }
+  };
 
   const init = async () => {
     if (!store.selectedBot) {
-      toast.add('warning', '未选择实例', '', 5000)
-      return
+      toast.add("warning", "未选择实例", "", 5000);
+      return;
     }
 
-    settingsData.value = []
+    settingsData.value = [];
 
-    const projectID = store.selectedBot.project_id
+    const projectID = store.selectedBot.project_id;
 
-    await getTomlConf(projectID)
-    await getNoneBotConf(projectID)
-    await getNoneBotPluginConf(projectID)
+    await getTomlConf(projectID);
+    await getNoneBotConf(projectID);
+    await getNoneBotPluginConf(projectID);
 
-    updateViewData(searchInput.value)
-  }
+    updateViewData(searchInput.value);
+  };
 
   const setViewModule = (module: ModuleConfigType) => {
-    viewModule.value = module
-    searchInput.value = ''
-    updateViewData()
-  }
+    viewModule.value = module;
+    searchInput.value = "";
+    updateViewData();
+  };
 
   return {
     viewModule,
@@ -163,6 +179,6 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     searchInput,
     init,
     updateViewData,
-    setViewModule
-  }
-})
+    setViewModule,
+  };
+});

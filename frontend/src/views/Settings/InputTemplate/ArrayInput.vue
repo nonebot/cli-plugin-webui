@@ -1,70 +1,77 @@
 <script setup lang="ts">
-import type { ConfigType, ModuleConfigChild, ModuleType } from '@/client/api'
-import { ref } from 'vue'
-import { updateConfig } from '../client'
-import { useNoneBotStore } from '@/stores'
+import type { ConfigType, ModuleConfigChild, ModuleType } from "@/client/api";
+import { ref } from "vue";
+import { updateConfig } from "../client";
+import { useNoneBotStore } from "@/stores";
 
-const store = useNoneBotStore()
+const store = useNoneBotStore();
 
 const props = defineProps<{
-  moduleType: ModuleType | ConfigType
-  data: ModuleConfigChild
-}>()
-const data = props.data as Omit<ModuleConfigChild, 'configured' | 'enum'> & {
-  configured: string[]
-  enum: any[]
-}
+  moduleType: ModuleType | ConfigType;
+  data: ModuleConfigChild;
+}>();
+const data = props.data as Omit<ModuleConfigChild, "configured" | "enum"> & {
+  configured: string[];
+  enum: any[];
+};
 
 const isAddItem = ref(false),
-  inputValue = ref<string>()
+  inputValue = ref<string>();
 
 const findItem = (fItem: string) => {
-  return data.configured.findIndex((item: string) => item === fItem)
-}
+  return data.configured.findIndex((item: string) => item === fItem);
+};
 
 const addItem = async () => {
   if (!inputValue.value) {
-    return
+    return;
   }
 
   if (!store.selectedBot) {
-    return
+    return;
   }
 
-  data.configured.push(inputValue.value)
+  data.configured.push(inputValue.value);
 
-  const result = await updateConfig(props.moduleType, data.conf_type, data.name, data.configured)
+  const result = await updateConfig(
+    props.moduleType,
+    data.conf_type,
+    data.name,
+    data.configured,
+  );
 
   if (result?.error) {
-    const index = findItem(inputValue.value!)
-    if (index === -1) return
-    data.configured.splice(index, 1)
+    const index = findItem(inputValue.value!);
+    if (index === -1) return;
+    data.configured.splice(index, 1);
   }
 
   if (result?.data) {
-    inputValue.value = ''
-    isAddItem.value = false
+    inputValue.value = "";
+    isAddItem.value = false;
   }
-}
+};
 
 const removeItem = async (rItem: string) => {
   if (!store.selectedBot) {
-    return
+    return;
   }
 
-  const index = findItem(rItem)
-  if (index === -1) return
-  data.configured.splice(index, 1)
+  const index = findItem(rItem);
+  if (index === -1) return;
+  data.configured.splice(index, 1);
 
-  await updateConfig(props.moduleType, data.conf_type, data.name, data.configured).catch(() => {
-    data.configured.push(rItem)
-  })
-}
+  await updateConfig(props.moduleType, data.conf_type, data.name, data.configured).catch(
+    () => {
+      data.configured.push(rItem);
+    },
+  );
+};
 
 const cancel = () => {
-  isAddItem.value = false
-  inputValue.value = ''
-}
+  isAddItem.value = false;
+  inputValue.value = "";
+};
 </script>
 
 <template>
@@ -78,7 +85,11 @@ const cancel = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="i in data.configured" :key="i" class="transition-colors hover:bg-base-300">
+          <tr
+            v-for="i in data.configured"
+            :key="i"
+            class="transition-colors hover:bg-base-300"
+          >
             <td>{{ i }}</td>
             <td>
               <button class="btn btn-xs btn-square btn-ghost" @click="removeItem(i)">

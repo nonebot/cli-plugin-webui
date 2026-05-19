@@ -32,25 +32,21 @@ if TYPE_CHECKING:
     @overload
     async def load_module_data(
         module_type: Literal[ModuleType.PLUGIN],
-    ) -> List[Plugin]:
-        ...
+    ) -> List[Plugin]: ...
 
     @overload
     async def load_module_data(
         module_type: Literal[ModuleType.ADAPTER],
-    ) -> List[Adapter]:
-        ...
+    ) -> List[Adapter]: ...
 
     @overload
     async def load_module_data(
         module_type: Literal[ModuleType.DRIVER],
-    ) -> List[Driver]:
-        ...
+    ) -> List[Driver]: ...
 
     async def load_module_data(
         module_type: ModuleType,
-    ) -> Union[List[Plugin], List[Adapter], List[Driver]]:
-        ...
+    ) -> Union[List[Plugin], List[Adapter], List[Driver]]: ...
 
 else:
 
@@ -69,7 +65,7 @@ else:
                 _("Invalid module type: {module_type}").format(module_type=module_type)
             )
 
-        module_name: str = getattr(module_class.__config__, "module_name")
+        module_name: str = module_class._registry_name
         exceptions: List[Exception] = list()
         urls = [
             f"https://registry.nonebot.dev/{module_name}.json",
@@ -91,7 +87,7 @@ else:
             try:
                 resp = await future
                 items = resp.json()
-                result = [module_class.parse_obj(item) for item in items]
+                result = [module_class.model_validate(item) for item in items]
                 for task in tasks:
                     if not task.done():
                         task.cancel()

@@ -87,7 +87,7 @@ def _get_openapi():
     host = args[0]
     port = args[1]
     url = f"http://{host}:{port}/api/docs/openapi.json"
-    response = httpx.get(url, proxies=dict())
+    response = httpx.get(url)
     if response.status_code == 502:
         print("Error: Could not fetch OpenAPI schema")
         exit(-1)

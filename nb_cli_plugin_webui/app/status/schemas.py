@@ -53,4 +53,4 @@ class SystemInfo(BaseModel):
 
 class StatusInfo(BaseModel):
     system: SystemInfo
-    process: Optional[ProcessInfo]
+    process: Optional[ProcessInfo] = None

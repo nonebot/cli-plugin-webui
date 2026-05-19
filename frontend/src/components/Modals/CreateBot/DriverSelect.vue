@@ -1,25 +1,29 @@
 <script setup lang="ts">
-import { StoreService, type Driver } from '@/client/api'
-import { ref } from 'vue'
-import ItemSelect from './ItemSelect.vue'
-import { useCreateBotStore } from '.'
+import { StoreService, type Driver } from "@/client/api";
+import { onMounted, ref } from "vue";
+import ItemSelect from "./ItemSelect.vue";
+import { useCreateBotStore } from ".";
 
-const store = useCreateBotStore()
+const store = useCreateBotStore();
 
-const driverList = ref<Driver[]>([])
+const driverList = ref<Driver[]>([]);
+const isLoading = ref(true);
 
-const { data } = await StoreService.getNonebotStoreItemsV1StoreNonebotListGet({
-  query: {
-    module_type: 'driver',
-    page: 0,
-    is_search: false,
-    show_all: true
+onMounted(async () => {
+  const { data } = await StoreService.getNonebotStoreItemsV1StoreNonebotListGet({
+    query: {
+      module_type: "driver",
+      page: 0,
+      is_search: false,
+      show_all: true,
+    },
+  });
+
+  if (data) {
+    driverList.value = data.detail;
   }
-})
-
-if (data) {
-  driverList.value = data.detail
-}
+  isLoading.value = false;
+});
 </script>
 
 <template>
@@ -27,12 +31,14 @@ if (data) {
     <ItemSelect :data="driverList" :data-type="'driver'" />
 
     <div class="flex justify-between items-center">
-      <button class="btn btn-sm btn-primary text-base-100" @click="store.step--">上一步</button>
+      <button class="btn btn-sm btn-primary text-base-100" @click="store.step--">
+        上一步
+      </button>
 
       <button
         :class="{
           'btn btn-sm btn-primary text-base-100': true,
-          'btn-disabled': !store.drivers.length
+          'btn-disabled': !store.drivers.length,
         }"
         @click="store.step++"
       >

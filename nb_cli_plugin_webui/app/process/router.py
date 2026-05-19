@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict, List, Callable, Optional, Awaitable
 
 from fastapi.websockets import WebSocketState
@@ -39,7 +40,7 @@ async def run_process(
     if not project_meta.drivers:
         raise DriverNotFound()
 
-    await run_nonebot_project(project)
+    asyncio.create_task(run_nonebot_project(project))
     return GenericResponse(detail="success")
 
 
@@ -100,7 +101,7 @@ async def get_process_log(websocket: WebSocket):
             log_listeners.pop(websocket)
 
     async def log_listener(log: ProcessLog):
-        await websocket.send_text(log.json())
+        await websocket.send_text(log.model_dump_json())
 
     async def receive_listener(recv: dict):
         nonlocal log_storage

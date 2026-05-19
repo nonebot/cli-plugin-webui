@@ -1,15 +1,11 @@
-[tool.poetry]
+[project]
 name = "nb-cli-plugin-webui"
 version = "0.4.2"
 description = "web ui support for nb-cli"
-authors = ["Kyomotoi <kyomotoiowo@gmail.com>"]
-license = "MIT"
-packages = [{ include = 'nb_cli_plugin_webui' }]
-include = ["nb_cli_plugin_webui/dist/**/*"]
+authors = [{ name = "Kyomotoi", email = "kyomotoiowo@gmail.com" }]
+license = { text = "MIT" }
+requires-python = ">=3.10"
 readme = "README.md"
-homepage = "https://github.com/nonebot/cli-plugin-webui"
-repository = "https://github.com/nonebot/cli-plugin-webui"
-documentation = "https://github.com/nonebot/cli-plugin-webui"
 keywords = ["nonebot", "cli", "web"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -19,39 +15,56 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
 ]
+dependencies = [
+  "psutil>=7.2.2",
+  "pathlib>=1.0.1,<2.0.0",
+  "WMI>=1.5.1,<2.0.0; sys_platform == 'win32'",
+  "nb-cli>=1.2.3,<2.0.0",
+  "pydantic>=2.0.0",
+  "fastapi>=0.115.0,<1.0.0",
+  "APScheduler>=3.10.1,<4.0.0",
+  "loguru>=0.7.0,<0.8.0",
+  "PyJWT>=2.7.0,<3.0.0",
+  "bcrypt>=5.0.0",
+  "passlib>=1.7.4,<2.0.0",
+  "uvicorn[standard]>=0.22.0,<1.0.0",
+  "httpx[socks]>=0.24.1,<1.0.0",
+  "python-dotenv>=1.0.0,<2.0.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8.1"
-psutil = "^5.9.5"
-pathlib = "^1.0.1"
-WMI = { version = "^1.5.1", markers = "sys_platform == 'win32'" }
-nb-cli = "^1.2.3"
-fastapi = "^0.95.1"
-APScheduler = "^3.10.1"
-loguru = "^0.7.0"
-PyJWT = "^2.7.0"
-bcrypt = "^4.0.1"
-passlib = "^1.7.4"
-uvicorn = { extras = ["standard"], version = "^0.22.0" }
-httpx = { extras = ["socks"], version = "^0.24.1" }
-python-dotenv = "^1.0.0"
+[project.urls]
+Homepage = "https://github.com/nonebot/cli-plugin-webui"
+Repository = "https://github.com/nonebot/cli-plugin-webui"
+Documentation = "https://github.com/nonebot/cli-plugin-webui"
 
-[tool.poetry.group.dev.dependencies]
-isort = "^5.10.1"
-black = "^23.1.0"
-nonemoji = "^0.1.2"
-pre-commit = "^3.1.0"
-flake8 = "^6.0.0"
-babel = "^2.16.0"
+[project.optional-dependencies]
+dev = [
+  "isort>=8.0.1",
+  "black>=26.5.1",
+  "nonemoji>=0.1.2,<0.2.0",
+  "pre-commit>=4.6.0",
+  "flake8>=7.3.0",
+  "babel>=2.16.0,<3.0.0",
+]
 
-[tool.poetry.plugins.nb]
+[project.entry-points."nb"]
 webui = "nb_cli_plugin_webui.plugin:install"
 
-[tool.poetry.scripts]
+[project.scripts]
 init = "nb_cli_plugin_webui.scripts:init"
 update = "nb_cli_plugin_webui.scripts:update"
 compile = "nb_cli_plugin_webui.scripts:compile"
 generate = "nb_cli_plugin_webui.scripts:generate_openapi"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["nb_cli_plugin_webui"]
+
+[tool.hatch.build.targets.sdist]
+include = ["nb_cli_plugin_webui/dist/**/*"]
 
 [tool.black]
 line-length = 88
@@ -70,6 +83,6 @@ extra_standard_library = ["typing_extensions"]
 [tool.pycln]
 path = "."
 
-[build-system]
-requires = ["poetry_core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.pdm.scripts]
+dev-backend = "python -m nb_cli_plugin_webui.server"
+dev-frontend = { cmd = "pnpm dev", working_dir = "frontend" }

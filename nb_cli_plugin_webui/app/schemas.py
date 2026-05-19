@@ -1,9 +1,9 @@
 from typing import Generic, TypeVar
 
-from pydantic.generics import GenericModel
+from pydantic import BaseModel
 
 _T = TypeVar("_T")
 
 
-class GenericResponse(GenericModel, Generic[_T]):
+class GenericResponse(BaseModel, Generic[_T]):
     detail: _T

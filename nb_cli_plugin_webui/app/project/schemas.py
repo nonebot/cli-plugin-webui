@@ -29,6 +29,7 @@ class AddProjectData(BaseModel):
     project_dir: str
     mirror_url: str
     adapters: List[str] = list()
+    drivers: List[str] = list()
     plugins: List[str] = list()
     plugin_dirs: List[str] = list()
     builtin_plugins: List[str] = list()

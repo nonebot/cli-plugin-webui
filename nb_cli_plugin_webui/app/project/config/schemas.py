@@ -17,21 +17,21 @@ ConfigModuleType = Union[BaseModuleType, ConfigType]
 
 class ModuleConfigSimpleInfo(BaseModel):
     title: str
-    description: Optional[str]
+    description: Optional[str] = None
     name: str
 
 
 class Item(BaseModel):
-    enum: Optional[List[Any]]
+    enum: Optional[List[Any]] = None
     type: str
 
 
 class ModuleConfigChild(ModuleConfigSimpleInfo):
     default: Any
     conf_type: str
-    enum: Optional[List[Any]]
+    enum: Optional[List[Any]] = None
     configured: Any
-    items: Optional[Item]
+    items: Optional[Item] = None
     unique_items: bool
     is_secret: bool
     latest_change: str = ".env"

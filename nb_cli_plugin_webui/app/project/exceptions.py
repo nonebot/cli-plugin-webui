@@ -19,5 +19,9 @@ class WriteNoneBotProjectProfileFailed(BadRequest):
     detail = ErrorCode.PROJECT_WRITE_PROFILE_FAILED
 
 
+class ProjectDirAlreadyExists(BadRequest):
+    detail = ErrorCode.PROJECT_DIR_ALREADY_EXISTS
+
+
 class ProjectTomlNotFound(BadRequest):
     detail = ErrorCode.PROJECT_TOML_NOT_FOUND

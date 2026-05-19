@@ -16,7 +16,7 @@ def create_jwt(
 ) -> str:
     to_encode = payload.copy()
     expire = datetime.utcnow() + expire_seconds
-    to_encode.update(JWTMeta(exp=expire, sub=JWT_SUBJECT).dict())
+    to_encode.update(JWTMeta(exp=expire, sub=JWT_SUBJECT).model_dump())
     return jwt.encode(to_encode, secret_key, algorithm=ALGORITHM)
 
 

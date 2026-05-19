@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { ModuleConfigFather } from '@/client/api'
-import StringInput from './InputTemplate/StringInput.vue'
-import BooleanInput from './InputTemplate/BooleanInput.vue'
-import ArrayInput from './InputTemplate/ArrayInput.vue'
-import NumberInput from './InputTemplate/NumberInput.vue'
-import SelectInput from './InputTemplate/SelectInput.vue'
+import type { ModuleConfigFather } from "@/client/api";
+import StringInput from "./InputTemplate/StringInput.vue";
+import BooleanInput from "./InputTemplate/BooleanInput.vue";
+import ArrayInput from "./InputTemplate/ArrayInput.vue";
+import NumberInput from "./InputTemplate/NumberInput.vue";
+import SelectInput from "./InputTemplate/SelectInput.vue";
 
-const props = defineProps<{ data: ModuleConfigFather }>()
+const props = defineProps<{ data: ModuleConfigFather }>();
 </script>
 
 <template>
@@ -50,7 +50,11 @@ const props = defineProps<{ data: ModuleConfigFather }>()
         :data="i"
         :module-type="data.module_type"
       />
-      <ArrayInput v-else-if="i.conf_type === 'array'" :data="i" :module-type="data.module_type" />
+      <ArrayInput
+        v-else-if="i.conf_type === 'array'"
+        :data="i"
+        :module-type="data.module_type"
+      />
       <NumberInput
         v-else-if="i.conf_type === 'integer'"
         :data="i"

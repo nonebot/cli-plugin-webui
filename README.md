@@ -18,7 +18,7 @@ _✨ NoneBot2 命令行工具 前端可视化页面（WebUI） 插件 ✨_
   <a href="https://pypi.python.org/pypi/nb-cli-plugin-webui">
     <img src="https://img.shields.io/pypi/v/nb-cli-plugin-webui" alt="pypi">
   </a>
-  <img src="https://img.shields.io/badge/python-3.8+-blue" alt="python">
+  <img src="https://img.shields.io/badge/python-3.10+-blue" alt="python">
   <a href="https://results.pre-commit.ci/latest/github/nonebot/nb-cli-plugin-webui/master">
     <img src="https://results.pre-commit.ci/badge/github/nonebot/cli-plugin-webui/master.svg" alt="pre-commit" />
   </a>

@@ -10,10 +10,10 @@ from starlette.exceptions import HTTPException as StarlettleHTTPException
 
 from nb_cli_plugin_webui import get_version
 
-from .config import Config
 from .logging import logger as log
 from .utils.scheduler import scheduler
 from .router import router as api_router
+from .config import CONFIG_FILE_PATH, Config
 from .handlers.process import ProcessManager
 from .handlers import driver_store_manager, plugin_store_manager, adapter_store_manager
 
@@ -53,7 +53,8 @@ class StaticFiles(BaseStaticFiles):
 
 
 frontend = FastAPI(openapi_url="")
-frontend.mount("/", StaticFiles(directory=STATIC_PATH, html=True), "NoneBot WebUI")
+if STATIC_PATH.exists():
+    frontend.mount("/", StaticFiles(directory=STATIC_PATH, html=True), "NoneBot WebUI")
 
 
 api = FastAPI(
@@ -78,6 +79,14 @@ app.mount("/", app=frontend)
 async def startup_event():
     if "WEBUI_BUILD" in os.environ:
         log.info("Running in docker.")
+
+    if CONFIG_FILE_PATH.exists():
+        try:
+            Config.load(CONFIG_FILE_PATH)
+        except Exception:
+            log.warning("Config file is broken, using default values.")
+    elif "WEBUI_BUILD" not in os.environ:
+        log.warning("Config not found, using default values.")
 
     log.info("Starting NoneBot CLI WebUI.")
     log.info(f"NoneBot CLI WebUI version: {get_version()}")

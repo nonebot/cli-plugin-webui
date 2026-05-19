@@ -39,4 +39,4 @@ async def verify_token(data: VerifyRequest) -> GenericResponse[str]:
 
     parsed_data = dict(jwt_data)
 
-    return GenericResponse(detail=parsed_data["exp"])
+    return GenericResponse(detail=str(parsed_data["exp"]))

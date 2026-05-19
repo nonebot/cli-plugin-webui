@@ -1,6 +1,7 @@
-from typing import Any, Dict, List, Generic, TypeVar, Optional
+from typing import Any, Dict, List, Generic, TypeVar, ClassVar, Optional
 
-from pydantic import Field, BaseModel, validator
+from pydantic import Field, BaseModel
+from pydantic.functional_validators import field_validator
 
 
 class ModuleTag(BaseModel):
@@ -21,45 +22,30 @@ class ModuleInfo(BaseModel):
     extra: Dict[Any, Any] = Field(default_factory=dict)
 
     # noneflow:PublishInfo 类型, 为通用移至此处
-    tags: Optional[List[ModuleTag]]
+    tags: Optional[List[ModuleTag]] = None
     is_official: bool = False
     version: str = "0.0.0"
 
     # WebUI 拓展类型
     is_download: bool = False
 
-    @validator("project_link", pre=True, always=True)
-    def set_project_link_default(cls, v):
-        return v if v is not None else "unknown"
-
-    @validator("author", pre=True, always=True)
-    def set_author_default(cls, v):
-        return v if v is not None else "unknown"
-
-    @validator("homepage", pre=True, always=True)
-    def set_homepage_default(cls, v):
+    @field_validator("project_link", "author", "homepage", mode="before")
+    @classmethod
+    def set_default_if_none(cls, v):
         return v if v is not None else "unknown"
 
 
 class Plugin(ModuleInfo):
     config: dict = dict()
-
-    class Config:
-        module_name = "plugins"
+    _registry_name: ClassVar[str] = "plugins"
 
 
 class Adapter(ModuleInfo):
-    pass
-
-    class Config:
-        module_name = "adapters"
+    _registry_name: ClassVar[str] = "adapters"
 
 
 class Driver(ModuleInfo):
-    pass
-
-    class Config:
-        module_name = "drivers"
+    _registry_name: ClassVar[str] = "drivers"
 
 
 _T = TypeVar("_T", bound=Plugin)

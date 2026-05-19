@@ -8,3 +8,5 @@ if metadata:
     data = asdict(metadata)
     data["config"] = dict()
     print(f"nonebot_plugin_metadata:{json.dumps(data)}")
+else:
+    print("nonebot_plugin_metadata:null")

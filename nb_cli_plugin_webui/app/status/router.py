@@ -72,5 +72,5 @@ async def send_status_info(websocket: WebSocket, process: Optional[Processor]) -
                 net=utils.get_net_info(),
             ),
             process=process.get_status() if process else None,
-        ).dict()
+        ).model_dump()
     )

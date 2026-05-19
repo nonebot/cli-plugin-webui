@@ -4,3 +4,4 @@ class ErrorCode:
     PROJECT_DELETE_FAILED = "NoneBot 实例删除失败"
     PROJECT_WRITE_PROFILE_FAILED = "NoneBot 实例信息写入失败"
     PROJECT_TOML_NOT_FOUND = "实例 pyproject.toml 文件不存在"
+    PROJECT_DIR_ALREADY_EXISTS = "该目录已被其他实例占用"

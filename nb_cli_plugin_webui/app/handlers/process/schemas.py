@@ -34,7 +34,7 @@ class ProcessPerformance(BaseModel):
 
 
 class ProcessInfo(BaseModel):
-    status_code: Optional[int]
+    status_code: Optional[int] = None
     total_log: int
     is_running: bool
-    performance: Optional[ProcessPerformance]
+    performance: Optional[ProcessPerformance] = None

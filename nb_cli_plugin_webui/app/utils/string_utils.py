@@ -17,7 +17,7 @@ def generate_complexity_string(
     length: int = random.randint(12, 18),
     *,
     use_digits: bool = False,
-    use_punctuation: bool = False
+    use_punctuation: bool = False,
 ) -> str:
     return str().join(
         random.choices(

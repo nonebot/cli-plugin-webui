@@ -26,8 +26,8 @@ class Plugin(BasePlugin):
     - https://github.com/nonebot/noneflow/blob/main/src/utils/store_test/models.py#L14
     """
 
-    type: Optional[PluginType]
-    supported_adapters: Optional[list[str]]
+    type: Optional[PluginType] = None
+    supported_adapters: Optional[list[str]] = None
     valid: bool
     time: str
     version: str
