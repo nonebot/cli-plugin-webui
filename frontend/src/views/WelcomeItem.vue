@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import AddBotIndex from '@/components/Modals/AddBot/AddBotIndex.vue'
-import CreateBotIndex from '@/components/Modals/CreateBot/CreateBotIndex.vue'
-import { useNoneBotStore } from '@/stores'
-import { ref } from 'vue'
+import AddBotIndex from "@/components/Modals/AddBot/AddBotIndex.vue";
+import CreateBotIndex from "@/components/Modals/CreateBot/CreateBotIndex.vue";
+import { useNoneBotStore } from "@/stores";
+import { ref } from "vue";
 
-const nonebotStore = useNoneBotStore()
+const nonebotStore = useNoneBotStore();
 
-const createBotModal = ref<InstanceType<typeof CreateBotIndex> | null>()
-const addBotModal = ref<InstanceType<typeof AddBotIndex> | null>()
+const createBotModal = ref<InstanceType<typeof CreateBotIndex> | null>();
+const addBotModal = ref<InstanceType<typeof AddBotIndex> | null>();
 </script>
 
 <template>
@@ -31,7 +31,9 @@ const addBotModal = ref<InstanceType<typeof AddBotIndex> | null>()
           class="p-4 border border-base-content/25 rounded-box flex flex-col gap-2 md:gap-4 transition hover:shadow-lg"
         >
           <div class="text-lg font-semibold">阅读文档</div>
-          <div class="text-base-content/75">查看文档以解决有关 NoneBot 的大部分疑问。</div>
+          <div class="text-base-content/75">
+            查看文档以解决有关 NoneBot 的大部分疑问。
+          </div>
         </a>
 
         <a

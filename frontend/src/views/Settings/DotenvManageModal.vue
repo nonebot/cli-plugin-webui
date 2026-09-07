@@ -1,100 +1,104 @@
 <script setup lang="ts">
-import { ProjectService } from '@/client/api'
-import { useNoneBotStore, useToastStore } from '@/stores'
-import { ref } from 'vue'
+import { ProjectService } from "@/client/api";
+import { useNoneBotStore, useToastStore } from "@/stores";
+import { ref } from "vue";
 
-const dotenvManageModal = ref<HTMLDialogElement>()
+const dotenvManageModal = ref<HTMLDialogElement>();
 
 defineExpose({
   openModal: () => {
-    dotenvManageModal.value?.showModal()
-    getDotenvList()
+    dotenvManageModal.value?.showModal();
+    getDotenvList();
   },
-  closeModal: () => dotenvManageModal.value?.close()
-})
+  closeModal: () => dotenvManageModal.value?.close(),
+});
 
-const nonebotStore = useNoneBotStore()
-const toast = useToastStore()
+const nonebotStore = useNoneBotStore();
+const toast = useToastStore();
 
-const dotenvList = ref<string[]>([])
-const isAddEnv = ref(false)
-const inputValue = ref()
+const dotenvList = ref<string[]>([]);
+const isAddEnv = ref(false);
+const inputValue = ref();
 
 const getDotenvList = async () => {
   if (!nonebotStore.selectedBot) {
-    toast.add('warning', '未选择实例', '', 5000)
-    return
+    toast.add("warning", "未选择实例", "", 5000);
+    return;
   }
-  const { data, error } = await ProjectService.getProjectEnvListV1ProjectConfigEnvListGet({
-    query: {
-      project_id: nonebotStore.selectedBot.project_id
-    }
-  })
+  const { data, error } = await ProjectService.getProjectEnvListV1ProjectConfigEnvListGet(
+    {
+      query: {
+        project_id: nonebotStore.selectedBot.project_id,
+      },
+    },
+  );
 
   if (error) {
-    toast.add('error', `获取环境失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `获取环境失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    dotenvList.value = data.detail
+    dotenvList.value = data.detail;
   }
-}
+};
 
 const addEnv = async () => {
   if (!inputValue.value) {
-    toast.add('warning', '请输入环境名称', '', 5000)
-    return
+    toast.add("warning", "请输入环境名称", "", 5000);
+    return;
   }
 
   if (!nonebotStore.selectedBot) {
-    toast.add('warning', '未选择实例', '', 5000)
-    return
+    toast.add("warning", "未选择实例", "", 5000);
+    return;
   }
 
-  const { data, error } = await ProjectService.createProjectEnvV1ProjectConfigEnvCreatePost({
-    query: {
-      env: inputValue.value,
-      project_id: nonebotStore.selectedBot.project_id
-    }
-  })
+  const { data, error } =
+    await ProjectService.createProjectEnvV1ProjectConfigEnvCreatePost({
+      query: {
+        env: inputValue.value,
+        project_id: nonebotStore.selectedBot.project_id,
+      },
+    });
 
   if (error) {
-    toast.add('error', `添加环境失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `添加环境失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    dotenvList.value.push(inputValue.value)
-    cancel()
+    dotenvList.value.push(inputValue.value);
+    cancel();
   }
-}
+};
 
 const removeEnv = async (env: string) => {
   if (!nonebotStore.selectedBot) {
-    toast.add('warning', '未选择实例', '', 5000)
-    return
+    toast.add("warning", "未选择实例", "", 5000);
+    return;
   }
 
-  const { data, error } = await ProjectService.deleteProjectEnvV1ProjectConfigEnvDeleteDelete({
-    query: {
-      env: env,
-      project_id: nonebotStore.selectedBot.project_id
-    }
-  })
+  const { data, error } =
+    await ProjectService.deleteProjectEnvV1ProjectConfigEnvDeleteDelete({
+      query: {
+        env: env,
+        project_id: nonebotStore.selectedBot.project_id,
+      },
+    });
 
   if (error) {
-    toast.add('error', `删除环境失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `删除环境失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    await getDotenvList()
-    await nonebotStore.updateEnv(dotenvList.value[0])
+    await getDotenvList();
+    await nonebotStore.updateEnv(dotenvList.value[0]);
   }
-}
+};
 
 const cancel = () => {
-  isAddEnv.value = false
-  inputValue.value = ''
-}
+  isAddEnv.value = false;
+  inputValue.value = "";
+};
 </script>
 
 <template>
@@ -110,7 +114,11 @@ const cancel = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="i in dotenvList" :key="i" class="transition-colors hover:bg-base-300">
+          <tr
+            v-for="i in dotenvList"
+            :key="i"
+            class="transition-colors hover:bg-base-300"
+          >
             <td role="btn" @click="nonebotStore.updateEnv(i)">
               {{ i }}
               <span
@@ -122,7 +130,10 @@ const cancel = () => {
             </td>
             <td>
               <button
-                :class="{ 'btn btn-xs btn-square btn-ghost': true, 'btn-disabled': i === '.env' }"
+                :class="{
+                  'btn btn-xs btn-square btn-ghost': true,
+                  'btn-disabled': i === '.env',
+                }"
                 @click="removeEnv(i)"
               >
                 <span class="material-symbols-outlined text-base"> close </span>
@@ -137,7 +148,11 @@ const cancel = () => {
           + 添加
         </button>
         <div v-else class="flex gap-2">
-          <input v-model="inputValue" class="input input-sm bg-base-200" placeholder="请输入" />
+          <input
+            v-model="inputValue"
+            class="input input-sm bg-base-200"
+            placeholder="请输入"
+          />
           <button class="btn btn-sm btn-ghost" @click="addEnv()">确认</button>
           <button class="btn btn-sm btn-ghost" @click="cancel()">取消</button>
         </div>

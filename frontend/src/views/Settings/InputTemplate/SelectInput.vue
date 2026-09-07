@@ -1,26 +1,29 @@
 <script setup lang="ts">
-import { type ConfigType, type ModuleConfigChild, type ModuleType } from '@/client/api'
-import { ref, watch } from 'vue'
-import { updateConfig } from '../client'
+import { type ConfigType, type ModuleConfigChild, type ModuleType } from "@/client/api";
+import { ref, watch } from "vue";
+import { updateConfig } from "../client";
 
-const props = defineProps<{ moduleType: ModuleType | ConfigType; data: ModuleConfigChild }>()
+const props = defineProps<{
+  moduleType: ModuleType | ConfigType;
+  data: ModuleConfigChild;
+}>();
 
-const data = props.data as Omit<ModuleConfigChild, 'configured' | 'default' | 'enum'> & {
-  configured: any
-  default: any
-  enum: any[]
-}
+const data = props.data as Omit<ModuleConfigChild, "configured" | "default" | "enum"> & {
+  configured: any;
+  default: any;
+  enum: any[];
+};
 
-const selectedValue = ref(data.configured)
-const inEditing = ref(false)
+const selectedValue = ref(data.configured);
+const inEditing = ref(false);
 
 const update = async (v: any) => {
-  await updateConfig(props.moduleType, data.conf_type, data.name, v)
-}
+  await updateConfig(props.moduleType, data.conf_type, data.name, v);
+};
 
 watch(selectedValue, async () => {
-  await update(selectedValue.value)
-})
+  await update(selectedValue.value);
+});
 </script>
 
 <template>
@@ -43,7 +46,12 @@ watch(selectedValue, async () => {
         data-tip="编辑"
         @click="inEditing = !inEditing"
       >
-        <span :class="{ 'material-symbols-outlined text-base': true, 'text-primary': inEditing }">
+        <span
+          :class="{
+            'material-symbols-outlined text-base': true,
+            'text-primary': inEditing,
+          }"
+        >
           edit
         </span>
       </button>
