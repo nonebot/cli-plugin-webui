@@ -4,139 +4,140 @@ import {
   StoreService,
   type Adapter as BaseAdapter,
   type Driver as BaseDriver,
-  type nb_cli_plugin_webui__app__models__base__Plugin
-} from '@/client/api'
-import { compareSemanticVersion } from '@/client/utils'
-import router from '@/router'
-import { useNoneBotStore, useToastStore } from '@/stores'
-import { useFetch } from '@vueuse/core'
-import { onMounted, ref } from 'vue'
+  type nb_cli_plugin_webui__app__models__base__Plugin,
+} from "@/client/api";
+import { compareSemanticVersion } from "@/client/utils";
+import router from "@/router";
+import { useNoneBotStore, useToastStore } from "@/stores";
+import { useFetch } from "@vueuse/core";
+import { onMounted, ref } from "vue";
 
-const store = useNoneBotStore()
-const toast = useToastStore()
+const store = useNoneBotStore();
+const toast = useToastStore();
 
 interface Plugin extends nb_cli_plugin_webui__app__models__base__Plugin {
-  latestVersion?: string
-  releases?: string[]
-  selectedVersion?: string
+  latestVersion?: string;
+  releases?: string[];
+  selectedVersion?: string;
 }
 
 interface Adapter extends BaseAdapter {
-  latestVersion?: string
+  latestVersion?: string;
 }
 
 interface Driver extends BaseDriver {
-  latestVersion?: string
+  latestVersion?: string;
 }
 
-const pluginsRef = ref<Plugin[]>()
-const adaptersRef = ref<Adapter[]>()
-const driversRef = ref<Driver[]>()
+const pluginsRef = ref<Plugin[]>();
+const adaptersRef = ref<Adapter[]>();
+const driversRef = ref<Driver[]>();
 
 const getPlugins = async () => {
   const { data } = await ProjectService.getPluginsV1ProjectPluginsGet({
-    query: { project_id: store.selectedBot!.project_id }
-  })
+    query: { project_id: store.selectedBot!.project_id },
+  });
 
-  if (data) pluginsRef.value = data.detail
-}
+  if (data) pluginsRef.value = data.detail;
+};
 
 const getAdapters = async () => {
   const { data } = await ProjectService.getAdaptersV1ProjectAdaptersGet({
-    query: { project_id: store.selectedBot!.project_id }
-  })
+    query: { project_id: store.selectedBot!.project_id },
+  });
 
-  if (data) adaptersRef.value = data.detail
-}
+  if (data) adaptersRef.value = data.detail;
+};
 
 const getDrivers = async () => {
   const { data } = await ProjectService.getDriversV1ProjectDriversGet({
-    query: { project_id: store.selectedBot!.project_id }
-  })
+    query: { project_id: store.selectedBot!.project_id },
+  });
 
-  if (data) driversRef.value = data.detail
-}
+  if (data) driversRef.value = data.detail;
+};
 
 const getData = async () => {
   if (!store.selectedBot) {
-    toast.add('error', '请先选择实例', '', 5000)
-    return
+    toast.add("error", "请先选择实例", "", 5000);
+    return;
   }
 
-  await getPlugins()
-  await getAdapters()
-  await getDrivers()
+  await getPlugins();
+  await getAdapters();
+  await getDrivers();
 
-  toast.add('info', '数据加载完成', '', 5000)
-}
+  toast.add("info", "数据加载完成", "", 5000);
+};
 
 const updateLatestVersion = async () => {
   if (!store.selectedBot) {
-    toast.add('error', '请先选择实例', '', 5000)
-    return
+    toast.add("error", "请先选择实例", "", 5000);
+    return;
   }
 
   const fetchLatestVersion = async (moduleName: string) => {
-    const url = `https://pypi.org/pypi/${moduleName}/json`
+    const url = `https://pypi.org/pypi/${moduleName}/json`;
     const { data } = await useFetch(url).json<{
       info: {
-        version: string
-      }
-      releases: Record<string, any[]>
-    }>()
-    return data.value
-  }
+        version: string;
+      };
+      releases: Record<string, any[]>;
+    }>();
+    return data.value;
+  };
 
   if (pluginsRef.value) {
     pluginsRef.value = await Promise.all(
       pluginsRef.value.map(async (plugin: Plugin) => {
-        plugin.latestVersion = 'ignore'
-        const data = await fetchLatestVersion(plugin.module_name!)
+        plugin.latestVersion = "ignore";
+        const data = await fetchLatestVersion(plugin.module_name!);
         if (data) {
-          plugin.latestVersion = data.info.version
-          plugin.releases = Object.keys(data.releases)
-          plugin.selectedVersion = plugin.version
+          plugin.latestVersion = data.info.version;
+          plugin.releases = Object.keys(data.releases);
+          plugin.selectedVersion = plugin.version;
         }
-        return plugin
-      })
-    )
+        return plugin;
+      }),
+    );
   }
 
-  toast.add('info', '检查更新完成', '', 5000)
-}
+  toast.add("info", "检查更新完成", "", 5000);
+};
 
 onMounted(async () => {
-  await getData()
-  await updateLatestVersion()
-})
+  await getData();
+  await updateLatestVersion();
+});
 
 const uninstall = async (module: Plugin | Adapter | Driver) => {
-  if (!store.selectedBot) return
+  if (!store.selectedBot) return;
 
-  const moduleType = 'valid' in module ? 'plugin' : 'module'
+  const moduleType = "valid" in module ? "plugin" : "module";
 
-  const { data, error } = await StoreService.uninstallNonebotModuleV1StoreNonebotUninstallPost({
-    query: {
-      env: store.selectedBot.use_env!,
-      project_id: store.selectedBot.project_id
-    },
+  const { data, error } =
+    await StoreService.uninstallNonebotModuleV1StoreNonebotUninstallPost({
+      query: {
+        env: store.selectedBot.use_env!,
+        project_id: store.selectedBot.project_id,
+      },
 
-    // @ts-ignore
-    body: {
-      ...module,
-      module_type: moduleType
-    }
-  })
+      // @ts-ignore
+      body: {
+        ...module,
+        module_type: moduleType,
+      },
+    });
 
   if (error) {
-    toast.add('error', `卸载失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `卸载失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    await getData()
-    toast.add('success', '卸载成功', '', 5000)
+    await getData();
+    toast.add("success", "卸载成功", "", 5000);
   }
-}
+};
 </script>
 
 <template>
@@ -330,14 +331,15 @@ const uninstall = async (module: Plugin | Adapter | Driver) => {
 .collapse[open] > :where(.collapse-content),
 .collapse-open > :where(.collapse-content),
 .collapse:focus:not(.collapse-close) > :where(.collapse-content),
-.collapse:not(.collapse-close) > :where(input[type='checkbox']:checked ~ .collapse-content),
-.collapse:not(.collapse-close) > :where(input[type='radio']:checked ~ .collapse-content) {
+.collapse:not(.collapse-close)
+  > :where(input[type="checkbox"]:checked ~ .collapse-content),
+.collapse:not(.collapse-close) > :where(input[type="radio"]:checked ~ .collapse-content) {
   @apply pb-4;
 }
 
 .collapse-title,
-:where(.collapse > input[type='checkbox']),
-:where(.collapse > input[type='radio']) {
+:where(.collapse > input[type="checkbox"]),
+:where(.collapse > input[type="radio"]) {
   @apply min-h-0;
 }
 </style>

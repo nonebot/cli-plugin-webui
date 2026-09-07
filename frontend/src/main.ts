@@ -1,4 +1,4 @@
-import '@/assets/main.css'
-import { initWebUI } from '@/client/init'
+import "@/assets/main.css";
+import { initWebUI } from "@/client/init";
 
-initWebUI()
+initWebUI();

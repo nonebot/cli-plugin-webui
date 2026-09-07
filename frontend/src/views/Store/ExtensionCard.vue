@@ -10,137 +10,139 @@
 import {
   StoreService,
   type nb_cli_plugin_webui__app__models__base__ModuleInfo,
-  type nb_cli_plugin_webui__app__models__store__Plugin
-} from '@/client/api'
-import type { PypiInfo } from '@/views/Store/types'
-import { useFetch } from '@vueuse/core'
-import { computed, ref } from 'vue'
-import { useSearchStore } from './client'
-import { useNoneBotStore, useToastStore } from '@/stores'
-import LogView from '@/components/Modals/Global/LogView.vue'
-import router from '@/router'
+  type nb_cli_plugin_webui__app__models__store__Plugin,
+} from "@/client/api";
+import type { PypiInfo } from "@/views/Store/types";
+import { useFetch } from "@vueuse/core";
+import { computed, ref } from "vue";
+import { useSearchStore } from "./client";
+import { useNoneBotStore, useToastStore } from "@/stores";
+import LogView from "@/components/Modals/Global/LogView.vue";
+import router from "@/router";
 
 const store = useSearchStore(),
-  nonebotStore = useNoneBotStore()
+  nonebotStore = useNoneBotStore();
 
-const toast = useToastStore()
+const toast = useToastStore();
 
 const props = defineProps<{
-  data: T
-}>()
+  data: T;
+}>();
 
 const extensionCardModal = ref<HTMLDialogElement>(),
   pypiData = ref<PypiInfo>(),
   logViewModal = ref<InstanceType<typeof LogView> | null>(),
-  installLogKey = ref(''),
-  extensionUninstallConfirmModal = ref<HTMLDialogElement>()
+  installLogKey = ref(""),
+  extensionUninstallConfirmModal = ref<HTMLDialogElement>();
 
 const open = async () => {
-  extensionCardModal.value?.showModal()
+  extensionCardModal.value?.showModal();
 
-  const pypiURL = `https://pypi.org/pypi/${props.data.project_link}/json`
-  const { data } = await useFetch(pypiURL).json<PypiInfo>()
-  if (data.value) pypiData.value = data.value
-}
+  const pypiURL = `https://pypi.org/pypi/${props.data.project_link}/json`;
+  const { data } = await useFetch(pypiURL).json<PypiInfo>();
+  if (data.value) pypiData.value = data.value;
+};
 
 const isTestPassed = (data: T): boolean => {
-  if ('valid' in data && 'skip_test' in data) {
-    return data.valid && !data.skip_test
+  if ("valid" in data && "skip_test" in data) {
+    return data.valid && !data.skip_test;
   }
-  return false
-}
+  return false;
+};
 
 const installModule = async (module: T) => {
-  if (!nonebotStore.selectedBot || !module) return
+  if (!nonebotStore.selectedBot || !module) return;
 
-  const moduleType = 'valid' in module ? 'plugin' : 'module'
+  const moduleType = "valid" in module ? "plugin" : "module";
 
-  const { data, error } = await StoreService.installNonebotModuleV1StoreNonebotInstallPost({
-    query: {
-      env: nonebotStore.selectedBot.use_env!,
-      project_id: nonebotStore.selectedBot.project_id
-    },
+  const { data, error } =
+    await StoreService.installNonebotModuleV1StoreNonebotInstallPost({
+      query: {
+        env: nonebotStore.selectedBot.use_env!,
+        project_id: nonebotStore.selectedBot.project_id,
+      },
 
-    // TODO: 正常 Module 同 Plugin 拓展数据冲突, 待修复
-    // @ts-ignore
-    body: {
-      ...module,
-      module_type: moduleType
-    }
-  })
+      // TODO: 正常 Module 同 Plugin 拓展数据冲突, 待修复
+      // @ts-ignore
+      body: {
+        ...module,
+        module_type: moduleType,
+      },
+    });
 
   if (error) {
-    toast.add('error', `提交安装失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `提交安装失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    installLogKey.value = data.detail
-    logViewModal.value?.openModal()
+    installLogKey.value = data.detail;
+    logViewModal.value?.openModal();
   }
-}
+};
 
 const uninstallModule = async (module: T) => {
-  if (!nonebotStore.selectedBot || !module) return
-  if (!module.is_download) return
+  if (!nonebotStore.selectedBot || !module) return;
+  if (!module.is_download) return;
 
-  const moduleType = 'valid' in module ? 'plugin' : 'module'
+  const moduleType = "valid" in module ? "plugin" : "module";
 
-  const { data, error } = await StoreService.uninstallNonebotModuleV1StoreNonebotUninstallPost({
-    query: {
-      env: nonebotStore.selectedBot.use_env!,
-      project_id: nonebotStore.selectedBot.project_id
-    },
+  const { data, error } =
+    await StoreService.uninstallNonebotModuleV1StoreNonebotUninstallPost({
+      query: {
+        env: nonebotStore.selectedBot.use_env!,
+        project_id: nonebotStore.selectedBot.project_id,
+      },
 
-    // TODO: 正常 Module 同 Plugin 拓展数据冲突, 待修复
-    // @ts-ignore
-    body: {
-      ...module,
-      module_type: moduleType
-    }
-  })
+      // TODO: 正常 Module 同 Plugin 拓展数据冲突, 待修复
+      // @ts-ignore
+      body: {
+        ...module,
+        module_type: moduleType,
+      },
+    });
 
   if (error) {
-    toast.add('error', `卸载失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `卸载失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    extensionUninstallConfirmModal.value?.close()
-    await store.updateData(nonebotStore.selectedBot.project_id, false)
-    toast.add('success', '卸载成功', '', 5000)
+    extensionUninstallConfirmModal.value?.close();
+    await store.updateData(nonebotStore.selectedBot.project_id, false);
+    toast.add("success", "卸载成功", "", 5000);
   }
-}
+};
 
 const isRetry = () => {
-  installModule(props.data)
-}
+  installModule(props.data);
+};
 
 const isFinished = async () => {
-  await store.updateData(nonebotStore.selectedBot!.project_id, false)
-}
+  await store.updateData(nonebotStore.selectedBot!.project_id, false);
+};
 
 const getUpdateTime = computed(() => {
-  if (!('time' in props.data)) return 'ignore'
+  if (!("time" in props.data)) return "ignore";
 
-  const time = new Date(props.data.time)
-  const now = new Date()
-  const diff = now.getTime() - time.getTime()
-  const diffHours = diff / (1000 * 60 * 60)
-  const diffDays = diff / (1000 * 60 * 60 * 24)
-  const diffMonths = diff / (1000 * 60 * 60 * 24 * 30)
-  const diffYears = diff / (1000 * 60 * 60 * 24 * 365)
+  const time = new Date(props.data.time);
+  const now = new Date();
+  const diff = now.getTime() - time.getTime();
+  const diffHours = diff / (1000 * 60 * 60);
+  const diffDays = diff / (1000 * 60 * 60 * 24);
+  const diffMonths = diff / (1000 * 60 * 60 * 24 * 30);
+  const diffYears = diff / (1000 * 60 * 60 * 24 * 365);
 
   if (diffYears >= 1) {
-    return `${Math.floor(diffYears)}年前`
+    return `${Math.floor(diffYears)}年前`;
   } else if (diffMonths >= 1) {
-    return `${Math.floor(diffMonths)}个月前`
+    return `${Math.floor(diffMonths)}个月前`;
   } else if (diffDays >= 1) {
-    return `${Math.floor(diffDays)}天前`
+    return `${Math.floor(diffDays)}天前`;
   } else if (diffHours >= 1) {
-    return `${Math.floor(diffHours)}小时前`
+    return `${Math.floor(diffHours)}小时前`;
   } else {
-    return '刚刚'
+    return "刚刚";
   }
-})
+});
 </script>
 
 <template>
@@ -157,7 +159,9 @@ const getUpdateTime = computed(() => {
 
       <div class="w-full grid grid-cols-2 gap-4">
         <button class="btn btn-sm" @click="uninstallModule(props.data)">确定</button>
-        <button class="btn btn-sm" @click="extensionUninstallConfirmModal?.close()">取消</button>
+        <button class="btn btn-sm" @click="extensionUninstallConfirmModal?.close()">
+          取消
+        </button>
       </div>
     </div>
   </dialog>
@@ -208,7 +212,9 @@ const getUpdateTime = computed(() => {
           >
             卸载
           </button>
-          <button v-else class="btn btn-sm" @click="installModule(props.data)">安装</button>
+          <button v-else class="btn btn-sm" @click="installModule(props.data)">
+            安装
+          </button>
         </div>
       </div>
 
@@ -218,7 +224,10 @@ const getUpdateTime = computed(() => {
         <div class="flex flex-col justify-between gap-2">
           <div class="opacity-70 text-sm">{{ props.data.desc }}</div>
 
-          <div v-if="props.data.tags?.length" class="flex flex-wrap items-center gap-1 md:gap-2">
+          <div
+            v-if="props.data.tags?.length"
+            class="flex flex-wrap items-center gap-1 md:gap-2"
+          >
             <div
               v-for="tag in props.data.tags"
               :key="tag.label"
@@ -252,7 +261,10 @@ const getUpdateTime = computed(() => {
 
             <div class="flex items-center gap-1 text-sm">
               <span class="material-symbols-outlined text-base"> file_save </span>
-              {{ (pypiData?.releases[Object.keys(pypiData.releases).pop()!][1].size ?? 0) / 1000 }}
+              {{
+                (pypiData?.releases[Object.keys(pypiData.releases).pop()!][1].size ?? 0) /
+                1000
+              }}
               K
             </div>
 
@@ -348,7 +360,7 @@ const getUpdateTime = computed(() => {
         @click="
           store.updateTag({
             label: 'author',
-            text: props.data.author
+            text: props.data.author,
           })
         "
       >
@@ -369,7 +381,7 @@ const getUpdateTime = computed(() => {
         @click="
           store.updateTag({
             label: 'tag',
-            text: tag.label
+            text: tag.label,
           })
         "
       >
@@ -407,7 +419,9 @@ const getUpdateTime = computed(() => {
         >
           设置
         </button>
-        <button v-else class="btn btn-sm btn-ghost" @click="installModule(props.data)">安装</button>
+        <button v-else class="btn btn-sm btn-ghost" @click="installModule(props.data)">
+          安装
+        </button>
       </div>
     </div>
   </div>
