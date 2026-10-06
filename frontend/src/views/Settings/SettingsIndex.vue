@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import SettingCard from './SettingCard.vue'
-import SearchBar from './SearchBar.vue'
-import { useSettingsStore } from './client'
+import SettingCard from "./SettingCard.vue";
+import SearchBar from "./SearchBar.vue";
+import { useSettingsStore } from "./client";
 
-const settingsStore = useSettingsStore()
+const settingsStore = useSettingsStore();
 
-settingsStore.init()
+settingsStore.init();
 </script>
 
 <template>

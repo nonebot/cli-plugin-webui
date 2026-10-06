@@ -9,8 +9,8 @@ from nb_cli_plugin_webui.app.utils.scheduler import scheduler
 from .schemas import CpuInfo, MemInfo, NetInfo, DiskInfo, PlatformProfile
 
 if pf == "win32":
-    import pythoncom
     import wmi  # type: ignore
+    import pythoncom
     from win32com import client
 
 

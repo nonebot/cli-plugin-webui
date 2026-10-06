@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from 'vue'
-import { useAddBotStore } from '.'
-import { ProjectService, type ProcessLog } from '@/client/api'
-import { useWebSocket } from '@vueuse/core'
-import { generateURLForWebUI } from '@/client/utils'
-import { useNoneBotStore, useToastStore } from '@/stores'
+import { computed, onUnmounted, ref, watch } from "vue";
+import { useAddBotStore } from ".";
+import { ProjectService, type ProcessLog } from "@/client/api";
+import { useWebSocket } from "@vueuse/core";
+import { generateURLForWebUI } from "@/client/utils";
+import { useNoneBotStore, useToastStore } from "@/stores";
 
-const IS_FINISHED = '✨ Done!'
-const IS_FAILED = '❌ Failed!'
+const IS_FINISHED = "✨ Done!";
+const IS_FAILED = "❌ Failed!";
 
-const store = useAddBotStore()
-const nonebotStore = useNoneBotStore()
-const toast = useToastStore()
+const store = useAddBotStore();
+const nonebotStore = useNoneBotStore();
+const toast = useToastStore();
 
-const logKey = ref('')
-const isFailed = ref(false)
-const logContainer = ref<HTMLElement>()
-const logData = ref<ProcessLog[]>([])
+const logKey = ref("");
+const isFailed = ref(false);
+const logContainer = ref<HTMLElement>();
+const logData = ref<ProcessLog[]>([]);
 
-const getLogData = computed(() => [...logData.value].reverse())
+const getLogData = computed(() => [...logData.value].reverse());
 
 const addBot = async () => {
   if (isFailed.value) {
-    isFailed.value = false
-    store.warningMessage = ''
+    isFailed.value = false;
+    store.warningMessage = "";
 
-    logData.value = []
+    logData.value = [];
     logData.value.push({
-      message: 'Retrying...'
-    })
+      message: "Retrying...",
+    });
   }
 
   const { data, error } = await ProjectService.addProjectV1ProjectAddPost({
@@ -38,67 +38,67 @@ const addBot = async () => {
       mirror_url: store.pythonMirror,
       adapters: store.adapters.map((obj) => obj.module_name) ?? [],
       plugins: store.plugins,
-      plugin_dirs: store.pluginDirs
-    }
-  })
+      plugin_dirs: store.pluginDirs,
+    },
+  });
 
   if (error) {
-    store.warningMessage = error.detail?.toString() ?? ''
-    isFailed.value = true
+    store.warningMessage = error.detail?.toString() ?? "";
+    isFailed.value = true;
   }
 
   if (data) {
-    logKey.value = data.detail
-    open()
+    logKey.value = data.detail;
+    open();
   }
-}
+};
 
 const finish = async () => {
-  await nonebotStore.loadBots()
-  toast.add('success', `添加实例 ${store.projectName} 成功`, '', 5000)
-}
+  await nonebotStore.loadBots();
+  toast.add("success", `添加实例 ${store.projectName} 成功`, "", 5000);
+};
 
 const { status, data, close, open } = useWebSocket<ProcessLog>(
-  generateURLForWebUI('/v1/process/log/ws', true),
+  generateURLForWebUI("/v1/process/log/ws", true),
   {
     immediate: false,
     onConnected(ws) {
-      const token = localStorage.getItem('token') ?? ''
-      ws.send(token)
-      ws.send(JSON.stringify({ type: 'log', log_key: logKey.value }))
-    }
-  }
-)
+      const token = localStorage.getItem("token") ?? "";
+      ws.send(token);
+      ws.send(JSON.stringify({ type: "log", log_key: logKey.value }));
+    },
+  },
+);
 
 watch(
   () => data.value,
   (rawData) => {
-    if (!rawData) return
+    if (!rawData) return;
 
-    const data: ProcessLog = JSON.parse(rawData.toString())
+    const data: ProcessLog = JSON.parse(rawData.toString());
 
-    logData.value.push(data)
+    logData.value.push(data);
 
     if (data.message === IS_FINISHED) {
-      close()
-      store.addBotSuccess = true
+      close();
+      store.addBotSuccess = true;
     } else if (data.message === IS_FAILED) {
-      close()
-      isFailed.value = true
+      close();
+      isFailed.value = true;
     }
-  }
-)
+  },
+);
 
 watch(
   () => status.value,
   (status) => {
-    store.isInstalling = status === 'OPEN'
-  }
-)
+    store.isInstalling = status === "OPEN";
+  },
+);
 
 onUnmounted(() => {
-  close()
-})
+  close();
+});
 </script>
 
 <template>
@@ -128,7 +128,9 @@ onUnmounted(() => {
               >
                 {{ adapter.name }}
               </span>
-              <span v-if="!store.adapters.length" class="text-base-content/50"> 未找到适配器 </span>
+              <span v-if="!store.adapters.length" class="text-base-content/50">
+                未找到适配器
+              </span>
             </td>
           </tr>
           <tr>
@@ -141,7 +143,9 @@ onUnmounted(() => {
               >
                 {{ plugin }}
               </span>
-              <span v-if="!store.plugins.length" class="text-base-content/50"> 未找到插件 </span>
+              <span v-if="!store.plugins.length" class="text-base-content/50">
+                未找到插件
+              </span>
             </td>
           </tr>
           <tr>
@@ -170,7 +174,7 @@ onUnmounted(() => {
             :class="{
               'flex font-mono': true,
               'bg-error/50': log.level === 'ERROR',
-              'bg-warning/50': log.level === 'WARNING'
+              'bg-warning/50': log.level === 'WARNING',
             }"
           >
             <th class="sticky left-0 right-0 text-gray-500 bg-base-200">
@@ -187,7 +191,7 @@ onUnmounted(() => {
       <button
         :class="{
           'btn btn-sm btn-primary text-base-100': true,
-          'btn-disabled': store.isInstalling || store.addBotSuccess
+          'btn-disabled': store.isInstalling || store.addBotSuccess,
         }"
         @click="store.step--"
       >
@@ -199,7 +203,7 @@ onUnmounted(() => {
           <button
             :class="{
               'btn btn-sm': true,
-              'btn-disabled': store.isInstalling || store.addBotSuccess
+              'btn-disabled': store.isInstalling || store.addBotSuccess,
             }"
           >
             取消
@@ -207,17 +211,19 @@ onUnmounted(() => {
         </form>
 
         <form v-if="store.addBotSuccess" method="dialog">
-          <button class="btn btn-sm btn-primary text-base-100" @click="finish()">完成</button>
+          <button class="btn btn-sm btn-primary text-base-100" @click="finish()">
+            完成
+          </button>
         </form>
         <button
           v-else
           :class="{
             'btn btn-sm btn-primary text-base-100': true,
-            'btn-disabled': store.isInstalling
+            'btn-disabled': store.isInstalling,
           }"
           @click="addBot()"
         >
-          {{ isFailed ? '重试' : '安装' }}
+          {{ isFailed ? "重试" : "安装" }}
         </button>
       </div>
     </div>
