@@ -1,87 +1,92 @@
 <script setup lang="ts">
-import { ProjectService } from '@/client/api'
-import EditorItem from '@/components/EditorItem.vue'
-import { useNoneBotStore, useToastStore } from '@/stores'
-import { editor as monacoEditor } from 'monaco-editor/esm/vs/editor/editor.api.js'
-import { ref, watch } from 'vue'
+import { ProjectService } from "@/client/api";
+import EditorItem from "@/components/EditorItem.vue";
+import { useNoneBotStore, useToastStore } from "@/stores";
+import { editor as monacoEditor } from "monaco-editor/esm/vs/editor/editor.api.js";
+import { ref, watch } from "vue";
 
-const dotenvEditorModal = ref<HTMLDialogElement>()
+const dotenvEditorModal = ref<HTMLDialogElement>();
 
 defineExpose({
   openModal: async () => {
-    dotenvEditorModal.value?.showModal()
-    await getDotenvFile()
+    dotenvEditorModal.value?.showModal();
+    await getDotenvFile();
   },
-  closeModal: () => dotenvEditorModal.value?.close()
-})
+  closeModal: () => dotenvEditorModal.value?.close(),
+});
 
 const props = defineProps<{
-  theme: string
-}>()
+  theme: string;
+}>();
 
-const nonebotStore = useNoneBotStore()
-const toast = useToastStore()
+const nonebotStore = useNoneBotStore();
+const toast = useToastStore();
 
-const editorValue = ref<string>('')
-const returnEditorValue = ref<string>('')
-const editor = ref<monacoEditor.IStandaloneCodeEditor>()
+const editorValue = ref<string>("");
+const returnEditorValue = ref<string>("");
+const editor = ref<monacoEditor.IStandaloneCodeEditor>();
 
 watch(
   () => props.theme,
   (theme) => {
     editor.value?.updateOptions({
-      theme: theme === 'dark' ? 'vs-dark' : 'vs'
-    })
-  }
-)
+      theme: theme === "dark" ? "vs-dark" : "vs",
+    });
+  },
+);
 
 const getDotenvFile = async () => {
   if (!nonebotStore.selectedBot) {
-    return
+    return;
   }
 
   const { data, error } = await ProjectService.getDotenvFileV1ProjectConfigDotenvGet({
     query: {
       env: nonebotStore.selectedBot.use_env!,
-      project_id: nonebotStore.selectedBot.project_id
-    }
-  })
+      project_id: nonebotStore.selectedBot.project_id,
+    },
+  });
 
   if (error) {
-    dotenvEditorModal.value?.close()
-    toast.add('error', `获取 dotenv 文件失败, 原因：${error.detail?.toString()}`, '', 5000)
+    dotenvEditorModal.value?.close();
+    toast.add(
+      "error",
+      `获取 dotenv 文件失败, 原因：${error.detail?.toString()}`,
+      "",
+      5000,
+    );
   }
 
   if (data) {
-    editorValue.value = data.detail
+    editorValue.value = data.detail;
   }
-}
+};
 
 const updateDotenvFile = async () => {
   if (!nonebotStore.selectedBot) {
-    return
+    return;
   }
 
   const { error } = await ProjectService.updateDotenvFileV1ProjectConfigDotenvPut({
     query: {
       data: returnEditorValue.value,
       env: nonebotStore.selectedBot.use_env!,
-      project_id: nonebotStore.selectedBot.project_id
+      project_id: nonebotStore.selectedBot.project_id,
     },
     body: {
-      detail: returnEditorValue.value
-    }
-  })
+      detail: returnEditorValue.value,
+    },
+  });
 
   if (error) {
-    toast.add('error', `更新文件失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `更新文件失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (!error) {
-    dotenvEditorModal.value?.close()
-    toast.add('success', `${nonebotStore.selectedBot.use_env} 文件已更新`, '', 5000)
+    dotenvEditorModal.value?.close();
+    toast.add("success", `${nonebotStore.selectedBot.use_env} 文件已更新`, "", 5000);
   }
-}
+};
 </script>
 
 <template>
@@ -98,16 +103,16 @@ const updateDotenvFile = async () => {
             minimap: { enabled: false },
             accessibilitySupport: 'off',
             automaticLayout: true,
-            lineNumbers: 'off'
+            lineNumbers: 'off',
           }"
           v-on:editor="
             (event) => {
-              editor = event
+              editor = event;
             }
           "
           v-on:update-value="
             (value) => {
-              returnEditorValue = value
+              returnEditorValue = value;
             }
           "
         />

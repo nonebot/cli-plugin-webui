@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import ToastItem from '@/components/ToastItem.vue'
-import { useToastStore } from '@/stores'
+import { RouterView } from "vue-router";
+import ToastItem from "@/components/ToastItem.vue";
+import { useToastStore } from "@/stores";
 
-const store = useToastStore()
+const store = useToastStore();
 </script>
 
 <template>

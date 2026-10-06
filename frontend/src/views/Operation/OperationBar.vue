@@ -1,110 +1,110 @@
 <script setup lang="ts">
-import { ProcessService, ProjectService } from '@/client/api'
-import { sleep } from '@/client/utils'
-import { useNoneBotStore, useToastStore } from '@/stores'
-import { ref } from 'vue'
+import { ProcessService, ProjectService } from "@/client/api";
+import { sleep } from "@/client/utils";
+import { useNoneBotStore, useToastStore } from "@/stores";
+import { ref } from "vue";
 
-const store = useNoneBotStore()
-const toast = useToastStore()
+const store = useNoneBotStore();
+const toast = useToastStore();
 
-const deleteConfirmModal = ref<HTMLDialogElement>()
+const deleteConfirmModal = ref<HTMLDialogElement>();
 
-const oLock = ref(false)
+const oLock = ref(false);
 
 const runBot = async () => {
-  if (!store.selectedBot) return
+  if (!store.selectedBot) return;
 
-  oLock.value = true
+  oLock.value = true;
   const { data, error } = await ProcessService.runProcessV1ProcessRunPost({
     query: {
-      project_id: store.selectedBot?.project_id
-    }
-  })
+      project_id: store.selectedBot?.project_id,
+    },
+  });
 
   if (error) {
-    toast.add('error', `启动失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `启动失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    await store.loadBots()
-    toast.add('success', `${store.selectedBot?.project_name} 已启动`, '', 5000)
+    await store.loadBots();
+    toast.add("success", `${store.selectedBot?.project_name} 已启动`, "", 5000);
   }
 
-  oLock.value = false
-}
+  oLock.value = false;
+};
 
 const stopBot = async () => {
-  if (!store.selectedBot) return
+  if (!store.selectedBot) return;
 
-  oLock.value = true
+  oLock.value = true;
   const { data, error } = await ProcessService.stopProcessV1ProcessStopPost({
     query: {
-      project_id: store.selectedBot?.project_id
-    }
-  })
+      project_id: store.selectedBot?.project_id,
+    },
+  });
 
   if (error) {
-    toast.add('error', `停止失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `停止失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    await store.loadBots()
-    toast.add('success', `${store.selectedBot?.project_name} 已停止`, '', 5000)
+    await store.loadBots();
+    toast.add("success", `${store.selectedBot?.project_name} 已停止`, "", 5000);
   }
 
-  oLock.value = false
-}
+  oLock.value = false;
+};
 
 const restartBot = async () => {
-  if (!store.selectedBot) return
+  if (!store.selectedBot) return;
 
-  oLock.value = true
+  oLock.value = true;
 
-  await stopBot()
+  await stopBot();
 
-  const pollingInterval = 2000
-  const maxAttempts = 30
+  const pollingInterval = 2000;
+  const maxAttempts = 30;
 
-  let attempts = 0
+  let attempts = 0;
   while (attempts < maxAttempts) {
     if (!store.selectedBot.is_running) {
-      break
+      break;
     }
 
-    await sleep(pollingInterval)
+    await sleep(pollingInterval);
   }
 
   if (attempts >= maxAttempts) {
-    toast.add('error', '重启失败', '', 5000)
+    toast.add("error", "重启失败", "", 5000);
   } else {
-    await runBot()
+    await runBot();
   }
-  oLock.value = false
-}
+  oLock.value = false;
+};
 
 const deleteBot = async (isFully: boolean = false) => {
-  if (!store.selectedBot) return
+  if (!store.selectedBot) return;
 
-  oLock.value = true
+  oLock.value = true;
 
   const { data, error } = await ProjectService.deleteProjectV1ProjectDeleteDelete({
     query: {
       project_id: store.selectedBot.project_id,
-      delete_fully: isFully
-    }
-  })
+      delete_fully: isFully,
+    },
+  });
 
   if (error) {
-    toast.add('error', `删除失败, 原因：${error.detail?.toString()}`, '', 5000)
+    toast.add("error", `删除失败, 原因：${error.detail?.toString()}`, "", 5000);
   }
 
   if (data) {
-    await store.loadBots()
-    store.selectBot(Object.values(store.bots)[0])
+    await store.loadBots();
+    store.selectBot(Object.values(store.bots)[0]);
   }
 
-  oLock.value = false
-}
+  oLock.value = false;
+};
 </script>
 
 <template>
@@ -118,7 +118,9 @@ const deleteBot = async (isFully: boolean = false) => {
         <button class="btn btn-sm hover:btn-warning shadow-none" @click="deleteBot()">
           仅删除信息
         </button>
-        <button class="btn btn-sm shadow-none" @click="deleteConfirmModal?.close()">取消</button>
+        <button class="btn btn-sm shadow-none" @click="deleteConfirmModal?.close()">
+          取消
+        </button>
       </div>
     </div>
   </dialog>
@@ -129,7 +131,9 @@ const deleteBot = async (isFully: boolean = false) => {
     <div class="flex items-center gap-4">
       <div class="text-lg font-semibold">{{ store.selectedBot?.project_name }}</div>
       <div class="flex items-center gap-2">
-        <div class="badge badge-sm text-gray-500">{{ store.selectedBot?.project_id }}</div>
+        <div class="badge badge-sm text-gray-500">
+          {{ store.selectedBot?.project_id }}
+        </div>
 
         <div
           v-if="store.selectedBot?.is_running"
@@ -145,7 +149,7 @@ const deleteBot = async (isFully: boolean = false) => {
       <button
         :class="{
           'btn btn-sm btn-primary font-normal text-base-100': true,
-          'btn-disabled': store.selectedBot?.is_running || oLock
+          'btn-disabled': store.selectedBot?.is_running || oLock,
         }"
         @click="runBot()"
       >
@@ -154,7 +158,7 @@ const deleteBot = async (isFully: boolean = false) => {
       <button
         :class="{
           'btn btn-sm shadow-none font-normal': true,
-          'btn-disabled': !store.selectedBot?.is_running || oLock
+          'btn-disabled': !store.selectedBot?.is_running || oLock,
         }"
         @click="stopBot()"
       >
@@ -163,7 +167,7 @@ const deleteBot = async (isFully: boolean = false) => {
       <button
         :class="{
           'btn btn-sm shadow-none font-normal border-red': true,
-          'btn-disabled': !store.selectedBot?.is_running || oLock
+          'btn-disabled': !store.selectedBot?.is_running || oLock,
         }"
         @click="restartBot()"
       >
@@ -173,7 +177,9 @@ const deleteBot = async (isFully: boolean = false) => {
         :class="{
           'btn btn-sm btn-outline btn-primary shadow-none font-normal': true,
           'btn-disabled':
-            store.selectedBot?.is_running || Object.values(store.bots).length <= 1 || oLock
+            store.selectedBot?.is_running ||
+            Object.values(store.bots).length <= 1 ||
+            oLock,
         }"
         @click="deleteConfirmModal?.showModal()"
       >

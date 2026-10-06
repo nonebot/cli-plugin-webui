@@ -55,8 +55,12 @@ class AppConfig(BaseModel):
     log_level: LogLevels = Field(default=LogLevels.INFO, description="日志等级")
     log_is_store: bool = Field(default=False, description="是否存储日志")
 
-    secret_key: SecretStr = Field(default=SecretStr(str()), description="验证密钥的密钥")
-    hashed_token: SecretStr = Field(default=SecretStr(str()), description="哈希后的 token")
+    secret_key: SecretStr = Field(
+        default=SecretStr(str()), description="验证密钥的密钥"
+    )
+    hashed_token: SecretStr = Field(
+        default=SecretStr(str()), description="哈希后的 token"
+    )
     salt: SecretStr = Field(default=SecretStr(str()), description="盐值")
 
     allowed_origins: list = Field(
@@ -68,7 +72,9 @@ class AppConfig(BaseModel):
         default=5 * 60, description="进程单条日志销毁时间（秒）"
     )
 
-    extension_store_visible_items: int = Field(default=12, description="扩展商店每页显示数量")
+    extension_store_visible_items: int = Field(
+        default=12, description="扩展商店每页显示数量"
+    )
 
     @property
     def log_level_str(self) -> str:
