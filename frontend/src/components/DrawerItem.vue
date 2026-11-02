@@ -1,21 +1,21 @@
 <script setup lang="ts">
 // TODO: 优化组件使用体验
 
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const isShow = ref(false)
+const isShow = ref(false);
 defineExpose({
   showDrawer: () => {
-    isShow.value = true
+    isShow.value = true;
   },
   hiddenDrawer: () => {
-    hiddenDrawer()
-  }
-})
+    hiddenDrawer();
+  },
+});
 
 const hiddenDrawer = () => {
-  isShow.value = false
-}
+  isShow.value = false;
+};
 </script>
 
 <template>
@@ -36,7 +36,7 @@ const hiddenDrawer = () => {
         'fixed top-0 right-0 z-50 h-screen bg-base-100 shadow-2xl transition shrink-0 flex flex-col': true,
         'w-full md:w-2/5 xl:w-1/4 ': true,
         'translate-x-0 opacity-100': isShow,
-        'translate-x-full opacity-0': !isShow
+        'translate-x-full opacity-0': !isShow,
       }"
     >
       <!-- Drawer Header -->
@@ -75,9 +75,9 @@ const hiddenDrawer = () => {
 
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 300,
-    'GRAD' 0,
-    'opsz' 24;
+    "FILL" 0,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 24;
 }
 </style>

@@ -1,105 +1,105 @@
 <script setup lang="ts">
-import { ProjectService, type ProcessLog } from '@/client/api'
-import { useWebSocket } from '@vueuse/core'
-import { computed, onUnmounted, ref, watch } from 'vue'
-import { generateURLForWebUI } from '@/client/utils'
-import { useCreateBotStore } from '.'
-import { useNoneBotStore, useToastStore } from '@/stores'
+import { ProjectService, type ProcessLog } from "@/client/api";
+import { useWebSocket } from "@vueuse/core";
+import { computed, onUnmounted, ref, watch } from "vue";
+import { generateURLForWebUI } from "@/client/utils";
+import { useCreateBotStore } from ".";
+import { useNoneBotStore, useToastStore } from "@/stores";
 
-const IS_FINISHED = '✨ Done!',
-  IS_FAILED = '❌ Failed!'
+const IS_FINISHED = "✨ Done!",
+  IS_FAILED = "❌ Failed!";
 
-const store = useCreateBotStore()
-const toast = useToastStore()
-const nonebotStore = useNoneBotStore()
+const store = useCreateBotStore();
+const toast = useToastStore();
+const nonebotStore = useNoneBotStore();
 
-const logKey = ref('')
-const isFailed = ref(false)
-const logContainer = ref<HTMLElement>()
-const logData = ref<ProcessLog[]>([])
+const logKey = ref("");
+const isFailed = ref(false);
+const logContainer = ref<HTMLElement>();
+const logData = ref<ProcessLog[]>([]);
 
 const createBot = async () => {
   if (isFailed.value) {
-    isFailed.value = false
-    store.warningMessage = ''
+    isFailed.value = false;
+    store.warningMessage = "";
 
-    logData.value = []
+    logData.value = [];
     logData.value.push({
-      message: 'Retrying...'
-    })
+      message: "Retrying...",
+    });
   }
 
   const { data, error } = await ProjectService.createProjectV1ProjectCreatePost({
     body: {
-      is_bootstrap: store.template === 'bootstrap',
+      is_bootstrap: store.template === "bootstrap",
       use_src: store.useSrc,
       project_name: store.projectName,
       project_dir: store.projectPath,
       mirror_url: store.pythonMirror,
       drivers: store.drivers,
-      adapters: store.adapters
-    }
-  })
+      adapters: store.adapters,
+    },
+  });
 
   if (error) {
-    store.warningMessage = error.detail?.toString() ?? ''
-    isFailed.value = true
+    store.warningMessage = error.detail?.toString() ?? "";
+    isFailed.value = true;
   }
 
   if (data) {
-    logKey.value = data.detail
-    open()
+    logKey.value = data.detail;
+    open();
   }
-}
+};
 
 const finish = async () => {
-  await nonebotStore.loadBots()
-  toast.add('success', `创建实例 ${store.projectName} 成功`, '', 5000)
-}
+  await nonebotStore.loadBots();
+  toast.add("success", `创建实例 ${store.projectName} 成功`, "", 5000);
+};
 
 const { status, data, close, open } = useWebSocket<ProcessLog>(
-  generateURLForWebUI('/v1/process/log/ws', true),
+  generateURLForWebUI("/v1/process/log/ws", true),
   {
     immediate: false,
     onConnected(ws) {
-      const token = localStorage.getItem('token') ?? ''
-      ws.send(token)
-      ws.send(JSON.stringify({ type: 'log', log_key: logKey.value }))
-    }
-  }
-)
+      const token = localStorage.getItem("token") ?? "";
+      ws.send(token);
+      ws.send(JSON.stringify({ type: "log", log_key: logKey.value }));
+    },
+  },
+);
 
 watch(
   () => data.value,
   (rawData) => {
-    if (!rawData) return
+    if (!rawData) return;
 
-    const data: ProcessLog = JSON.parse(rawData.toString())
+    const data: ProcessLog = JSON.parse(rawData.toString());
 
-    logData.value.push(data)
+    logData.value.push(data);
 
     if (data.message === IS_FINISHED) {
-      close()
-      store.createBotSuccess = true
+      close();
+      store.createBotSuccess = true;
     } else if (data.message === IS_FAILED) {
-      close()
-      isFailed.value = true
+      close();
+      isFailed.value = true;
     }
-  }
-)
+  },
+);
 
 watch(
   () => status.value,
   (status) => {
-    store.isInstalling = status === 'OPEN'
-  }
-)
+    store.isInstalling = status === "OPEN";
+  },
+);
 
-const getLogData = computed(() => [...logData.value].reverse())
+const getLogData = computed(() => [...logData.value].reverse());
 
 onUnmounted(() => {
-  close()
-})
+  close();
+});
 </script>
 
 <template>
@@ -113,11 +113,11 @@ onUnmounted(() => {
           </tr>
           <tr>
             <th class="font-semibold text-base">实例类型</th>
-            <td>{{ store.template === 'bootstrap' ? '初学者 / 普通用户' : '开发者' }}</td>
+            <td>{{ store.template === "bootstrap" ? "初学者 / 普通用户" : "开发者" }}</td>
           </tr>
           <tr v-if="store.template === 'simple'">
             <th class="font-semibold text-base">实例插件加载位置</th>
-            <td>{{ store.useSrc ? '/src' : `/${store.projectName}` }}</td>
+            <td>{{ store.useSrc ? "/src" : `/${store.projectName}` }}</td>
           </tr>
           <tr>
             <th class="font-semibold text-base">实例路径</th>
@@ -154,10 +154,12 @@ onUnmounted(() => {
             :class="{
               'flex font-mono': true,
               'bg-error/50': item.level === 'ERROR',
-              'bg-warning/50': item.level === 'WARNING'
+              'bg-warning/50': item.level === 'WARNING',
             }"
           >
-            <th class="sticky left-0 right-0 bg-base-200 text-gray-500">{{ item.time }}</th>
+            <th class="sticky left-0 right-0 bg-base-200 text-gray-500">
+              {{ item.time }}
+            </th>
             <td class="flex">{{ item.level }}</td>
             <td class="flex">{{ item.message }}</td>
           </tr>
@@ -169,7 +171,7 @@ onUnmounted(() => {
       <button
         :class="{
           'btn btn-sm btn-primary text-base-100': true,
-          'btn-disabled': store.isInstalling || store.createBotSuccess
+          'btn-disabled': store.isInstalling || store.createBotSuccess,
         }"
         @click="store.step--"
       >
@@ -181,7 +183,7 @@ onUnmounted(() => {
           <button
             :class="{
               'btn btn-sm': true,
-              'btn-disabled': store.isInstalling || store.createBotSuccess
+              'btn-disabled': store.isInstalling || store.createBotSuccess,
             }"
           >
             取消
@@ -189,17 +191,19 @@ onUnmounted(() => {
         </form>
 
         <form v-if="store.createBotSuccess" method="dialog">
-          <button class="btn btn-sm btn-primary text-base-100" @click="finish()">完成</button>
+          <button class="btn btn-sm btn-primary text-base-100" @click="finish()">
+            完成
+          </button>
         </form>
         <button
           v-else
           :class="{
             'btn btn-sm btn-primary text-base-100': true,
-            'btn-disabled': store.isInstalling
+            'btn-disabled': store.isInstalling,
           }"
           @click="createBot()"
         >
-          {{ isFailed ? '重试' : '安装' }}
+          {{ isFailed ? "重试" : "安装" }}
         </button>
       </div>
     </div>

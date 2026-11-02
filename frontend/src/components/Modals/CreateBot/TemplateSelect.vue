@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { useCreateBotStore } from '.'
+import { useCreateBotStore } from ".";
 
-const store = useCreateBotStore()
+const store = useCreateBotStore();
 
 interface OptionItem {
-  value: 'bootstrap' | 'simple'
-  text: string
+  value: "bootstrap" | "simple";
+  text: string;
 }
 
 const options: OptionItem[] = [
   {
-    value: 'bootstrap',
-    text: '初学者 / 普通用户'
+    value: "bootstrap",
+    text: "初学者 / 普通用户",
   },
   {
-    value: 'simple',
-    text: '开发者'
-  }
-]
+    value: "simple",
+    text: "开发者",
+  },
+];
 </script>
 
 <template>
@@ -31,7 +31,7 @@ const options: OptionItem[] = [
           :key="i.text"
           :class="{
             'w-full md:w-1/3 btn btn-primary font-normal text-base-100': true,
-            'btn-outline': store.template !== i.value
+            'btn-outline': store.template !== i.value,
           }"
           @click="store.template = i.value"
         >
@@ -76,7 +76,7 @@ const options: OptionItem[] = [
       <button
         :class="{
           'btn btn-sm btn-primary text-base-100': true,
-          'btn-disabled': !store.template.length
+          'btn-disabled': !store.template.length,
         }"
         @click="store.step++"
       >

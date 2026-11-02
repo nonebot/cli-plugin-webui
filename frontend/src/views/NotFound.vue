@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import FooterItem from '@/components/FooterItem.vue'
+import { RouterLink } from "vue-router";
+import FooterItem from "@/components/FooterItem.vue";
 
-defineProps<{ pathMatched?: string }>()
+defineProps<{ pathMatched?: string }>();
 </script>
 
 <template>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useNoneBotStore } from '@/stores'
-import DrawerItem from '@/components/DrawerItem.vue'
-import CreateBotIndex from '@/components/Modals/CreateBot/CreateBotIndex.vue'
+import { ref } from "vue";
+import { useNoneBotStore } from "@/stores";
+import DrawerItem from "@/components/DrawerItem.vue";
+import CreateBotIndex from "@/components/Modals/CreateBot/CreateBotIndex.vue";
 
-const store = useNoneBotStore()
+const store = useNoneBotStore();
 
-const createBotModal = ref<InstanceType<typeof CreateBotIndex> | null>(null)
-const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null)
+const createBotModal = ref<InstanceType<typeof CreateBotIndex> | null>(null);
+const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null);
 </script>
 
 <template>
@@ -45,7 +45,9 @@ const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null)
             >
               选择中
             </div>
-            <div v-if="bot.is_running" class="badge badge-success text-base-100">运行中</div>
+            <div v-if="bot.is_running" class="badge badge-success text-base-100">
+              运行中
+            </div>
           </div>
         </div>
       </div>
@@ -72,9 +74,9 @@ const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null)
 <style scoped>
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' -25,
-    'opsz' 48;
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" -25,
+    "opsz" 48;
 }
 </style>

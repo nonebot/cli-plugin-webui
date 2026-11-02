@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-import DrawerItem from '@/components/DrawerItem.vue'
-import { useToastStore } from '@/stores'
+import DrawerItem from "@/components/DrawerItem.vue";
+import { useToastStore } from "@/stores";
 
-const store = useToastStore()
+const store = useToastStore();
 
-const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null)
+const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null);
 </script>
 
 <template>
@@ -70,7 +70,7 @@ const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null)
           </div>
 
           <div v-if="toast.from" class="text-xs text-base-content/50">
-            {{ toast.from ? `From: ${toast.from}` : '' }}
+            {{ toast.from ? `From: ${toast.from}` : "" }}
           </div>
         </div>
       </div>
@@ -91,9 +91,9 @@ const drawerRef = ref<InstanceType<typeof DrawerItem> | null>(null)
 <style scoped>
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' -25,
-    'opsz' 48;
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" -25,
+    "opsz" 48;
 }
 </style>

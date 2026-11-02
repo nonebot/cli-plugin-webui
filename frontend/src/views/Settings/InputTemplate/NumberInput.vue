@@ -1,32 +1,33 @@
 <script setup lang="ts">
-import type { ConfigType, ModuleConfigChild, ModuleType } from '@/client/api'
-import { ref, watch } from 'vue'
-import { updateConfig } from '../client'
+import type { ConfigType, ModuleConfigChild, ModuleType } from "@/client/api";
+import { ref, watch } from "vue";
+import { updateConfig } from "../client";
 
 const props = defineProps<{
-  moduleType: ModuleType | ConfigType
-  data: ModuleConfigChild
-}>()
+  moduleType: ModuleType | ConfigType;
+  data: ModuleConfigChild;
+}>();
 
-const data = props.data as Omit<ModuleConfigChild, 'configured' | 'default'> & {
-  configured: string
-  default: string
-}
+const data = props.data as Omit<ModuleConfigChild, "configured" | "default"> & {
+  configured: string;
+  default: string;
+};
 
 const inputValue = ref(data.configured),
   inEditing = ref(false),
-  isNumber = ref(true)
+  isNumber = ref(true);
 
 const update = async () => {
   if (!inputValue.value) {
-    return
+    return;
   }
-  await updateConfig(props.moduleType, data.conf_type, data.name, inputValue.value)
-}
+  await updateConfig(props.moduleType, data.conf_type, data.name, inputValue.value);
+};
 
 watch(inputValue, (value) => {
-  isNumber.value = value !== undefined && value.trim().length !== 0 && !isNaN(Number(value.trim()))
-})
+  isNumber.value =
+    value !== undefined && value.trim().length !== 0 && !isNaN(Number(value.trim()));
+});
 </script>
 
 <template>
@@ -45,7 +46,10 @@ watch(inputValue, (value) => {
     </label>
 
     <div class="join">
-      <button class="btn btn-xs btn-ghost join-item tooltip font-normal" data-tip="恢复默认">
+      <button
+        class="btn btn-xs btn-ghost join-item tooltip font-normal"
+        data-tip="恢复默认"
+      >
         <span class="material-symbols-outlined text-base"> refresh </span>
       </button>
 
@@ -54,7 +58,12 @@ watch(inputValue, (value) => {
         data-tip="编辑"
         @click="inEditing = !inEditing"
       >
-        <span :class="{ 'material-symbols-outlined text-base': true, 'text-primary': inEditing }">
+        <span
+          :class="{
+            'material-symbols-outlined text-base': true,
+            'text-primary': inEditing,
+          }"
+        >
           edit
         </span>
       </button>

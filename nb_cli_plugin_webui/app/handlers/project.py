@@ -4,8 +4,8 @@ from typing import Any, Dict, List
 import tomlkit
 from nb_cli.config import ConfigManager
 from dotenv import set_key, dotenv_values
-from tomlkit.toml_document import TOMLDocument
 from pydantic import BaseModel, ValidationError
+from tomlkit.toml_document import TOMLDocument
 from nb_cli.exceptions import ProjectNotFoundError
 from nb_cli.config import SimpleInfo as CliSimpleInfo
 from nb_cli.config.parser import CONFIG_FILE_ENCODING

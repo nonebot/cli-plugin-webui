@@ -1,41 +1,41 @@
 <script setup lang="ts">
-import { useCreateBotStore } from '.'
+import { useCreateBotStore } from ".";
 
-const store = useCreateBotStore()
+const store = useCreateBotStore();
 
 interface MirrorItem {
-  abbr: string
-  url: string
-  name: string
+  abbr: string;
+  url: string;
+  name: string;
 }
 
 const mirrors: MirrorItem[] = [
   {
-    abbr: 'pypi',
-    url: 'https://pypi.org/simple',
-    name: 'PyPI'
+    abbr: "pypi",
+    url: "https://pypi.org/simple",
+    name: "PyPI",
   },
   {
-    abbr: 'CERNET',
-    url: 'https://mirrors.cernet.edu.cn/pypi/web/simple',
-    name: '校园网联合镜像站'
+    abbr: "CERNET",
+    url: "https://mirrors.cernet.edu.cn/pypi/web/simple",
+    name: "校园网联合镜像站",
   },
   {
-    abbr: 'TUNA',
-    url: 'https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple',
-    name: '清华大学开源软件镜像站'
+    abbr: "TUNA",
+    url: "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple",
+    name: "清华大学开源软件镜像站",
   },
   {
-    abbr: 'PKU',
-    url: 'https://mirrors.pku.edu.cn/pypi/web/simple',
-    name: '北京大学开源软件镜像站'
+    abbr: "PKU",
+    url: "https://mirrors.pku.edu.cn/pypi/web/simple",
+    name: "北京大学开源软件镜像站",
   },
   {
-    abbr: 'STSTech CRA',
-    url: 'https://mirrors.sustech.edu.cn/pypi/web/simple',
-    name: '南方科技大学开源软件镜像站'
-  }
-]
+    abbr: "STSTech CRA",
+    url: "https://mirrors.sustech.edu.cn/pypi/web/simple",
+    name: "南方科技大学开源软件镜像站",
+  },
+];
 </script>
 
 <template>
@@ -80,7 +80,7 @@ const mirrors: MirrorItem[] = [
       <div
         :class="{
           'btn btn-sm btn-primary text-base-100': true,
-          'btn-disabled': !store.pythonMirror.length
+          'btn-disabled': !store.pythonMirror.length,
         }"
         @click="store.step++"
       >
