@@ -1,7 +1,7 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
 
 self.MonacoEnvironment = {
   getWorkerUrl: () => {
-    return './editor.worker.bundle.js'
-  }
-}
+    return "./editor.worker.bundle.js";
+  },
+};

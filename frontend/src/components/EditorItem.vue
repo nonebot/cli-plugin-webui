@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { editor as monacoEditor } from 'monaco-editor/esm/vs/editor/editor.api.js'
-import { onMounted, ref, watch } from 'vue'
+import { editor as monacoEditor } from "monaco-editor/esm/vs/editor/editor.api.js";
+import { onMounted, ref, watch } from "vue";
 
 const props = defineProps<{
-  modelValue: string
-  editorOptional: Partial<monacoEditor.IStandaloneEditorConstructionOptions>
-}>()
+  modelValue: string;
+  editorOptional: Partial<monacoEditor.IStandaloneEditorConstructionOptions>;
+}>();
 
 const emit = defineEmits<{
-  editor: [value: monacoEditor.IStandaloneCodeEditor]
-  updateValue: [value: string]
-}>()
+  editor: [value: monacoEditor.IStandaloneCodeEditor];
+  updateValue: [value: string];
+}>();
 
-const editorContainer = ref<HTMLDivElement>()
-let editor: monacoEditor.IStandaloneCodeEditor
+const editorContainer = ref<HTMLDivElement>();
+let editor: monacoEditor.IStandaloneCodeEditor;
 
 onMounted(() => {
   editor = monacoEditor.create(editorContainer.value!, {
     value: props.modelValue,
-    ...props.editorOptional
-  })
-  emit('editor', editor)
+    ...props.editorOptional,
+  });
+  emit("editor", editor);
   editor.onDidChangeModelContent(() => {
-    emit('updateValue', editor.getValue())
-  })
-})
+    emit("updateValue", editor.getValue());
+  });
+});
 
 watch(
   () => props.modelValue,
-  (value) => editor.setValue(value)
-)
+  (value) => editor.setValue(value),
+);
 </script>
 
 <template>

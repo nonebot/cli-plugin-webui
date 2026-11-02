@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useCustomStore } from '@/stores'
-import DrawerItem from '@/components/DrawerItem.vue'
+import { ref } from "vue";
+import { useCustomStore } from "@/stores";
+import DrawerItem from "@/components/DrawerItem.vue";
 
-const store = useCustomStore()
+const store = useCustomStore();
 
-const drawerRef = ref<InstanceType<typeof DrawerItem> | null>()
+const drawerRef = ref<InstanceType<typeof DrawerItem> | null>();
 </script>
 
 <template>
@@ -63,9 +63,9 @@ const drawerRef = ref<InstanceType<typeof DrawerItem> | null>()
 <style scoped>
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' -25,
-    'opsz' 48;
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" -25,
+    "opsz" 48;
 }
 </style>

@@ -9,9 +9,9 @@ from .schemas import CustomLog
 class ProcessFuncWithLog:
     def __init__(self, log: LogStorage) -> None:
         self.log = log
-        self.queue: List[
-            Tuple[Callable[..., Any], Tuple[Any, ...], Dict[str, Any]]
-        ] = list()
+        self.queue: List[Tuple[Callable[..., Any], Tuple[Any, ...], Dict[str, Any]]] = (
+            list()
+        )
 
     async def _err_parse(
         self, err: Exception, additional_err_msg: Optional[str] = None
